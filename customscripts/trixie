@@ -1,0 +1,8 @@
+#!/bin/sh
+T_DIR=~/trixie
+
+# echo -n "Usuario de trixie? "
+# read T_USER
+
+mkdir -p $T_DIR
+sudo mount -t cifs -o user=jtrabucco,uid=$(id -u),gid=$(id -g),file_mode=0600,dir_mode=0700 //192.168.2.168/$T_USER $T_DIR

@@ -1,0 +1,2 @@
+#!/bin/bash
+source /usr/share/nvm/init-nvm.sh;nvm use 12.14; cd ~/proyectos/kipin/webapp; ng s

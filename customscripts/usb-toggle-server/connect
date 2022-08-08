@@ -1,0 +1,24 @@
+#!/usr/bin/python3
+import sys,os,requests
+# if ($_GET["key"] === "317DE4D7A1BCAD1D70877EA90849EEC5BB00CEC52979FAC1790753F265472E93"){
+if len(sys.argv) < 2: print('Error: no param specified')
+
+if(sys.argv[1]=='audio'):
+    res = requests.get('http://192.168.1.37:81/?key=317DE4D7A1BCAD1D70877EA90849EEC5BB00CEC52979FAC1790753F265472E93')
+    if res.content == b'8557C1674B6CFF0597E7FCDF262F6CD02103FE7BB204F92E56CC36E5D97F9918':
+        os.system('sudo /usr/bin/usbip bind -b 1-8')
+        res = requests.get('http://192.168.1.37:81/connect-audio.php?key=317DE4D7A1BCAD1D70877EA90849EEC5BB00CEC52979FAC1790753F265472E93')
+        if(not res.content):
+            os.system('sudo /usr/bin/usbip unbind -b 1-8')
+    else:
+        print(res.content)
+if(sys.argv[1]=='keymouse'):
+    res = requests.get('http://192.168.1.37:81/?key=317DE4D7A1BCAD1D70877EA90849EEC5BB00CEC52979FAC1790753F265472E93')
+    if res.content == b'8557C1674B6CFF0597E7FCDF262F6CD02103FE7BB204F92E56CC36E5D97F9918':
+        os.system('sudo /usr/bin/usbip bind -b 1-5')
+        os.system('sudo /usr/bin/usbip bind -b 1-6')
+        res = requests.get('http://192.168.1.37:81/connect-keymouse.php?key=317DE4D7A1BCAD1D70877EA90849EEC5BB00CEC52979FAC1790753F265472E93')
+        if(not res.content):
+            os.system('sudo /usr/bin/usbip unbind -b 1-5')
+            os.system('sudo /usr/bin/usbip unbind -b 1-6')
+            print(res.content)

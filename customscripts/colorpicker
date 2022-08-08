@@ -1,0 +1,2 @@
+#!/bin/bash
+gpick -s -o | tr -d '\n' | xclip -selection c

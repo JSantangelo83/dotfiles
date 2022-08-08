@@ -1,0 +1,8 @@
+keycode 64 = Mode_switch
+keysym j = j J Left
+keysym l = l L Right
+keysym i = i I Up
+keysym k = k K Down
+keysym h = h H End
+keysym f = f F Home
+keysym n = n N ntilde Ntilde

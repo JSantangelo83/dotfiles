@@ -1,0 +1,5 @@
+#!/bin/bash
+export TESSDATA_PREFIX='/usr/share/tessdata/';
+gscreenshot -s -f /tmp/tmp-capture.png 2> /tmp/error-gs;
+tesseract /tmp/tmp-capture.png /tmp/tmp-capture-out 2> /tmp/error-tess;
+cat /tmp/tmp-capture-out.txt | xclip -selection c

@@ -1,0 +1,158 @@
+#!/usr/bin/python3
+
+#Imports
+import argparse,os,filecmp,json,re,uuid
+from pathlib import Path
+
+parser = argparse.ArgumentParser()
+
+#Constants
+PATH_HOME = str(Path.home())
+PATH_APPDIR = f'{PATH_HOME}/.svk'
+PATH_TASKS = f'{PATH_APPDIR}/tasks'
+PATH_DATA = f'{PATH_APPDIR}/data.json'
+PATH_DISCARDED= f'{PATH_APPDIR}/discarded'
+DATA = json.load(open(PATH_DATA,'r')) if os.path.isfile(PATH_DATA) else {}
+#Constants - Commands
+CM_NOT_IGNORED_STATUS = "svn st | sed -e \"/^--- Changelist 'ignore'/,/^--- Changelist/d\""
+CM_UNTRACKED = CM_NOT_IGNORED_STATUS + " | grep '^[?]' | awk '{print $2}'"
+CM_CHANGED = CM_NOT_IGNORED_STATUS + " | grep '^[ADMR!]' | awk '{print $2}'"
+CM_ADD_UNTRACKED = f'{CM_UNTRACKED} | xargs -I "files" svn add "files"'
+CM_DELETE_UNTRACKED = f'{CM_UNTRACKED} | xargs rm -r'
+CM_REVERT_ALL = f'{CM_CHANGED} | xargs svn revert --depth infinity'
+CM_CHANGED_DIFF= f'{CM_CHANGED} | xargs -I "files" svn diff "files"'
+#Errors Handling
+if(not os.path.isdir(PATH_APPDIR)):os.system(f'mkdir {PATH_APPDIR}')
+if(not os.path.isdir(PATH_TASKS)):os.system(f'mkdir {PATH_TASKS}')
+if(not os.path.isdir(PATH_DISCARDED)):os.system(f'mkdir {PATH_DISCARDED}')
+
+#Arguments declaration
+parser.add_argument('-i', '--init', help="Inits a new task")
+parser.add_argument('-c', '--current', action='store_true', help="Prints the current task")
+parser.add_argument('-s', '--stage', action='store_true', help="Stages all changes into the current task")
+parser.add_argument('-r', '--revert',action='store_true', help="Revert all new changes that aren't staged")
+parser.add_argument('-ci', '--commit',action='store_true', help="Commits all changes to the current task. Also deletes task")
+parser.add_argument('-rs', '--restore', help="Restores the indicated task")
+parser.add_argument('-d', '--delete', help="Deletes the indicated task, and reverts all changes (0 for current)")
+parser.add_argument('-ls', '--list', action='store_true', help="List all existent tasks")
+parser.add_argument('-df', '--diff', help="Show diff from indicated task (0 for current)")
+parser.add_argument('-ch', '--changed', help="Shows changed files from indicated task (0 for current)")
+args = parser.parse_args()
+
+#TODO: Make task selection by index and not task_number
+#TODO: Check if running in svn project
+#TODO: Add diff
+#TODO: Add changed files (0 for current)
+#TODO: Add params without '-'
+#Function declarations
+def stage(clearTask=True):
+        os.system(CM_UNTRACKED)
+        print('--------------------------------------------')
+        add = input(' Add unversioned files? [Y/n]: ') or 'Y'
+        print('--------------------------------------------')
+        if( add == 'Y'): os.system(CM_ADD_UNTRACKED)
+        os.system(f'{CM_CHANGED_DIFF} > "{PATH_TASKS}/{DATA["TASK_PATCH"]}"')
+        if (clearTask):
+            os.system(f'rm {PATH_DATA}')
+            #TODO: Test and fix revert (sometimes crash unexpectly)
+            os.system(CM_REVERT_ALL)
+
+def discard(msg=''):
+    print('\033[93;95m--------------------------------------------------------------------------')
+    print(f'WARNING! {msg} Every change will be DISCARDED')
+    print('--------------------------------------------------------------------------\033[0m')
+    input('Press enter to continue...')
+    os.system(CM_ADD_UNTRACKED)
+    os.system(f'{CM_CHANGED_DIFF} > "{PATH_DISCARDED}/{uuid.uuid4()}.patch"')
+
+def getTaskData(number):
+    tmpdata = {}
+    for file in os.listdir(PATH_TASKS):
+        match = re.search(f'{number} -', file)
+        if match: 
+            tmpdata['TASK_NUMBER'] = number
+            tmpdata['TASK_PATCH'] = file
+            break
+    if not 'TASK_NUMBER' in tmpdata: raise ValueError('Bad usage, unexistent task')
+    return tmpdata
+
+def handleTaskNumber(number, acceptcurrent=True):
+    if(number == '0' and "TASK_NUMBER" in DATA and acceptcurrent):
+        return DATA
+    elif(number == '0' and not "TASK_NUMBER" in DATA):
+        raise ValueError('Bad usage, no task is selected')
+    elif(number == '0' and not acceptcurrent):
+        raise ValueError('Bad usage, cant use current task')
+    elif(number != '0'):
+        return getTaskData(number)
+
+try:
+    # Arguments handling
+    if(not len([ k for (k,v) in vars(args).items() if v ])): raise ValueError('Bad usage, no arguments provided\nFor more information try --help')
+
+    #Do things
+    if(args.init):
+        #TODO: Check that init is a number
+        if("TASK_NUMBER" in DATA):
+            do_stage = input(' Stage current changes? [Y/n]:') or 'Y'
+            if(do_stage == 'Y'): stage()
+        desc = input(' Descripcion: ')
+        taskname = f'{args.init}{" - " + desc if desc else ""}.patch'
+        os.system(f"echo '' > '{PATH_TASKS}/{taskname}'")
+        DATA['TASK_NUMBER'] = args.init
+        DATA['TASK_PATCH'] = taskname
+        json.dump(DATA,open(PATH_DATA,'w'))
+        #TODO: Add already created task warning!
+
+    if(args.current):
+        print(f'{" Current Task: " + DATA["TASK_PATCH"].replace(".patch","") if "TASK_NUMBER" in DATA else " No task is selected"}')
+        
+    if(args.stage):
+        if(not 'TASK_NUMBER' in DATA): raise ValueError('Bad Usage, no task is selected')
+        stage()    
+
+    if(args.restore):
+        #TODO: Check that restore is a number
+        #TODO: code refactor
+        tmpdata = handleTaskNumber(args.restore, False)
+        if(not 'TASK_NUMBER' in DATA): 
+            discard('No task selected.')
+        else:
+            do_stage = input(' Stage current changes? (press enter if no task) [Y/n]: ') or 'Y'
+            if(do_stage == 'Y'): stage()
+
+        DATA = tmpdata
+        os.system(f'svn patch "{PATH_TASKS}/{DATA["TASK_PATCH"]}"')
+        json.dump(DATA,open(PATH_DATA,'w'))
+
+
+    if(args.delete):
+        DATA = handleTaskNumber(args.delete)
+        if(args.delete=='0'):discard()
+        os.system(f'rm "{PATH_TASKS}/{DATA["TASK_PATCH"]}"')
+        os.system(f'rm {PATH_DATA} 2> /tmp/null')
+
+    if(args.revert): 
+        discard()
+        os.system(f'svn patch "{PATH_TASKS}/{DATA["TASK_PATCH"]}"')        
+
+    if(args.list):
+        print('-----------------------------------------------------------')
+        for i,file in enumerate(os.listdir(PATH_TASKS)):
+            print(f' {i+1}) {file.replace(".patch","")}')
+        print('-----------------------------------------------------------')
+
+    if (args.diff):
+        # TODO: Check that diff is a number
+        DATA = handleTaskNumber(args.diff)
+        if(args.diff == '0'): stage(False)
+        os.system(f'xterm -e micro {PATH_TASKS}/"{DATA["TASK_PATCH"]}"')
+
+    if (args.changed):
+        # TODO: Check that diff is a number
+        DATA = handleTaskNumber(args.changed)
+        if(args.changed == '0'): stage(False)
+        os.system(f'cat {PATH_TASKS}/"{DATA["TASK_PATCH"]}" | grep "+++" | ' + 'awk "{print \$2}"')
+
+except KeyboardInterrupt as error: print('\n Proceso terminado por el usuario')
+except ValueError as error: print(error)

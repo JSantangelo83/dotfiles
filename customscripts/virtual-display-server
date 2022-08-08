@@ -1,0 +1,62 @@
+#!/usr/bin/python3
+import pyautogui as pa,socket
+from pynput import mouse,keyboard
+
+HOST = '192.168.1.43'
+PORT = 8300
+
+while True:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.bind((HOST, PORT))
+        print(f'listening on {HOST}:{PORT}')
+        s.listen()
+        conn, addr = s.accept()
+        with conn:
+            print(f'connected with {addr}')
+
+            capture = False
+
+            def handleExit():
+                global capture
+                if(pa.position().x==1365 or not capture):
+                    if capture:
+                        pa.moveTo(1,pa.position().y)
+                        capture = False
+                    return True
+
+            def clickHandler(x, y, button, pressed):
+                if(handleExit()): return False
+                conn.sendall(f'click/event/{pressed},{button}/end/'.encode())
+
+            def moveHandler(x,y):
+                if(handleExit()): return False
+                conn.sendall(f'mousemove/event/{x},{y}/end/'.encode())
+
+            def keyPressHandler(key):
+                if(handleExit()): return False
+                conn.sendall(f'keypress/event/{key}/end/'.encode())
+                print(f'keypress/event/{key}/end/'.encode())
+
+            def keyReleaseHandler(key):
+                if(handleExit()): return False
+                conn.sendall(f'keyrelease/event/{key}/end/'.encode())
+                print(f'keyrelease/event/{key}/end/'.encode())
+
+            while True:
+                if(pa.position().x==0):
+                    capture = True
+                    pa.moveTo(1364,pa.position().y)
+                    kbListener = keyboard.Listener(
+                            on_press=keyPressHandler,
+                            on_release=keyReleaseHandler
+                           )
+                    msListener = mouse.Listener(
+                            on_click=clickHandler,
+                            on_move=moveHandler
+                            )
+
+                    msListener.start()
+                    kbListener.start()
+                    msListener.join()
+                    kbListener.join()

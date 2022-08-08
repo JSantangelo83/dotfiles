@@ -1,0 +1,6 @@
+#/bin/bash
+clear;
+TERM_TEXT=$($TERM --version | cut -f -2 -d ' ');
+SHELL_TEXT=$(echo $SHELL | cut -f 3- -d '/')\ $(echo $BASH_VERSION | cut -f -1 -d '(');
+UPTIME_TEXT=$(uptime -p | cut -f 2- -d ' ');
+paste <(figlet ${USER^}) <(echo -e "\e[1;3;32mTerminal:\e[m ${TERM_TEXT^} \n\n\e[1;3;32mUptime:\e[m ${UPTIME_TEXT} \n\n\e[1;3;32mShell:\e[m ${SHELL_TEXT^} \n\n");

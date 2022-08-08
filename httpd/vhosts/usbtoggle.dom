@@ -1,0 +1,16 @@
+	<VirtualHost *:81>
+	    ServerAdmin joakinsant@gmail.com
+	    DocumentRoot "/home/js/.customscripts/usb-toggle-server"
+	    ServerName usbtoggle
+	    ServerAlias usbtoggle
+	    ErrorLog "/var/log/httpd/usbtoggle-error_log"
+	    CustomLog"/var/log/httpd/usbtoggle-access_log" common
+
+	    <Directory "/home/js/.customscripts/usb-toggle-server">
+	    	DirectoryIndex index.php
+	        Require all granted
+	        AllowOverride all
+	        Allow from all
+	        Options +Indexes +FollowSymLinks -MultiViews
+	    </Directory>
+	</VirtualHost>
