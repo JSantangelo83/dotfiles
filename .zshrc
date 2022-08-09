@@ -90,6 +90,7 @@ export EDITOR=vim
 export BROWSER=firefox
 export nb='192.168.1.37'
 export TESSDATA_PREFIX='/usr/share/tessdata/'
+export dotfiles='/home/js/.config/dotfiles'
 
 OPERAPLUGINWRAPPER_PRIORITY=0
 OPERA_KEEP_BLOCKED_PLUGIN=1

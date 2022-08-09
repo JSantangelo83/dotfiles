@@ -1,0 +1,42 @@
+#!/bin/bash
+function usage {
+       echo "Usage: cpperm [-o][-p][-g] SOURCE TARGET
+         -o                          Copies Ownership.
+         -p                          Copies Permissions.
+         -g                          Copies Group.
+         -h                          Display this help message.
+
+Cpperm copies the perm|owner|group recursively from a directory to another one with the same structure."
+       exit 0
+}
+
+#Counting flags
+owner=false;
+perm=false;
+group=false;
+
+while getopts :opgh opt; do
+    case ${opt} in
+      o) owner=true ;;
+      p) perm=true ;;
+      g) group=true ;;
+      h) usage ;;
+      *) echo "Invalid Option";usage;;
+     esac
+done
+#Changing opt pointer
+shift $((OPTIND - 1));
+
+#Validating flags and params
+if ! [[ $owner || $perm || $group ]] || [[ $# -lt 2 ]]; then
+	usage;
+fi
+
+#Logic
+find "$1" | while read -r source; do
+	target=${source/$1/$2};
+	if [[ $owner ]]; then sudo chown --reference "$source" "$target"; fi
+	if [[ $perm ]]; then sudo chmod --reference "$source" "$target"; fi
+	if [[ $group ]]; then sudo chgrp --reference "$source" "$target"; fi
+	echo "changed $target";
+done;
