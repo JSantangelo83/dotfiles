@@ -52,7 +52,8 @@ function linkfile(){
        
        if [[ -f $sourcefile ]] || ! [[ -f $sourcefile ]] && $force; then
               echo "[+] Linking File: $sourcefile -> $targetfile";
-              rm "$sourcefile";
+              [[ -f $sourcefile ]] && rm "$sourcefile";
+              mkdir -p $(realpath $(dirname $sourcefile));
               ln -sf $(realpath $targetfile) "$sourcefile";
        else
               echo "[!] File not found (Use -f to force creation of file): $sourcefile";
