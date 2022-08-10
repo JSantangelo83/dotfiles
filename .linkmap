@@ -8,3 +8,4 @@ $HOME/.config/picom:picom
 $HOME/.config/qtile:qtile
 /etc/ssh:ssh
 $HOME/.config/xremap:xremap
+$HOME/.config/lite-xl:lite-xl

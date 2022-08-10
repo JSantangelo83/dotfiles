@@ -1,6 +1,6 @@
 #!/bin/bash
 function usage {
-       echo "Usage: dfinstall -s dotfiles_path [-c config_file] [-f]
+       echo "Usage: dfinstall -s dotfiles_path [-c config_file][-v]
          -s                          path of the dotfiles DIRECTORY.
          -c                          config file (mapping) 
                                      format:
@@ -9,24 +9,25 @@ function usage {
                                           src:destination
                                           EOF
                                    [default: dotfiles_path/.linkmap]
-         -f                          Force creation if file doesn't exists     
          -h                          Display this help message.
+         -v                          Increase verbosity level
 
 dfinstall installs all the dotfiles mapped at .linkmap in the source folder"
        exit 0
 }
 
 #Getting params
-dotfiles_path='';
+dotfiles_path='/home/js/.config/dotfiles/'; #default value
 config_file='';
-force=false;
-while getopts :s:c:fh opt; do
+export _V=0;
+
+while getopts :s:c:vh opt; do
     case ${opt} in
       s) dotfiles_path=${OPTARG};;
       c) config_file=${OPTARG};;
-      f) force=true;;
       h) usage ;;
-      *) echo "Invalid Option";usage;;
+      v) _V=1;;
+      *) echo >&2 "[x] Invalid Option";usage;;
      esac
 done
 
@@ -35,49 +36,72 @@ if [[ -z "$dotfiles_path" ]] || ! [[ -d "$dotfiles_path" ]]; then
 	usage;
 fi
 
+#Verbosity
+function log () {
+    if [[ $_V -eq 1 ]]; then
+        echo "$@"
+    fi
+}
+export -f log;
+
 #Validating config file
 if [[ -z $config_file ]]; then
-       echo "[+] No config file specified, using $dotfiles_path.linkmap..."
+       log "[!] No config file specified, using $dotfiles_path.linkmap..."
        config_file=$dotfiles_path.linkmap
-       if ! [[ -f $config_file ]]; then echo "[!] No valid config file found, exiting...";exit 1; fi
 fi
+if ! [[ -f $config_file ]]; then >&2 echo "[x] No valid config file found ($config_file), exiting...";exit 1; fi
 
 #link subfile function
 function linkfile(){
        if [[ $# -gt 2 ]]; then 
-              sourcefile=${1/$3/$2};targetfile=$1
+              sourcefile=${1/$3/$2};targetfile=$1;
        else
               sourcefile=$1;targetfile=$2
        fi
-       
-       if [[ -f $sourcefile ]] || ! [[ -f $sourcefile ]] && $force; then
-              echo "[+] Linking File: $sourcefile -> $targetfile";
+       # if [[ -f $sourcefile ]]; then
+              log "[+] Linking File: $sourcefile -> $targetfile";
               [[ -f $sourcefile ]] && rm "$sourcefile";
               mkdir -p $(realpath $(dirname $sourcefile));
               ln -sf $(realpath $targetfile) "$sourcefile";
-       else
-              echo "[!] File not found (Use -f to force creation of file): $sourcefile";
-       fi
+       # else
+              #backup de lo anterior por las dudas
+              # echo "[!] File not found (Use -f to force creation of file): $sourcefile";
+       # fi
 }
 export -f linkfile;
 
+list=$(cat $config_file);
+
+#Check if sudo
+if [ "$EUID" -eq 0 ]; then
+       read -p "[!] Running as sudo, the \$HOME variable will be pointing to /root, do you want to exclude the paths including it? [Y/n]: " -r
+       rs=${REPLY:l};
+       if [[ $rs =~ ^(yes|y| ) ]] || [[ -z $rs ]]; then list=$(cat $config_file | grep -v "\$HOME"); fi
+       echo $list;
+fi
+
+echo -e "[!] WARNING! Every file at:";
+echo '-------------------';
+echo $list | tr ' ' '\n' | awk -F ':' "{print \$1}" | sed 's,$HOME,'"$HOME,";
+echo '-------------------';
+read -p "will be overwrited with a symlink pointing to the specified dotfiles directory ($dotfiles_path), do you want to continue? [y/N]: " -r
+rs=${REPLY:l};
+if ! [[ $rs =~ ^(yes|y| ) ]] || [[ -z $rs ]]; then
+    exit 0;
+fi
+
 #Logic
-echo "[+] Linking..."
-while read -r line; 
+log "[+] Linking..."
+for line in $list;
 do
        tmp_source=$(echo "$line" | cut -d ":" -f 1);
        source=${tmp_source/"\$HOME"/$HOME}
        target=$dotfiles_path$(echo $line | cut -d ":" -f 2);
        #If its a directory, links the subfiles
        if [[ -d $target ]]; then
-              echo "[+] Linking directory: $source -> $target";
+              log "[+] Linking directory: $source -> $target";
               find $target -type f -exec bash -c "linkfile \"{}\" $source $target" \;
        elif [[ -f $target ]]; then
               linkfile $source $target;
        fi
-done < $config_file
-
-
-
-
-
+done
