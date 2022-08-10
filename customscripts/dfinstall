@@ -1,6 +1,6 @@
 #!/bin/bash
 function usage {
-       echo "Usage: dfinstall -s dotfiles_path [-c config_file]
+       echo "Usage: dfinstall -s dotfiles_path [-c config_file] [-f]
          -s                          path of the dotfiles DIRECTORY.
          -c                          config file (mapping) 
                                      format:
@@ -9,6 +9,7 @@ function usage {
                                           src:destination
                                           EOF
                                    [default: dotfiles_path/.linkmap]
+         -f                          Force creation if file doesn't exists     
          -h                          Display this help message.
 
 dfinstall installs all the dotfiles mapped at .linkmap in the source folder"
@@ -18,10 +19,12 @@ dfinstall installs all the dotfiles mapped at .linkmap in the source folder"
 #Getting params
 dotfiles_path='';
 config_file='';
-while getopts :s:c:h opt; do
+force=false;
+while getopts :s:c:fh opt; do
     case ${opt} in
       s) dotfiles_path=${OPTARG};;
       c) config_file=${OPTARG};;
+      f) force=true;;
       h) usage ;;
       *) echo "Invalid Option";usage;;
      esac
@@ -41,11 +44,19 @@ fi
 
 #link subfile function
 function linkfile(){
-       [[ $# -gt 2 ]] && sourcefile=${1/$3/$2};targetfile=$1 || sourcefile=$1;targetfile=$2
-       [[ -f $sourcefile ]] && 
+       if [[ $# -gt 2 ]]; then 
+              sourcefile=${1/$3/$2};targetfile=$1
+       else
+              sourcefile=$1;targetfile=$2
+       fi
+       
+       if [[ -f $sourcefile ]] || ! [[ -f $sourcefile ]] && $force; then
               echo "[+] Linking File: $sourcefile -> $targetfile";
-              ln -sf "$target" "$sourcefile"
-       || echo "[!] File not found: $sourcefile";
+              rm "$sourcefile";
+              ln -sf $(realpath $targetfile) "$sourcefile";
+       else
+              echo "[!] File not found (Use -f to force creation of file): $sourcefile";
+       fi
 }
 export -f linkfile;
 
