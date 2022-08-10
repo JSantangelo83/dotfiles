@@ -12,8 +12,6 @@ alias ll='ls -la --color=auto'
 alias bashrc='edtw ~/.bashrc'
 alias zshrc='edtw ~/.zshrc'
 alias py='python3 '
-alias mkpy='~/.customscripts/touchpy'
-alias mksh='~/.customscripts/touchsh'
 alias gip='ip a | grep 192.168 | awk "{print \$2}"'
 alias syst='sudo systemctl start'
 alias sysr='sudo systemctl restart'
@@ -86,7 +84,7 @@ PS2=$' %{\e[1;31m%} %{\e[0%}m'
 
 #Variables
 export LC_ALL="C"
-export EDITOR=vim
+export EDITOR=micro
 export BROWSER=firefox
 export nb='192.168.1.37'
 export TESSDATA_PREFIX='/usr/share/tessdata/'
@@ -96,7 +94,7 @@ OPERAPLUGINWRAPPER_PRIORITY=0
 OPERA_KEEP_BLOCKED_PLUGIN=1
 GDK_NATIVE_WINDOWS=1
 
-PATH="/usr/NX/bin/:/home/js/.customscripts:/opt/lampp:/home/js/perl5/bin${PATH:+:${PATH}}"; export PATH;
+PATH="/usr/NX/bin/:${dotfiles}/customscripts:/opt/lampp:/home/js/perl5/bin${PATH:+:${PATH}}"; export PATH;
 PERL5LIB="/home/js/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
 PERL_LOCAL_LIB_ROOT="/home/js/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
 PERL_MB_OPT="--install_base \"/home/js/perl5\""; export PERL_MB_OPT;

@@ -1,0 +1,71 @@
+#!/bin/bash
+function usage {
+       echo "Usage: dfinstall -s dotfiles_path [-c config_file]
+         -s                          path of the dotfiles DIRECTORY.
+         -c                          config file (mapping) 
+                                     format:
+                                          src:destination
+                                          src:destination
+                                          src:destination
+                                          EOF
+                                   [default: dotfiles_path/.linkmap]
+         -h                          Display this help message.
+
+dfinstall installs all the dotfiles mapped at .linkmap in the source folder"
+       exit 0
+}
+
+#Getting params
+dotfiles_path='';
+config_file='';
+while getopts :s:c:h opt; do
+    case ${opt} in
+      s) dotfiles_path=${OPTARG};;
+      c) config_file=${OPTARG};;
+      h) usage ;;
+      *) echo "Invalid Option";usage;;
+     esac
+done
+
+#Validating dotfiles path
+if [[ -z "$dotfiles_path" ]] || ! [[ -d "$dotfiles_path" ]]; then
+	usage;
+fi
+
+#Validating config file
+if [[ -z $config_file ]]; then
+       echo "[+] No config file specified, using $dotfiles_path.linkmap..."
+       config_file=$dotfiles_path.linkmap
+       if ! [[ -f $config_file ]]; then echo "[!] No valid config file found, exiting...";exit 1; fi
+fi
+
+#link subfile function
+function linkfile(){
+       [[ $# -gt 2 ]] && sourcefile=${1/$3/$2};targetfile=$1 || sourcefile=$1;targetfile=$2
+       [[ -f $sourcefile ]] && 
+              echo "[+] Linking File: $sourcefile -> $targetfile";
+              ln -sf "$target" "$sourcefile"
+       || echo "[!] File not found: $sourcefile";
+}
+export -f linkfile;
+
+#Logic
+echo "[+] Linking..."
+while read -r line; 
+do
+       tmp_source=$(echo "$line" | cut -d ":" -f 1);
+       source=${tmp_source/"\$HOME"/$HOME}
+       target=$dotfiles_path$(echo $line | cut -d ":" -f 2);
+       #If its a directory, links the subfiles
+       if [[ -d $target ]]; then
+              echo "[+] Linking directory: $source -> $target";
+              find $target -type f -exec bash -c "linkfile \"{}\" $source $target" \;
+       elif [[ -f $target ]]; then
+              linkfile $source $target;
+       fi
+done < $config_file
+
+
+
+
+

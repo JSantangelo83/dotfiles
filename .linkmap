@@ -1,0 +1,10 @@
+$HOME/.ssh:.ssh
+$HOME/.vimrc:.vimrc
+$HOME/.zshrc:.zshrc
+$HOME/.config/alacritty:alacritty
+$HOME/.customscripts:customscripts
+/etc/httpd:httpd
+$HOME/.config/picom:picom
+$HOME/.config/qtile:qtile
+/etc/ssh:ssh
+$HOME/.config/xremap:xremap
