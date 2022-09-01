@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ "$PS1" == "$FULL_PROMPT" ]; then
+	source minPrompt
+else
+	source maxPrompt
+fi

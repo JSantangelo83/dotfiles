@@ -1,3 +1,3 @@
 #!/bin/bash
-xwinwrap -b -fdt -fs -sp -fs -nf -ov -- wal --backend haishoku --iterative -e -q -i /home/js/documents/wallpapers
 # & alacritty-themes $(shuf -n 1 /home/js/.config/alacritty/themes)
+xwinwrap -b -fdt -fs -sp -fs -nf -ov -- wal --saturate 0.35 --backend haishoku --iterative -e -q -i /home/js/documents/wallpapers

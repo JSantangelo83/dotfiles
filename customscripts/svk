@@ -146,7 +146,7 @@ try:
         # TODO: Check that diff is a number
         DATA = handleTaskNumber(args.diff)
         if(args.diff == '0'): stage(False)
-        os.system(f'xterm -e micro {PATH_TASKS}/"{DATA["TASK_PATCH"]}"')
+        os.system(f'bat {PATH_TASKS}/"{DATA["TASK_PATCH"]}"')
 
     if (args.changed):
         # TODO: Check that diff is a number
