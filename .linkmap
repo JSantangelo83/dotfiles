@@ -4,8 +4,10 @@ $HOME/.zshrc:.zshrc
 $HOME/.config/alacritty:alacritty
 $HOME/.customscripts:customscripts
 /etc/httpd:httpd
+/etc:etc
 $HOME/.config/picom:picom
 $HOME/.config/qtile:qtile
 /etc/ssh:ssh
+/etc/lightdm:lightdm
 $HOME/.config/xremap:xremap
 $HOME/.config/lite-xl:lite-xl
