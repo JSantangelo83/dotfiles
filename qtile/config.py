@@ -85,7 +85,7 @@ keys = [
     Key("M-C-r", lazy.reload_config(), desc="Reload Qtile Config"),
     Key("M-C-S-r", lazy.restart(), desc="Restart Qtile"),    
     Key("M-C-q", lazy.shutdown(), desc="Shutdown Qtile"),
-    Key("M-e",lazy.spawn("nemo"),desc="Spawn Nautilus"),
+    Key("M-e",lazy.spawn("nautilus"),desc="Spawn Nautilus"),
             
     #rofi menu
     Key("M-m", lazy.spawn("rofi -show-icons -icon-theme Papirus -show drun")),
@@ -98,7 +98,7 @@ keys = [
     #OCR
     Key("M-S-a", lazy.spawn("/home/js/.config/dotfiles/customscripts/ocr-selection")),
     #Env-Selection
-    Key("M-e", lazy.spawn("/home/js/.config/dotfiles/customscripts/env-selector-menu")),
+    # Key("M-e", lazy.spawn("/home/js/.config/dotfiles/customscripts/env-selector-menu")),
 
     #Gif
     Key("M-S-r", lazy.spawn("peek")),

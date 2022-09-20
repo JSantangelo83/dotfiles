@@ -64,7 +64,7 @@ class Default:
                         smallSpacer(),
                     ],
                     self.customScreens()[0]["top"]["size"] if "size" in self.customScreens()[0]["top"] else 24,
-                    margin=self.customScreens()[0]["top"]["margin"] if "margin" in self.customScreens()[0]["top"] else 1,
+                    margin=self.customScreens()[0]["top"]["margin"] if "margin" in self.customScreens()[0]["top"] else [1,0,3,0],
                     background=self.customScreens()[0]["top"]["background"] if "background" in self.customScreens()[0]["top"] else "#282C34",
                 ),
                 **{
