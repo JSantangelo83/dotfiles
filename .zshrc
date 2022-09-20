@@ -132,3 +132,11 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+
+function anonfiles(){
+	while true; do
+	str=$(pene)
+	[[ -z $(grep -Fxq "$str" anonfiles.txt) ]] && echo $str >> anonfiles.txt
+	done;
+}

@@ -88,7 +88,7 @@ keys = [
     Key("M-e",lazy.spawn("nemo"),desc="Spawn Nautilus"),
             
     #rofi menu
-    Key("M-m", lazy.spawn("rofi -show-icons -show run")),
+    Key("M-m", lazy.spawn("rofi -show-icons -icon-theme Papirus -show drun")),
 
     #firefox
     Key("M-b", lazy.spawn("firefox")),
