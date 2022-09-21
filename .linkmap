@@ -3,6 +3,8 @@ $HOME/.vimrc:.vimrc
 $HOME/.zshrc:.zshrc
 $HOME/.config/alacritty:alacritty
 $HOME/.customscripts:customscripts
+$HOME/.config/ranger:ranger
+$HOME/.config/fish:fish
 /etc/httpd:httpd
 /etc:etc
 $HOME/.config/picom:picom

@@ -1,3 +1,28 @@
 #!/bin/bash
-# & alacritty-themes $(shuf -n 1 /home/js/.config/alacritty/themes)
-xwinwrap -b -fdt -fs -sp -fs -nf -ov -- wal --saturate 0.35 --backend haishoku --iterative -e -q -i /home/js/documents/wallpapers
+# ***Deprecated***
+# xwinwrap -b -fdt -fs -sp -fs -nf -ov -- wal --saturate 0.35 --backend haishoku --iterative -e -q -i /home/js/documents/wallpapers
+# & alacritty-themes $(shuf -n 1 /home/js/.config/alacritty/alacritty-themes)
+
+#Wallpapers directory
+wallpapers="$HOME/documents/wallpapers"
+# Current bg
+n=$(cat ~/.fehbg | awk -F'[g.]' '{print $4}' | tail -n 1);
+#Next bg number
+n=$((n+1))
+# Next bg file
+new_bg="$wallpapers/bg$n.jpg";
+
+# Change bg
+[[ -f $new_bg ]] && feh --bg-fill $new_bg || feh --bg-fill "$wallpapers/bg1.jpg"
+
+#Select Random theme from themes-mapping matching this bg
+theme=$(sed -n "$n"p $dotfiles/alacritty/themes-mapping | tr '|' '\n' | shuf -n 1)
+
+#Delete
+sed -n "$n"p $dotfiles/alacritty/themes-mapping
+echo $theme
+#Delete
+
+#Change theme if any
+
+[ -z $theme ] || alacritty-themes "$theme"
