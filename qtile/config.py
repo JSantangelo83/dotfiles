@@ -78,8 +78,9 @@ keys = [
     #Toggle bottom bar
     Key("M-f",lazy.hide_show_bar("bottom")),
 	
-    Key("M-<Return>", lazy.spawn(terminal), desc="Launch terminal"),
-    Key("S-M-<Return>", lazy.spawn('/home/js/.config/dotfiles/customscripts/newalacritty'), desc="Launch terminal in same directory"),
+    # Key("M-<Return>", lazy.spawn(terminal), desc="Launch terminal"),
+    Key("M-<Return>", lazy.spawn('kitty'), desc="Launch terminal"),
+    # Key("S-M-<Return>", lazy.spawn('/home/js/.config/dotfiles/customscripts/newkitty'), desc="Launch terminal in same directory"),
     Key("M-<Tab>", lazy.next_layout(), desc="Toggle between layouts"),
     Key("M-w", lazy.window.kill(), desc="Kill focused window"),
     Key("M-C-r", lazy.reload_config(), desc="Reload Qtile Config"),

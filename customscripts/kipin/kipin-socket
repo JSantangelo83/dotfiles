@@ -1,2 +1,2 @@
 #!/bin/bash
-source /usr/share/nvm/init-nvm.sh; nvm use 12.14; cd ~/proyectos/kipin/socketserver_ts; npm start; sleep 10
+cd ~/proyectos/kipin/socketserver_ts; npm start; sleep 10

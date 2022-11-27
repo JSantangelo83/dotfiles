@@ -25,30 +25,30 @@ key_bindings:
   - { key: M, mods: Control, chars: "toggleprompt;banner \r" }
 
 colors:
-  # Default colors
+  name: hund
+  author: hund
   primary:
-    background: '#202734'
-    foreground: '#CBCCC6'
-
-  # Normal colors
+    background: "#161616"
+    foreground: "#FFFFFF"
+  cursor:
+    text: "#161616"
+    cursor: "#FFFFFF"
   normal:
-    black: '#191E2A'
-    red: '#FF3333'
-    green: '#BAE67E'
-    yellow: '#FFA759'
-    blue: '#73D0FF'
-    magenta: '#FFD580'
-    cyan: '#95E6CB'
-    white: '#C7C7C7'
-
-  # Bright colors
+    black: "#222222"
+    red: "#E84F4F"
+    green: "#B7CE42"
+    yellow: "#FEA63C"
+    blue: "#66AABB"
+    magenta: "#B7416E"
+    cyan: "#6D878D"
+    white: "#DDDDDD"
   bright:
-    black: '#686868'
-    red: '#F27983'
-    green: '#A6CC70'
-    yellow: '#FFCC66'
-    blue: '#5CCFE6'
-    magenta: '#FFEE99'
-    cyan: '#95E6CB'
-    white: '#FFFFFF'
-theme: Ayu-Mirage
+    black: "#666666"
+    red: "#D23D3D"
+    green: "#BDE077"
+    yellow: "#FFE863"
+    blue: "#AACCBB"
+    magenta: "#E16A98"
+    cyan: "#42717B"
+    white: "#CCCCCC"
+theme: Hund

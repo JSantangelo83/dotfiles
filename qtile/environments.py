@@ -43,12 +43,18 @@ class Default:
                         ),
                         smallSpacer(),
                         owm.OpenWeatherMap(
-                            api_key="7834197c2338888258f8cb94ae14ef49",
-                            latitude=-34.6497,
-                            longitude=-58.3834,
-                            foreground="#88E7E7",
-                            format="{icon} {temp:.1f}{temp_units}",
+                        api_key="7834197c2338888258f8cb94ae14ef49",
+                        latitude=-34.6497,
+                        longitude=-58.3834,
+                        foreground="#88E7E7",
+                        format="{icon} {temp:.1f}{temp_units}",
                         ),
+                        # widget.ThermalSensor(
+                            # format=" {temp:.0f}{unit}",
+                            # tag_sensor="Tctl",
+                            # threshold=80.0,
+                            # foreground="#88E7E7",
+                        # ),
                         verticalLine(),
                         widget.CPU(
                             foreground="#FC88F8",

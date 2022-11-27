@@ -1,10 +1,12 @@
 #!/bin/bash
+
 # ***Deprecated***
 # xwinwrap -b -fdt -fs -sp -fs -nf -ov -- wal --saturate 0.35 --backend haishoku --iterative -e -q -i /home/js/documents/wallpapers
 # & alacritty-themes $(shuf -n 1 /home/js/.config/alacritty/alacritty-themes)
 
 #Wallpapers directory
 wallpapers="$HOME/documents/wallpapers"
+dotfiles="$HOME/.config/dotfiles"
 # Current bg
 n=$(cat ~/.fehbg | awk -F'[g.]' '{print $4}' | tail -n 1);
 #Next bg number
@@ -25,4 +27,6 @@ echo $theme
 
 #Change theme if any
 
-[ -z $theme ] || alacritty-themes "$theme"
+[[ -z $theme ]] || alacritty-themes "$theme";
+	
+

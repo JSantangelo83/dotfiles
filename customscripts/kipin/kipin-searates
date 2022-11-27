@@ -1,2 +1,2 @@
 #!/bin/bash
-source /usr/share/nvm/init-nvm.sh;nvm use 12.14; cd /home/js/proyectos/kipin/searates; npm run dev
+cd /home/js/proyectos/kipin/searates; npm run dev

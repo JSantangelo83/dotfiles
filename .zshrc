@@ -21,6 +21,10 @@ alias mhost='sudo micro /etc/hosts'
 alias sshn='ssh js@192.168.1.37'
 alias dotfiles='cd /home/js/.config/dotfiles'
 alias rs='source /home/js/.zshrc'
+alias xterm-kitty='kitty'
+function memusage() top -o %MEM -b -n1 | tail +8 | head -n ${1:-6} | awk '{print toupper( substr( $12, 1, 1 ) ) substr( $12, 2 )" "$10"%"}'
+function cpusage() top -o %CPU -b -n1 | tail +8 | head -n ${1:-6} | awk '{print toupper( substr( $12, 1, 1 ) ) substr( $12, 2 )" "$9"%"}'
+
 #pacman
 alias get='sudo pacman -S'
 alias rem='sudo pacman -R'
@@ -45,9 +49,12 @@ alias svnni="svn st | sed -e \"/^--- Changelist 'ignore'/,/^--- Changelist/d\" |
 alias svndiff="svnni | xargs svn diff | bat -l patch"
 #kipin
 alias kipin='~/.customscripts/kipin/init'
-alias betalog='initial_path=$(pwd) && cd /tmp && wget ftp://logsbeta%2540dattacargo.com:LogsBeta.2021@dattacargo.com/prod.log && cat ./prod.log | tail -100 | bat -l log && rm ./prod.log && cd $initial_path'
+alias betalog='initial_path=$(pwd) && cd /tmp && wget ftp://logsbeta%2540dattacargo.com:LogsBeta.2021@dattacargo.com/prod.log && cat ./prod.log | tac | head | bat -l log && rm ./prod.log && cd $initial_path'
 alias migrate='php bin/console doctrine:migrations:migrate'
 alias mkmigration="php bin/console make:migration | grep \"new migration\" | awk -F'\"' '{print \$2}'"
+#resets
+alias kds='pkill -f discord; pkill -f Discord'
+alias klol='pkill -f lutris'
 
 //Functions
 toggleprompt(){
@@ -115,8 +122,21 @@ PERL_MB_OPT="--install_base \"/home/js/perl5\""; export PERL_MB_OPT;
 PERL_MM_OPT="INSTALL_BASE=/home/js/perl5"; export PERL_MM_OPT;
 shopt -s checkwinsize
 
-SAVEHIST=100000  # Save most-recent 1000 lines
+#History
+export HISTCONTROL=ignoredups:erasedups  # no duplicate entries
+export HISTSIZE=100000                   # big big history
+export HISTFILESIZE=100000               # big big history
+export SAVEHIST=100000 					 # big big history
+shopt -s histappend                      # append to history, don't overwrite it
+# Appends every command to the history file once it is executed
+setopt inc_append_history
+# Reloads the history whenever you use it
+setopt share_history
+# Save and reload the history after each command finishes
+# export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+
 HISTFILE=~/.zsh_history
+
 
 #BINDKEYS
 bindkey  "^[[H"   beginning-of-line

@@ -5,6 +5,8 @@ $HOME/.config/alacritty:alacritty
 $HOME/.customscripts:customscripts
 $HOME/.config/ranger:ranger
 $HOME/.config/fish:fish
+$HOME/.config/kitty:kitty
+/etc/fonts:fonts
 /etc/httpd:httpd
 /etc:etc
 $HOME/.config/picom:picom
