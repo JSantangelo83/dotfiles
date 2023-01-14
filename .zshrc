@@ -7,8 +7,9 @@
 
 # cat ~/.cache/wal/sequences
 #system
-alias ls='ls --color=auto'
-alias ll='ls -la --color=auto'
+alias ls='exa --git --icons'
+alias ll='exa --git --icons --long --all --all --octal-permissions'
+alias tree='exa --git --icons --tree'
 alias bashrc='edtw ~/.bashrc'
 alias zshrc='edtw ~/.zshrc'
 alias py='python3 '
@@ -55,7 +56,6 @@ alias mkmigration="php bin/console make:migration | grep \"new migration\" | awk
 #resets
 alias kds='pkill -f discord; pkill -f Discord'
 alias klol='pkill -f lutris'
-
 //Functions
 toggleprompt(){
 	if [ "$PS1" \=\= "$FULL_PROMPT" ]; then
@@ -84,7 +84,28 @@ alias msfconsole="msfconsole -x \"db_connect js@msf\""
 #nvm
 alias nvmi="source /usr/share/nvm/init-nvm.sh;nvm use 12.14"
 #htb
-alias htbinit="sudo openvpn ~/hacking/hackthebox/htb-vpn.ovpn"
+export tip='';
+
+alias htbi="sudo openvpn ~/hacking/hackthebox/htb-vpn.ovpn"
+alias htbu="sudo /opt/htbExplorer/htbExplorer -v /home/js/hacking/hackthebox/htb-vpn.ovpn"
+alias htb="sudo /opt/htbExplorer/htbExplorer"
+alias getp="cat open | grep -oE '[0-9]+/'  | tr -d '/' | tr '\n' ','| xargs | xclip -sel c -r"
+
+function uptip(){
+	cat ~/.zshrc | sed "s/^export tip='.*/export tip='$1'/g"
+	export tip="$1";
+}
+
+function htbc() {
+	mkdir "/home/js/hacking/hackthebox/machines/$1"
+	mkdir "/home/js/hacking/hackthebox/machines/$1/recon"
+	mkdir "/home/js/hacking/hackthebox/machines/$1/content"
+	mkdir "/home/js/hacking/hackthebox/machines/$1/exploit"
+	cd "/home/js/hacking/hackthebox/machines/$1/recon"
+	uptip $2
+	
+}
+
 #python
 alias pysv="sudo python -m http.server 9000"
 #php
@@ -107,7 +128,7 @@ PS2=$MIN_PROMPT
 export LC_ALL="C"
 export EDITOR=micro
 export BROWSER=firefox
-export nb='192.168.1.37'
+export nb='192.168.1.38'
 export TESSDATA_PREFIX='/usr/share/tessdata/'
 export dotfiles='/home/js/.config/dotfiles'
 export dirlist='/home/js/hacking/wordlists/dirbuster/directory-list-2.3-medium.txt'

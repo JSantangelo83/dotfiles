@@ -1,2 +1,4 @@
 #!/bin/bash
-cd ~/proyectos/kipin/webapp; npx ng s
+cd ~/proyectos/kipin/webapp || exit; 
+export NODE_OPTIONS=--openssl-legacy-provider;
+npx ng s;

@@ -7,7 +7,6 @@ alacritty 0.11.0-1
 alacritty-themes 4.3.0-1
 alsaplayer 0.99.81-10
 ambix 0.2.10-3
-amdctl 0.11-1
 amsynth 1.13.0-1
 android-apktool 2.6.0-1
 android-emulator 31.2.8-1
@@ -136,9 +135,6 @@ kitty 0.26.4-1
 kxstudio-lv2-extensions 2022.09.28-2
 leptonica 1.82.0-2
 lftp 4.9.2-1
-lib32-gamemode 1.7-1
-lib32-opencl-mesa 22.2.1-1
-lib32-vulkan-radeon 22.2.1-1
 libreoffice-fresh 7.4.2-2
 libtool 2.4.7-5
 libxml 1.8.17-4
@@ -182,13 +178,11 @@ networkmanager 1.40.2-1
 ninjas2 0.2.0-2
 nmap 7.92-1
 nodejs 19.0.0-2
-noisetorch 0.12.2-1
 nomachine 7.9.2-1
 noto-fonts 20220810-1
 noto-fonts-emoji 20220920-1
 ntfs-3g 2022.5.17-1
 onesixtyone-git r52.f2a4fa5-1
-opencl-mesa 22.2.1-1
 openssh 9.1p1-1
 openvpn 2.5.7-1
 opera 92.0.4561.21-1
@@ -290,9 +284,6 @@ valgrind 3.19.0-5
 vim 9.0.0354-1
 virtualbox-bin 6.1.28-1
 visual-studio-code-bin 1.61.2-1
-vkbasalt 0.3.2.6-1
-vulkan-radeon 22.2.1-1
-vulkan-tools 1.3.226-1
 web-greeter 3.4.1-4
 wfuzz 3.1.0-1
 whatweb 0.5.5-1
@@ -310,8 +301,6 @@ xautoclick 0.34-2
 xautomation 1.09-4
 xclip 0.13-3
 xdotool 3.20211022.1-1
-xf86-video-amdgpu 22.0.0-1
-xf86-video-vesa 2.5.0-3
 xkeycaps 2.47-2
 xorg-bdftopcf 1.1.1-1
 xorg-docs 1.7.2-1

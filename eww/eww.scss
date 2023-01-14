@@ -1,0 +1,23 @@
+/* Colors */
+$BGColor: #353535;
+
+
+.env-selector {
+	background-color: $BGColor;
+	border-radius: 23px;
+}
+
+.bar {
+	background-color: $BGColor;
+	border-radius: 20px;
+}
+
+/* Workspaces */
+.loaded-1 {
+	color: white;
+}
+
+.workspace-item {
+	font-size:22px;
+	color: grey;
+}

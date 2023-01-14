@@ -1,0 +1,72 @@
+(defwidget other []
+	(box)
+)
+
+(defwidget workspace-item [icon monitor loaded]
+	(box 
+		:class "workspace-item monitor-${monitor} loaded-${loaded ? 0 : 1}"
+		"${icon}"
+	)
+)
+
+(defvar workspace-icons "[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]")
+
+(defwidget workspace-selector []
+	(box 
+		:class "workspace-selector"
+		:orientation "vertical"
+		(for icon in workspace-icons
+			(workspace-item 
+				:icon "${icon}"
+				:monitor "-1"
+				:loaded true
+			)
+		)
+		
+	)
+)
+
+(defwidget env-selector []
+	(box
+		:class "env-selector"
+		:orientation "horizontal"
+	)
+)
+
+(defwidget bar []
+	(box
+		:class "bar"
+		:orientation "vertical"
+	(workspace-selector)
+	(other)
+	(other)
+	(other)
+	)
+)
+
+
+(defwindow bar
+           :monitor 0
+           :geometry (geometry :x "20px"
+   							:y "37px"
+    						:width "36px"
+      						:height "91%"
+       						:anchor "left center")
+           :stacking "fg"
+           :reserve (struts :distance "75px" :side "left")
+           :wm-ignore false
+  (bar)
+)
+
+(defwindow env-selector
+           :monitor 0
+           :geometry (geometry 
+           					:x "5px"
+           					:y "13px"
+    						:width "70px"
+      						:height "70px"
+       						:anchor "left top")
+           :stacking "fg"
+           :wm-ignore false
+  (env-selector)
+)

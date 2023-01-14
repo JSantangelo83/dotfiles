@@ -61,7 +61,7 @@ keys = [
     Key("M-S-l", lazy.layout.shuffle_right(),desc="Move window to the right"),
     Key("M-S-k", lazy.layout.shuffle_down(),desc="Move window down"),
     Key("M-S-i", lazy.layout.shuffle_up(), desc="Move window up"),
-
+    
     #Resize Windows (MonadTall)
     Key("M-C-j", lazy.layout.shrink_main(),desc='Grow window to the left'),
     Key("M-C-l", lazy.layout.grow_main()),
@@ -93,6 +93,7 @@ keys = [
 
     #firefox
     Key("M-b", lazy.spawn("firefox")),
+    Key("S-M-b", lazy.spawn("google-chrome-stable")),
 
     #Screenshot
     Key("M-S-s", lazy.spawn("flameshot gui")),
@@ -128,6 +129,11 @@ keys = [
     #Brightness
     Key("<XF86MonBrightnessUp>", lazy.spawn("brightnessctl set +10%")),
     Key("<XF86MonBrightnessDown>", lazy.spawn("brightnessctl set 10%-")),
+
+    #Eww Bar
+    Key("M-C-<Space>", lazy.spawn("qtile cmd-obj -o cmd -f hide_show_bar")),
+    Key("M-<Space>", lazy.spawn("/home/js/.config/dotfiles/eww/scripts/start")),
+    Key("M-S-<Space>", lazy.spawn("/home/js/.config/dotfiles/eww/scripts/stop")),
 
         
 ]

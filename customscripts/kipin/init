@@ -1,2 +1,4 @@
 #!/bin/bash
-cd ~/proyectos/kipin; ~/.customscripts/banner; alacritty -e ~/.customscripts/kipin/kipin-socket & alacritty -e ~/.customscripts/kipin/kipin-front & alacritty -e ~/.customscripts/kipin/kipin-searates & sleep 2 & disown
+cd ~/proyectos/kipin || exit; 
+~/.customscripts/banner; 
+alacritty -e ~/.customscripts/kipin/kipin-socket & alacritty -e ~/.customscripts/kipin/kipin-front & alacritty -e ~/.customscripts/kipin/kipin-searates & sleep 2 & disown

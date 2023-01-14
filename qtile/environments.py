@@ -122,6 +122,24 @@ class Default:
 
 
 # Custom Envs
+class Eww(Default):
+    def getIcon():
+        return '?'
+
+    def customLayouts(self):
+        return [
+            layout.MonadTall(
+                margin=10,
+                border_width=0,
+                border_focus="#E8C7DE",
+                single_margin=10,
+                single_border_width=0,
+                corner_radius=16,
+            )
+        ]
+    def customGroups(self):
+        return [Group(i) for i in ['0','1','2','3','4','5','6','7']]
+
 class Code(Default):
     def getIcon():
         return ''

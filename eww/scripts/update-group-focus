@@ -1,0 +1,2 @@
+#!/bin/bash
+qtile cmd-obj -o layout -f info | grep group | cut -d ':' -f2 | awk -NF "['']" '{print $2}' >> /home/js/.config/dotfiles/eww/data/current-group

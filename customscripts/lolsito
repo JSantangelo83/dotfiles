@@ -1,2 +1,0 @@
-#!/bin/bash
-/usr/share/applications/leagueoflegends.desktop & disown & exit;

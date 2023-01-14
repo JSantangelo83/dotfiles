@@ -102,6 +102,9 @@ do
               log "[+] Linking directory: $source -> $target";
               find $target -type f -exec bash -c "linkfile \"{}\" $source $target" \;
        elif [[ -f $target ]]; then
-              linkfile $source $target;
+          linkfile $source $target;
+       elif [ -f $source ] && [ ! -f $target ]; then
+       		cp $source $target;
+       		linkfile $source $target;
        fi
 done
