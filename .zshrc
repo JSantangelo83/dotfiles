@@ -92,17 +92,17 @@ alias htb="sudo /opt/htbExplorer/htbExplorer"
 alias getp="cat open | grep -oE '[0-9]+/'  | tr -d '/' | tr '\n' ','| xargs | xclip -sel c -r"
 
 function uptip(){
-	cat ~/.zshrc | sed "s/^export tip='.*/export tip='$1'/g"
+	sed -i "s/^export tip='.*/export tip='$1'/g" /home/js/.zshrc;
 	export tip="$1";
 }
 
 function htbc() {
-	mkdir "/home/js/hacking/hackthebox/machines/$1"
-	mkdir "/home/js/hacking/hackthebox/machines/$1/recon"
-	mkdir "/home/js/hacking/hackthebox/machines/$1/content"
-	mkdir "/home/js/hacking/hackthebox/machines/$1/exploit"
-	cd "/home/js/hacking/hackthebox/machines/$1/recon"
-	uptip $2
+	mkdir "/home/js/hacking/hackthebox/machines/$1";
+	mkdir "/home/js/hacking/hackthebox/machines/$1/recon";
+	mkdir "/home/js/hacking/hackthebox/machines/$1/content";
+	mkdir "/home/js/hacking/hackthebox/machines/$1/exploit";
+	cd "/home/js/hacking/hackthebox/machines/$1/recon";
+	uptip $2;
 	
 }
 
