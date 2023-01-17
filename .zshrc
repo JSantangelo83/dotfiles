@@ -8,7 +8,8 @@
 # cat ~/.cache/wal/sequences
 #system
 alias ls='exa --git --icons'
-alias ll='exa --git --icons --long --all --all --octal-permissions'
+alias ll='exa --git --icons --long --octal-permissions'
+alias lla='exa --git --icons --long --all --all --octal-permissions'
 alias tree='exa --git --icons --tree'
 alias bashrc='edtw ~/.bashrc'
 alias zshrc='edtw ~/.zshrc'

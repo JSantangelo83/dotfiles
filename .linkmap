@@ -10,6 +10,7 @@ $HOME/.config/ranger:ranger
 $HOME/.config/fish:fish
 $HOME/.config/eww:eww
 $HOME/.config/kitty:kitty
+/var/spool/cron/js:cron/js
 /etc/fonts:fonts
 /etc/httpd:httpd
 /etc:etc
