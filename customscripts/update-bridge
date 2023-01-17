@@ -23,6 +23,10 @@ git pull;
 #Updating data locally
 cd "/home/js/bridge/data/$device" || exit 1;
 
+#Deleting old data
+rm public-ip;
+rm private-ip;
+
 dig +short myip.opendns.com @resolver1.opendns.com > public-ip
 ip a | grep 192.168 | awk "{print \$2}" > private-ip
 
