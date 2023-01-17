@@ -15,9 +15,9 @@ def smallSpacer():
 class Default:
     def getLayouts(self):
         return [
-            layout.Max(
-                margin=10,
-            )
+            # layout.Max(
+                # margin=10,
+            # )
         ] + self.customLayouts()
 
     def getGroups(self):
@@ -49,12 +49,13 @@ class Default:
                         foreground="#88E7E7",
                         format="{icon} {temp:.1f}{temp_units}",
                         ),
-                        # widget.ThermalSensor(
-                            # format=" {temp:.0f}{unit}",
-                            # tag_sensor="Tctl",
-                            # threshold=80.0,
-                            # foreground="#88E7E7",
-                        # ),
+                        verticalLine(),
+                        widget.ThermalSensor(
+                            format=" {temp:.0f}{unit}",
+                            tag_sensor="Tctl",
+                            threshold=80.0,
+                            foreground="#88E7E7",
+                        ),
                         verticalLine(),
                         widget.CPU(
                             foreground="#FC88F8",
@@ -135,6 +136,16 @@ class Eww(Default):
                 single_margin=10,
                 single_border_width=0,
                 corner_radius=16,
+            ),
+            layout.Columns(
+                margin=10,
+                border_width=0,
+                border_focus="#E8C7DE",
+                single_margin=10,
+                single_border_width=0,
+                corner_radius=16,                
+                num_columns=6,
+                insert_position=1,
             )
         ]
     def customGroups(self):
@@ -156,6 +167,16 @@ class Code(Default):
                 single_margin=10,
                 single_border_width=0,
                 corner_radius=16,
+            ),
+            layout.Columns(
+                margin=10,
+                border_width=0,
+                border_focus="#E8C7DE",
+                single_margin=10,
+                single_border_width=0,
+                corner_radius=16,                
+                num_columns=6,
+                insert_position=1,
             )
         ]
 

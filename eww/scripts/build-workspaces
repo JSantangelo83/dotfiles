@@ -1,0 +1,35 @@
+#!/bin/bash
+workspaces_icons=":::::::"
+function get-group-data(){
+	group_n="$1"
+	data_name="$2"
+	#Check if param exists and is a number
+	if ! [[ "$group_n" =~ ^[0-9]+$ ]]; then
+		echo -e '\n[x] No valid Argument provided. Exiting...\n';
+		exit 1;
+	fi
+	
+	group_json=$(qtile cmd-obj -o group "$group_n" -f info);
+
+	case $data_name in
+		loaded) 
+			[ "$(echo "$group_json" | grep "'focus'" | cut -d ':' -f2 | tr -d ',')" = ' None' ] && echo 'false' || echo 'true'
+		;;
+		monitor) echo 'test';;
+	 esac
+}
+
+count=0;
+while read -r icon; do
+	# monitor=$(get-group-data "$count" monitor);
+	monitor='-1';
+	# loaded='true';
+	loaded=$(get-group-data "$count" loaded);
+
+	yuck="$yuck (workspace-item :icon '$icon' :monitor '$monitor' :loaded $loaded)"
+	count=$((count+1))
+done <<<"$(echo $workspaces_icons | tr ':' '\n')"
+
+#Final return 
+echo -e "(box :class 'workspace-selector' :vexpand true :spacing -30 :orientation 'vertical' $yuck)"
+

@@ -1,29 +1,23 @@
-(defwidget other []
-	(box)
+;;;;;;;;;;;;;; Variables Section ;;;;;;;;;;;;;;;;;;;;;;;;
+
+(deflisten workspacesitems :initial "(box)" `scripts/build-workspaces`)
+(deflisten song :initial 'no se' `playerctl --follow metadata --format {{title}}`)
+;;;;;;;;;;;;;;;; Widgets Section ;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(defwidget other [?class]
+	(box :class "${class}")
 )
 
 (defwidget workspace-item [icon monitor loaded]
 	(box 
-		:class "workspace-item monitor-${monitor} loaded-${loaded ? 0 : 1}"
+		:class "workspace-item monitor-${monitor} loaded-${loaded ? 1 : 0}"
 		"${icon}"
 	)
 )
 
-(defvar workspace-icons "[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]")
-
 (defwidget workspace-selector []
-	(box 
-		:class "workspace-selector"
-		:orientation "vertical"
-		(for icon in workspace-icons
-			(workspace-item 
-				:icon "${icon}"
-				:monitor "-1"
-				:loaded true
-			)
-		)
-		
-	)
+	(literal :content workspacesitems)
 )
 
 (defwidget env-selector []
@@ -41,19 +35,24 @@
 	(other)
 	(other)
 	(other)
+	;; (other :class 'red')
+	;; (other :class 'blue')
+	;; (other :class 'green')
 	)
 )
 
 
+;;;;;;;;;Windows Section;;;;;;;;;;;;;;;;;;;;;
+
 (defwindow bar
            :monitor 0
-           :geometry (geometry :x "20px"
+           :geometry (geometry :x "23px"
    							:y "37px"
-    						:width "36px"
+    						:width "38px"
       						:height "91%"
        						:anchor "left center")
            :stacking "fg"
-           :reserve (struts :distance "75px" :side "left")
+           :reserve (struts :distance "87px" :side "left")
            :wm-ignore false
   (bar)
 )
@@ -61,7 +60,7 @@
 (defwindow env-selector
            :monitor 0
            :geometry (geometry 
-           					:x "5px"
+           					:x "7px"
            					:y "13px"
     						:width "70px"
       						:height "70px"

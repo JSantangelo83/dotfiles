@@ -1,7 +1,6 @@
 /* Colors */
 $BGColor: #353535;
 
-
 .env-selector {
 	background-color: $BGColor;
 	border-radius: 23px;
@@ -13,11 +12,46 @@ $BGColor: #353535;
 }
 
 /* Workspaces */
+
+.workspace-selector{
+	background-color: #282828;
+}
+
+
+.monitor-test{
+	color:red;
+}
+
+.workspace-item {
+	font-size:26px;
+	color: grey;
+}
+
 .loaded-1 {
 	color: white;
 }
 
-.workspace-item {
-	font-size:22px;
-	color: grey;
+/* 6th workspace icon is bigger than others, this is to make it equal */
+.workspace-item:nth-child(6) {
+	font-size:23px;
+}
+/* Last workspace icon is smaller than others, this is to make it equal */
+.workspace-item:nth-child(8){
+	font-size:28px;
+}
+
+.red{
+	background-color:red;
+}
+.grey{
+	background-color:grey;
+}
+.violet{
+	background-color:violet;
+}
+.green{
+	background-color:green;
+}
+.blue{
+	background-color:blue;
 }

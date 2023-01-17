@@ -37,7 +37,7 @@ alias aget='sudo apt install'
 alias arem='sudo apt remove'
 #qtile
 alias qtilec='edtw ~/.config/qtile/config.py'
-alias qtilee='bat ~/.local/share/qtile/qtile.log'
+alias qtilee='cat ~/.local/share/qtile/qtile.log | tail -n 40 | bat -l log'
 alias fqkey='bat ~/.config/qtile/keys | grep'
 #yay
 alias yget='yay -S'
@@ -163,17 +163,33 @@ HISTFILE=~/.zsh_history
 bindkey  "^[[H"   beginning-of-line
 bindkey  "^[[F"   end-of-line
 bindkey  "^[[3~"  delete-char
+bindkey "^d" kill-path-word
+
 banner
 
 export FZF_DEFAULT_OPS='-x -i'
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .Android --exclude snap --exclude .git --exclude .cache --exclude cache --exclude .vscode-oss --exclude .svn --exclude node-modules --exclude composer --exclude build'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-
+#zsh plugins/functions
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
+function kill-path-word()
+{
+  local words word spaces
+   zle set-mark-command                 # save current cursor position ("mark")
+   while [[ $LBUFFER[-1] == "/" ]] {
+     (( CURSOR -= 1 ))                  # consume all trailing slashes
+  }
+  words=("${(s:/:)LBUFFER/\~/_}")       # split command line at "/" after "~" is replaced by "_" to prevent FILENAME EXPANSION messing things up
+  word=$words[-1]                       # this is the portion from cursor back to previous "/"
+  (( CURSOR -= $#word ))                # then, jump to the previous "/"
+  zle exchange-point-and-mark           # swap "mark" and "cursor"
+  zle kill-region                       # delete marked region
+}
+zle -N kill-path-word
 
 function anonfiles(){
 	while true; do

@@ -1,0 +1,5 @@
+#Qtile Pycache 
+qtile/__pycache__/*
+
+#Eww temp data
+eww/data

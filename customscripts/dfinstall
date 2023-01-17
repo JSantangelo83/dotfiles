@@ -101,8 +101,13 @@ do
        if [[ -d $target ]]; then
               log "[+] Linking directory: $source -> $target";
               find $target -type f -exec bash -c "linkfile \"{}\" $source $target" \;
+              #Clears broken symlinks (Symlinks pointing to nonexistent files)
+        	  # find -L $source -type l -exec rm {} \;
+       #If it is a file, link the file
        elif [[ -f $target ]]; then
           linkfile $source $target;
+       #When linking files, copy it if not exists in dotfiles folder 
+       #(This allows install the dotfile only by putting it in the .linkmap file)
        elif [ -f $source ] && [ ! -f $target ]; then
        		cp $source $target;
        		linkfile $source $target;

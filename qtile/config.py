@@ -1,32 +1,6 @@
-# Copyright (c) 2010 Aldo Cortesi
-# Copyright (c) 2010, 2014 dequis
-# Copyright (c) 2012 Randall Ma
-# Copyright (c) 2012-2014 Tycho Andersen
-# Copyright (c) 2012 Craig Barnes
-# Copyright (c) 2013 horsik
-# Copyright (c) 2013 Tao Sauvage
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
 from typing import List  # noqa: F401
-import json,environments
-from libqtile import layout
+import json,environments,eventlogger,os,subprocess
+from libqtile import layout,hook
 from libqtile.config import Click, Drag, Key, Match
 from libqtile.utils import guess_terminal
 from libqtile.config import EzKey as Key
@@ -54,7 +28,7 @@ keys = [
     Key("M-l", lazy.layout.right(), desc="Move focus to right"),
     Key("M-k", lazy.layout.down(), desc="Move focus down"),
     Key("M-i", lazy.layout.up(), desc="Move focus up"),
-    Key("M-q", lazy.layout.next(), desc="Move windo w focus to other window"),
+    Key("M-q", lazy.window.toggle_fullscreen()),
     
     #Move Windows
     Key("M-S-j", lazy.layout.shuffle_left(),desc="Move window to the left"),
@@ -62,12 +36,40 @@ keys = [
     Key("M-S-k", lazy.layout.shuffle_down(),desc="Move window down"),
     Key("M-S-i", lazy.layout.shuffle_up(), desc="Move window up"),
     
-    #Resize Windows (MonadTall)
-    Key("M-C-j", lazy.layout.shrink_main(),desc='Grow window to the left'),
-    Key("M-C-l", lazy.layout.grow_main()),
-    Key("M-C-k", lazy.layout.shrink()),
-    Key("M-C-i", lazy.layout.grow()),
+    #Resize Windows
+    Key("M-C-j",
+        lazy.layout.shrink_main().when(layout='monadtall'),
+        lazy.layout.grow_left().when(layout='columns')
+     ),
     
+    Key("M-C-l",
+        lazy.layout.grow_main().when(layout='monadtall'),
+        lazy.layout.grow_right().when(layout='columns')
+     ),
+    
+    Key("M-C-k",
+        lazy.layout.shrink().when(layout='monadtall'),
+        lazy.layout.grow_down().when(layout='columns')
+     ),
+    
+    Key("M-C-i",
+        lazy.layout.grow().when(layout='monadtall'),
+        lazy.layout.grow_up().when(layout='columns')
+     ),
+
+    #Columns Layout Specific Keys
+    Key("M-S-C-l", 
+        lazy.layout.swap_column_right().when(layout='columns'),
+        lazy.layout.flip().when(layout='monadtall')
+    ),
+    Key("M-S-C-j", 
+        lazy.layout.swap_column_left().when(layout='columns'),
+        lazy.layout.flip().when(layout='monadtall')
+    ),
+    
+    Key("M-<Space>", lazy.layout.toggle_split()),
+    
+
     #Reset Windows size
     Key("M-r", lazy.layout.normalize()),
     #Toggle Floating
@@ -86,7 +88,7 @@ keys = [
     Key("M-C-r", lazy.reload_config(), desc="Reload Qtile Config"),
     Key("M-C-S-r", lazy.restart(), desc="Restart Qtile"),    
     Key("M-C-q", lazy.shutdown(), desc="Shutdown Qtile"),
-    Key("M-e",lazy.spawn("nautilus"),desc="Spawn Nautilus"),
+    Key("M-e",lazy.spawn("nemo"),desc="Spawn Nemo"),
             
     #rofi menu
     Key("M-m", lazy.spawn("rofi -show-icons -icon-theme Papirus -show drun")),
@@ -131,9 +133,9 @@ keys = [
     Key("<XF86MonBrightnessDown>", lazy.spawn("brightnessctl set 10%-")),
 
     #Eww Bar
-    Key("M-C-<Space>", lazy.spawn("qtile cmd-obj -o cmd -f hide_show_bar")),
-    Key("M-<Space>", lazy.spawn("/home/js/.config/dotfiles/eww/scripts/start")),
-    Key("M-S-<Space>", lazy.spawn("/home/js/.config/dotfiles/eww/scripts/stop")),
+    Key("M-C-<BackSpace>", lazy.spawn("qtile cmd-obj -o cmd -f hide_show_bar")),
+    Key("M-<BackSpace>", lazy.spawn("/home/js/.config/dotfiles/eww/scripts/start")),
+    Key("M-S-<BackSpace>", lazy.spawn("/home/js/.config/dotfiles/eww/scripts/stop")),
 
         
 ]
