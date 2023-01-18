@@ -1,7 +1,9 @@
 ;;;;;;;;;;;;;; Variables Section ;;;;;;;;;;;;;;;;;;;;;;;;
 
-(deflisten workspacesitems :initial "(box)" `scripts/build-workspaces`)
+(deflisten workspacesitems :initial "(box)" `ncat -lknp 13255`)
+; (defpoll workspacesitems :interval '0.1s' `scripts/qtile-parser`)
 (deflisten song :initial 'no se' `playerctl --follow metadata --format {{title}}`)
+
 ;;;;;;;;;;;;;;;; Widgets Section ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
@@ -9,10 +11,37 @@
 	(box :class "${class}")
 )
 
-(defwidget workspace-item [icon monitor loaded]
-	(box 
-		:class "workspace-item monitor-${monitor} loaded-${loaded ? 1 : 0}"
-		"${icon}"
+;;TODO: loaded esta al pedo
+(defwidget workspace-item [index monitor alert windows]
+	(overlay
+		;;:halign 'center'
+		(box 	
+			:class "workspace-item loaded-${windows > 0 ? 1 : 0}" 
+			:hexpand true
+			:valign 'center'
+			(image 
+				:class "workspace-icon"
+				:path "assets/workspace${index}-${windows > 0 ? 1 : 0}.png"
+				:image-width 21
+				:image-height 21
+			)
+	    )
+	    (label
+			:text "${windows}"
+			:class 'workspace-label'
+			:visible {windows > 0 && windows > 0}
+	    )
+		(image
+			:class "warning-icon"
+			:path "assets/warning.png"
+			:image-width 10
+			:image-height 8
+			:visible {alert && windows > 0}
+		)
+		(image
+			:class "monitor-underline"
+			:path "assets/monitor-${monitor}.png"
+		)
 	)
 )
 
@@ -21,9 +50,11 @@
 )
 
 (defwidget env-selector []
+
 	(box
 		:class "env-selector"
 		:orientation "horizontal"
+	(image :path "assets/arch-icon.png")	
 	)
 )
 
@@ -46,9 +77,9 @@
 
 (defwindow bar
            :monitor 0
-           :geometry (geometry :x "23px"
+           :geometry (geometry :x "22px"
    							:y "37px"
-    						:width "38px"
+    						:width "43px"
       						:height "91%"
        						:anchor "left center")
            :stacking "fg"
@@ -68,4 +99,5 @@
            :stacking "fg"
            :wm-ignore false
   (env-selector)
+
 )

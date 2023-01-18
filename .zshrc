@@ -22,17 +22,16 @@ alias sysa='sudo systemctl status'
 alias mhost='sudo micro /etc/hosts'
 alias sshn='ssh js@192.168.1.37'
 alias dotfiles='cd /home/js/.config/dotfiles'
+alias bridge='cd /home/js/bridge'
 alias rs='source /home/js/.zshrc'
 alias xterm-kitty='kitty'
 function memusage() top -o %MEM -b -n1 | tail +8 | head -n ${1:-6} | awk '{print toupper( substr( $12, 1, 1 ) ) substr( $12, 2 )" "$10"%"}'
 function cpusage() top -o %CPU -b -n1 | tail +8 | head -n ${1:-6} | awk '{print toupper( substr( $12, 1, 1 ) ) substr( $12, 2 )" "$9"%"}'
-
 #pacman
 alias get='sudo pacman -S'
 alias rem='sudo pacman -R'
 alias srch='pacman -Ss'
 alias lstin="pacman -Qi | sed '/^Name/{ s/  *//; s/^.* //; H;N;d}; /^URL/,/^Build Date/d; /^Install Reason/,/^Description/d; /^  */d;x; s/^.*: ... //; s/Jan/01/;  s/Feb/02/;  s/Mar/03/;  s/Apr/04/;  s/May/05/;  s/Jun/06/;  s/Jul/07/;  s/Aug/08/; s/Sep/09/; s/Oct/10/;  s/Nov/11/;  s/Dec/12/; / [1-9]\{1\} /{ s/[[:digit:]]\{1\}/0&/3 }; s/\(^[[:digit:]][[:digit:]]\) \([[:digit:]][[:digit:]]\) \(.*\) \(....\)/\4-\1-\2 \3/' | sed ' /^[[:alnum:]].*$/ N; s/\n/ /; s/\(^[[:graph:]]*\) \(.*$\)/\2 \1/'"
-# alias lstin='grep -i " installed" /var/log/pacman.log | awk "{print \$4}"'
 #apt
 alias aget='sudo apt install'
 alias arem='sudo apt remove'
@@ -129,10 +128,16 @@ PS2=$MIN_PROMPT
 export LC_ALL="C"
 export EDITOR=micro
 export BROWSER=firefox
-export nb='192.168.1.38'
 export TESSDATA_PREFIX='/usr/share/tessdata/'
 export dotfiles='/home/js/.config/dotfiles'
 export dirlist='/home/js/hacking/wordlists/dirbuster/directory-list-2.3-medium.txt'
+#bridge
+export nb="$(cat /home/js/bridge/data/nb/public-ip)"
+export lnb="$(cat /home/js/bridge/data/nb/private-ip)"
+export pc="$(cat /home/js/bridge/data/pc/public-ip)"
+export lpc="$(cat /home/js/bridge/data/pc/private-ip)"
+
+
 OPERAPLUGINWRAPPER_PRIORITY=0
 OPERA_KEEP_BLOCKED_PLUGIN=1
 GDK_NATIVE_WINDOWS=1
@@ -192,9 +197,3 @@ function kill-path-word()
 }
 zle -N kill-path-word
 
-function anonfiles(){
-	while true; do
-	str=$(pene)
-	[[ -z $(grep -Fxq "$str" anonfiles.txt) ]] && echo $str >> anonfiles.txt
-	done;
-}

@@ -1,8 +1,9 @@
 /* Colors */
 $BGColor: #353535;
+$BGDarkerColor: #282828;
 
 .env-selector {
-	background-color: $BGColor;
+	background-color: $BGDarkerColor;
 	border-radius: 23px;
 }
 
@@ -14,9 +15,17 @@ $BGColor: #353535;
 /* Workspaces */
 
 .workspace-selector{
-	background-color: #282828;
+	background-color: $BGDarkerColor;
+	padding-top:0.5em;
+	border-radius:20px 20px 0 0;
 }
 
+.workspace-label{
+	font-size:8px;
+	font-weight:bold;
+	margin-left:28px;	
+	margin-top:9px;
+}
 
 .monitor-test{
 	color:red;
@@ -24,22 +33,50 @@ $BGColor: #353535;
 
 .workspace-item {
 	font-size:26px;
-	color: grey;
 }
 
 .loaded-1 {
 	color: white;
 }
 
-/* 6th workspace icon is bigger than others, this is to make it equal */
-.workspace-item:nth-child(6) {
-	font-size:23px;
-}
-/* Last workspace icon is smaller than others, this is to make it equal */
-.workspace-item:nth-child(8){
-	font-size:28px;
+.workspace-icon {
+	padding-bottom:8px;
 }
 
+
+.monitor-underline{
+	margin-top:30px;
+}
+
+/* TODO: Clases residuales, ahora no se usan mas los borders */
+$monitor0:#B15656;
+$monitor1:#566AB1;
+$monitor2:#B1AD56;
+$monitor3:#A8F0AE;
+.monitor-0 { 
+	border-bottom:1px solid $monitor0; 
+} 
+.monitor-1 { 
+	border-bottom:1px solid $monitor1; 
+} 
+
+.monitor-2 { 
+	border-bottom:1px solid $monitor2; 
+} 
+.monitor-3 { 
+	border-bottom:1px solid $monitor3; 
+}
+/* TODO: Las de ariba son clases residuales*/
+
+
+
+.warning-icon{
+	margin-right:14px; 
+	margin-top:7px; 
+}
+/* 
+* Debugging / Generic Styles
+*/
 .red{
 	background-color:red;
 }

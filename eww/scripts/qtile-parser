@@ -1,0 +1,88 @@
+#!/usr/bin/env node
+const { exec } = require("child_process");
+// process.stdout.write("(box :class 'workspace-selector' :vexpand true :orientation 'vertical'  (workspace-item :class 'workspace-item' :index '0' :monitor '-1' :alert false :windows 0)(workspace-item :class 'workspace-item' :index '1' :monitor '[object Object]' :alert false :windows 0)(workspace-item :class 'workspace-item' :index '2' :monitor '[object Object]' :alert true :windows 2)(workspace-item :class 'workspace-item' :index '3' :monitor '-1' :alert true :windows 1)(workspace-item :class 'workspace-item' :index '4' :monitor '[object Object]' :alert true :windows 1)(workspace-item :class 'workspace-item' :index '5' :monitor '[object Object]' :alert true :windows 2)(workspace-item :class 'workspace-item' :index '6' :monitor '-1' :alert false :windows 0)(workspace-item :class 'workspace-item' :index '7' :monitor '-1' :alert false :windows 0))")
+//Entry point of the script
+async function main() {
+    let [windows, screens] = await Promise.all([
+        systemExec('qtile cmd-obj -o cmd -f windows'),
+        systemExec('qtile cmd-obj -o cmd -f screens'),
+    ]);
+
+    let windowsObj = pythonStrToObject(windows);
+    let screensObj = pythonStrToObject(screens);
+
+    //getting data grouped by group
+    let groupObj = windowsObj.reduce((acc, item) => {
+        if (item.group) {
+            if (!acc[item.group]) {
+                acc[item.group] = [];
+            }
+            if (item.group)
+                acc[item.group].push(item);
+        }
+        return acc;
+    }, {});
+
+    windowsAlerts = (await Promise.all(windowsObj.map(w =>
+        systemExec(`if [ -z "$(xprop -id '${w.id}' | grep _NET_WM_STATE_DEMANDS_ATTENTION)" ]; then echo false; else echo true; fi`)))
+    )
+        .map((status, i) =>
+            new Object({
+                id: windowsObj[i].id,
+                status: status.replace('\n', ''),
+            })
+        )
+
+    let finalObj = Object.keys(groupObj).map(k => {
+        return new Object({
+            index: k,
+            windows: groupObj[k].length,
+            alert: groupObj[k].map(w => windowsAlerts.find(w2 => w.id == w2.id).status).includes('true'),
+        })
+    });
+    let yuck = buildYuck(finalObj, screensObj);
+    // console.log(yuck);
+    systemExec(`echo "${yuck}" | nc localhost 13255`).then()
+}
+
+//Builds yuck as a string
+function buildYuck(dataObj, screensObj) {
+    let yuckItems = [0, 1, 2, 3, 4, 5, 6, 7].map(i => {
+        item = dataObj.find(d => d.index == i);
+        screen = screensObj.findIndex(s => s.group == i);
+        return item ?
+            `(workspace-item :class 'workspace-item' :index '${i}' :monitor '${screen}' :alert ${item.alert} :windows ${item.windows})` :
+
+            `(workspace-item :class 'workspace-item' :index '${i}' :monitor '${screen}' :alert false :windows 0)`;
+    }).join('');
+    return `(box :class 'workspace-selector' :vexpand true :orientation 'vertical'  ${yuckItems})`;
+
+}
+
+
+//executes a command in the terminal and returns a promise
+function systemExec(cmd) {
+    return new Promise((resolve, reject) => {
+        exec(cmd, (error, stdout, stderr) => {
+            if (error) reject(`error: ${error.message}`);
+            if (stderr) reject(`stderr: ${stderr}`);
+
+            resolve(stdout);
+        });
+    });
+}
+
+
+//Parses from python object in string format to javascript object and fixes qtile parser error
+function pythonStrToObject(json) {
+    return eval(json
+        .replaceAll('False', 'false')
+        .replaceAll('True', 'true')
+        .replaceAll('None', 'null')
+        //Qtile parser error
+        .replaceAll(/'\s+'/g, " "));
+
+}
+
+//executes main function
+main();

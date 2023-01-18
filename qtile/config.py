@@ -11,6 +11,12 @@ selectedEnvironment = environments.getEnv(persisted['environment'])()
 
 terminal = guess_terminal()
 
+@hook.subscribe.client_managed
+@hook.subscribe.client_killed
+@hook.subscribe.setgroup
+def client_focus(window=''):
+    subprocess.Popen(["/home/js/.config/eww/scripts/qtile-parser"])
+    
 def openhtop():
     lazy.spawn('htop')
     lazy.spawn('nemo')
@@ -28,7 +34,7 @@ keys = [
     Key("M-l", lazy.layout.right(), desc="Move focus to right"),
     Key("M-k", lazy.layout.down(), desc="Move focus down"),
     Key("M-i", lazy.layout.up(), desc="Move focus up"),
-    Key("M-q", lazy.window.toggle_fullscreen()),
+    Key("M-q", lazy.layout.next()),
     
     #Move Windows
     Key("M-S-j", lazy.layout.shuffle_left(),desc="Move window to the left"),
@@ -71,7 +77,7 @@ keys = [
     
 
     #Reset Windows size
-    Key("M-r", lazy.layout.normalize()),
+    Key("M-r", lazy.spawn("/home/js/.config/eww/scripts/qtile-parser")),
     #Toggle Floating
     Key("M-d", lazy.window.toggle_floating()),
     #Toggle Minimize
