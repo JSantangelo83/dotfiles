@@ -1,32 +1,91 @@
 from typing import List  # noqa: F401
-import json,environments,eventlogger,os,subprocess
-from libqtile import layout,hook
+import json
+import environments
+import eventlogger
+import os
+import subprocess
+import time
+import sys
+import socket
+from libqtile import layout, hook
+from libqtile.command.client import InteractiveCommandClient
 from libqtile.config import Click, Drag, Key, Match
 from libqtile.utils import guess_terminal
 from libqtile.config import EzKey as Key
 from libqtile.lazy import lazy
+from libqtile.backend.base import Window
+from libqtile import qtile
 
-persisted = json.load(open('/home/js/.config/qtile/persisted.json','r'))
+persisted = json.load(open('/home/js/.config/qtile/persisted.json', 'r'))
 selectedEnvironment = environments.getEnv(persisted['environment'])()
 
 terminal = guess_terminal()
 
+
+# alert = 'true' if window.urgent else 'false'
+# environment = 'default' #TODO: Implement environment from persisted.json (change `Eww` to `default`)
+# monitor = window.group.screen.index
+
 @hook.subscribe.client_managed
+def client_managed(window):
+    windows = str(len(window.group.windows))
+    updateEwwGroup(window.group.name, windows=windows)
+
 @hook.subscribe.client_killed
+def client_killed(window):
+    windows = str(len(window.group.windows) -1)
+    updateEwwGroup(window.group.name, windows=windows)
+
+@hook.subscribe.client_urgent_hint_changed
+def client_urgent_hint_changed(window):
+    alert = 'true' if window.urgent else 'false'
+    updateEwwGroup(window.group.name, alert=alert)
+
 @hook.subscribe.setgroup
-def client_focus(window=''):
-    subprocess.Popen(["/home/js/.config/eww/scripts/qtile-parser"])
+def setgroup():
+    a = []
+    for group in qtile.groups:
+        updateEwwGroup(group.name, monitor=group.screen.index if group.screen else '-1')
+
+def updateEwwGroup(index, monitor=None, environment=None, alert=None, windows=None):
+    port = int('1325' + str(index))
+    # netcat('localhost', 2233, str(port))
+    pl=''
+    if monitor is not None:
+        pl+=f"monitor={monitor} "
+    if environment is not None:
+        pl+=f"environment='{environment}' "
+    if alert is not None:
+        pl+=f"alert={alert} "
+    if windows is not None:
+        pl+=f"windows={windows} "
     
+    pl=pl.strip()
+    pl+='\n'
+
+    netcat('localhost', port, pl)
+
+def netcat(hn, p, content):
+    # initialize the connection
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect((hn, p))
+
+    sock.sendall(content.encode())
+    sock.shutdown(socket .SHUT_WR)
+    sock.close()
+
+
 def openhtop():
     lazy.spawn('htop')
     lazy.spawn('nemo')
 
+
 keys = [
-    #Switch between groups
+    # Switch between groups
     Key("M-C-<Right>", lazy.screen.next_group()),
     Key("M-C-<Left>", lazy.screen.prev_group()),
 
-    #Switch between screens
+    # Switch between screens
     Key("M-C-y", lazy.next_screen()),
 
     # Switch between windows
@@ -35,94 +94,96 @@ keys = [
     Key("M-k", lazy.layout.down(), desc="Move focus down"),
     Key("M-i", lazy.layout.up(), desc="Move focus up"),
     Key("M-q", lazy.layout.next()),
-    
-    #Move Windows
-    Key("M-S-j", lazy.layout.shuffle_left(),desc="Move window to the left"),
-    Key("M-S-l", lazy.layout.shuffle_right(),desc="Move window to the right"),
-    Key("M-S-k", lazy.layout.shuffle_down(),desc="Move window down"),
+
+    # Move Windows
+    Key("M-S-j", lazy.layout.shuffle_left(), desc="Move window to the left"),
+    Key("M-S-l", lazy.layout.shuffle_right(), desc="Move window to the right"),
+    Key("M-S-k", lazy.layout.shuffle_down(), desc="Move window down"),
     Key("M-S-i", lazy.layout.shuffle_up(), desc="Move window up"),
-    
-    #Resize Windows
+
+    # Resize Windows
     Key("M-C-j",
         lazy.layout.shrink_main().when(layout='monadtall'),
         lazy.layout.grow_left().when(layout='columns')
-     ),
-    
+        ),
+
     Key("M-C-l",
         lazy.layout.grow_main().when(layout='monadtall'),
         lazy.layout.grow_right().when(layout='columns')
-     ),
-    
+        ),
+
     Key("M-C-k",
         lazy.layout.shrink().when(layout='monadtall'),
         lazy.layout.grow_down().when(layout='columns')
-     ),
-    
+        ),
+
     Key("M-C-i",
         lazy.layout.grow().when(layout='monadtall'),
         lazy.layout.grow_up().when(layout='columns')
-     ),
+        ),
 
-    #Columns Layout Specific Keys
-    Key("M-S-C-l", 
+    # Columns Layout Specific Keys
+    Key("M-S-C-l",
         lazy.layout.swap_column_right().when(layout='columns'),
         lazy.layout.flip().when(layout='monadtall')
-    ),
-    Key("M-S-C-j", 
+        ),
+    Key("M-S-C-j",
         lazy.layout.swap_column_left().when(layout='columns'),
         lazy.layout.flip().when(layout='monadtall')
-    ),
-    
-    Key("M-<Space>", lazy.layout.toggle_split()),
-    
+        ),
 
-    #Reset Windows size
-    Key("M-r", lazy.spawn("/home/js/.config/eww/scripts/qtile-parser")),
-    #Toggle Floating
+    Key("M-<Space>", lazy.layout.toggle_split()),
+
+
+    # Reset Windows size
+    Key("M-r", lazy.layout.normalize()),
+    # Toggle Floating
     Key("M-d", lazy.window.toggle_floating()),
-    #Toggle Minimize
+    # Toggle Minimize
     Key("M-S-m", lazy.window.toggle_minimize()),
 
-    #Toggle bottom bar
-    Key("M-f",lazy.hide_show_bar("bottom")),
-	
+    # Toggle bottom bar
+    Key("M-f", lazy.hide_show_bar("bottom")),
+
     # Key("M-<Return>", lazy.spawn(terminal), desc="Launch terminal"),
     Key("M-<Return>", lazy.spawn('kitty'), desc="Launch terminal"),
     # Key("S-M-<Return>", lazy.spawn('/home/js/.config/dotfiles/customscripts/newkitty'), desc="Launch terminal in same directory"),
     Key("M-<Tab>", lazy.next_layout(), desc="Toggle between layouts"),
     Key("M-w", lazy.window.kill(), desc="Kill focused window"),
     Key("M-C-r", lazy.reload_config(), desc="Reload Qtile Config"),
-    Key("M-C-S-r", lazy.restart(), desc="Restart Qtile"),    
+    Key("M-C-S-r", lazy.restart(), desc="Restart Qtile"),
     Key("M-C-q", lazy.shutdown(), desc="Shutdown Qtile"),
-    Key("M-e",lazy.spawn("nemo"),desc="Spawn Nemo"),
-            
-    #rofi menu
+    Key("M-e", lazy.spawn("nemo"), desc="Spawn Nemo"),
+
+    # rofi menu
     Key("M-m", lazy.spawn("rofi -show-icons -icon-theme Papirus -show drun")),
 
-    #firefox
+    # firefox
     Key("M-b", lazy.spawn("firefox")),
     Key("S-M-b", lazy.spawn("google-chrome-stable")),
 
-    #Screenshot
+    # Screenshot
     Key("M-S-s", lazy.spawn("flameshot gui")),
-    #OCR
+    # OCR
     Key("M-S-a", lazy.spawn("/home/js/.config/dotfiles/customscripts/ocr-selection")),
-    #Env-Selection
+    # Env-Selection
     # Key("M-e", lazy.spawn("/home/js/.config/dotfiles/customscripts/env-selector-menu")),
 
-    #Gif
+    # Gif
     Key("M-S-r", lazy.spawn("peek")),
 
-    #Color picker
+    # Color picker
     Key("M-S-c", lazy.spawn("/home/js/.config/dotfiles/customscripts/colorpicker")),
-    
-    #Next Wallpaper
-    Key("M-n",lazy.spawn("/home/js/.config/dotfiles/customscripts/next-wallpaper")),
 
-    #Usb-toggle
-    Key("<Pause>",lazy.spawn("/home/js/.config/dotfiles/customscripts/usb-toggle-server/connect audio")),
-    Key("<Scroll_Lock>",lazy.spawn("/home/js/.config/dotfiles/customscripts/usb-toggle-server/connect keymouse")),
-    
+    # Next Wallpaper
+    Key("M-n", lazy.spawn("/home/js/.config/dotfiles/customscripts/next-wallpaper")),
+
+    # Usb-toggle
+    Key("<Pause>", lazy.spawn(
+        "/home/js/.config/dotfiles/customscripts/usb-toggle-server/connect audio")),
+    Key("<Scroll_Lock>", lazy.spawn(
+        "/home/js/.config/dotfiles/customscripts/usb-toggle-server/connect keymouse")),
+
     # Volume
     Key("<XF86AudioLowerVolume>", lazy.spawn("pamixer --decrease 5")),
     Key("<XF86AudioRaiseVolume>", lazy.spawn("pamixer --increase 5")),
@@ -134,26 +195,26 @@ keys = [
     Key("<XF86AudioPrev>", lazy.spawn("playerctl previous")),
     Key("<XF86AudioStop>", lazy.spawn("playerctl stop")),
 
-    #Brightness
+    # Brightness
     Key("<XF86MonBrightnessUp>", lazy.spawn("brightnessctl set +10%")),
     Key("<XF86MonBrightnessDown>", lazy.spawn("brightnessctl set 10%-")),
 
-    #Eww Bar
+    # Eww Bar
     Key("M-C-<BackSpace>", lazy.spawn("qtile cmd-obj -o cmd -f hide_show_bar")),
     Key("M-<BackSpace>", lazy.spawn("/home/js/.config/dotfiles/eww/scripts/start")),
     Key("M-S-<BackSpace>", lazy.spawn("/home/js/.config/dotfiles/eww/scripts/stop")),
 
-        
+
 ]
 
-extraKeys = ['<grave>','1','2','8','9','0','<minus>','<equal>']
+extraKeys = ['<grave>', '1', '2', '8', '9', '0', '<minus>', '<equal>']
 groups = selectedEnvironment.getGroups()
-    
+
 for i, group in enumerate(groups):
-        keys.extend([
-            Key('M-'+ str(extraKeys[i]), lazy.group[group.name].toscreen()),
-            Key('M-S-'+ str(extraKeys[i]), lazy.window.togroup(group.name)),
-        ])
+    keys.extend([
+        Key('M-' + str(extraKeys[i]), lazy.group[group.name].toscreen()),
+        Key('M-S-' + str(extraKeys[i]), lazy.window.togroup(group.name)),
+    ])
 
 layouts = selectedEnvironment.getLayouts()
 
@@ -181,17 +242,17 @@ follow_mouse_focus = True
 bring_front_click = False
 cursor_warp = False
 floating_layout = layout.Floating(
-            border_width=0,
-            float_rules=[
-                # Run the utility of `xprop` to see the wm class and name of an X client.
-                *layout.Floating.default_float_rules,
-                Match(wm_class='confirmreset'),  # gitk
-                Match(wm_class='makebranch'),  # gitk
-                Match(wm_class='maketag'),  # gitk
-                Match(wm_class='ssh-askpass'),  # ssh-askpass
-                Match(title='branchdialog'),  # gitk
-                Match(title='pinentry'),  # GPG key password entry
-            ])
+    border_width=0,
+    float_rules=[
+        # Run the utility of `xprop` to see the wm class and name of an X client.
+        *layout.Floating.default_float_rules,
+        Match(wm_class='confirmreset'),  # gitk
+        Match(wm_class='makebranch'),  # gitk
+        Match(wm_class='maketag'),  # gitk
+        Match(wm_class='ssh-askpass'),  # ssh-askpass
+        Match(title='branchdialog'),  # gitk
+        Match(title='pinentry'),  # GPG key password entry
+    ])
 auto_fullscreen = True
 focus_on_window_activation = "smart"
 reconfigure_screens = True
@@ -211,13 +272,12 @@ auto_minimize = True
 wmname = "LG3D"
 
 # def changeEnv(name):
-    # with open('/home/js/.config/qtile/persisted.json','w') as f:
-        # if name == 'Hacking':
-            # persisted['environment'] = 'Hacking'
-            # json.dump(persisted, f)
-            # lazy.reload_config()
-        # if name == 'Develop':
-            # persisted['environment'] = 'Develop'
-            # json.dump(persisted, f)
-            # lazy.reload_config()
-
+# with open('/home/js/.config/qtile/persisted.json','w') as f:
+# if name == 'Hacking':
+# persisted['environment'] = 'Hacking'
+# json.dump(persisted, f)
+# lazy.reload_config()
+# if name == 'Develop':
+# persisted['environment'] = 'Develop'
+# json.dump(persisted, f)
+# lazy.reload_config()

@@ -1,0 +1,12 @@
+#!/bin/bash
+workspaces_icons="0:1:2:3:4:5:6:7"
+count=0;
+#TODO: Add a way to get the environment variable
+environment="default";
+while read -r icon; do
+	yuck="$yuck\n	(workspace-item :class 'workspace-item' :index '$count' :monitor {ws-data$count-monitor} :alert {ws-data$count-alert} :windows {ws-data$count-windows} :environment '$environment')"
+	count=$((count+1))
+done <<<"$(echo $workspaces_icons | tr ':' '\n')"
+
+#Final return 
+echo -ne "(defvar workspacesitems \"(box :class 'workspace-selector' :vexpand true :orientation 'vertical'  $yuck\n)\")" > ../workspaces.yuck

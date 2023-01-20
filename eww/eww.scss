@@ -35,10 +35,6 @@ $BGDarkerColor: #282828;
 	font-size:26px;
 }
 
-.loaded-1 {
-	color: white;
-}
-
 .workspace-icon {
 	padding-bottom:8px;
 }
@@ -92,3 +88,30 @@ $monitor3:#A8F0AE;
 .blue{
 	background-color:blue;
 }
+
+
+//Rfhyn
+// Variable Color's
+$background: #1A1B26;
+$foreground: #A9B1D6;
+
+$black: #24283B;
+$gray: #565F89;
+$red: #F7768E;
+$green: #73DACA;
+$yellow: #E0AF68;
+$blue: #7AA2F7;
+$magenta: #BB9AF7;
+$cyan: #7DCFFF;
+$white: $foreground;
+
+.time {
+	font-family: Comic Mono;
+	font-weight: bold;
+	font-size: 1.2em;
+	background-color: $BGColor;
+	color: $white;
+	border-radius: 50px;
+	padding: .7rem 0 .5rem 0;
+	margin: .5rem 0 .5rem 0;
+  }

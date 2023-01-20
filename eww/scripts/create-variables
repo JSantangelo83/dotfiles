@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const { exec } = require("child_process");
-// process.stdout.write("(box :class 'workspace-selector' :vexpand true :orientation 'vertical'  (workspace-item :class 'workspace-item' :index '0' :monitor '-1' :alert false :windows 0)(workspace-item :class 'workspace-item' :index '1' :monitor '[object Object]' :alert false :windows 0)(workspace-item :class 'workspace-item' :index '2' :monitor '[object Object]' :alert true :windows 2)(workspace-item :class 'workspace-item' :index '3' :monitor '-1' :alert true :windows 1)(workspace-item :class 'workspace-item' :index '4' :monitor '[object Object]' :alert true :windows 1)(workspace-item :class 'workspace-item' :index '5' :monitor '[object Object]' :alert true :windows 2)(workspace-item :class 'workspace-item' :index '6' :monitor '-1' :alert false :windows 0)(workspace-item :class 'workspace-item' :index '7' :monitor '-1' :alert false :windows 0))")
+
 //Entry point of the script
 async function main() {
     let [windows, screens] = await Promise.all([
@@ -40,25 +40,33 @@ async function main() {
             alert: groupObj[k].map(w => windowsAlerts.find(w2 => w.id == w2.id).status).includes('true'),
         })
     });
-    let yuck = buildYuck(finalObj, screensObj);
-    // console.log(yuck);
-    systemExec(`echo "${yuck}" | nc localhost 13255`).then()
+    workspacesIdxs = [0, 1, 2, 3, 4, 5, 6, 7];
+    // let listenersYuck = buildListeners(finalObj, screensObj, workspacesIdxs);
+    let variablesYuck = buildVariables(finalObj, screensObj, workspacesIdxs);
+    //saving yuck to 'variables.yuck' file
+    fs = require('fs');
+    fs.writeFile("../variables.yuck", variablesYuck, function (err) {
+        if (err) {
+            return console.log(err);
+        }
+        console.log("The file was saved!");
+    });
 }
 
 //Builds yuck as a string
-function buildYuck(dataObj, screensObj) {
-    let yuckItems = [0, 1, 2, 3, 4, 5, 6, 7].map(i => {
+function buildVariables(dataObj, screensObj, idxs) {
+    let yuckListeners = idxs.map(i => {
         item = dataObj.find(d => d.index == i);
         screen = screensObj.findIndex(s => s.group == i);
-        return item ?
-            `(workspace-item :class 'workspace-item' :index '${i}' :monitor '${screen}' :alert ${item.alert} :windows ${item.windows})` :
+        return item ? 
+        [`(defvar ws-data${i}-monitor ${screen})`,`(defvar ws-data${i}-alert ${item.alert})`,`(defvar ws-data${i}-windows ${item.windows})`].join('\n')
+        :
+        [`(defvar ws-data${i}-monitor ${screen})`,`(defvar ws-data${i}-alert false)`,`(defvar ws-data${i}-windows 0)`].join('\n')
 
-            `(workspace-item :class 'workspace-item' :index '${i}' :monitor '${screen}' :alert false :windows 0)`;
-    }).join('');
-    return `(box :class 'workspace-selector' :vexpand true :orientation 'vertical'  ${yuckItems})`;
+    }).join('\n\n');
 
+    return yuckListeners;
 }
-
 
 //executes a command in the terminal and returns a promise
 function systemExec(cmd) {

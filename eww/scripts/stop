@@ -1,3 +1,4 @@
 #!/bin/bash
 eww close bar;
 eww close env-selector;
+./listeners stop;

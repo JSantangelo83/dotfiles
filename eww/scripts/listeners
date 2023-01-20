@@ -1,0 +1,28 @@
+#!/bin/bash
+function usage {
+    echo "Usage: $0 [start|stop]"
+    exit 1
+}
+#checking that have at least one string argument
+if [ -z "$1" ]; then
+    usage;
+fi
+
+#if argument is 'start'
+if [ "$1" = "start" ]; then
+    #start listeners
+    for i in {0..7}; do
+        nc -lkp "1325$i" | stdbuf -oL sed -Ee "s/(^|[\r\f])/ ws-data$i-/g" | xargs -I args eww update "args" &
+    done
+    exit 0
+    #if argument is 'stop'
+elif [ "$1" = "stop" ]; then
+    #stop listeners
+    for i in {0..7}; do
+        fuser -k "1325$i"/tcp;
+    done
+    exit 0
+else #if argument is not 'start' or 'stop'
+    usage;
+fi
+
