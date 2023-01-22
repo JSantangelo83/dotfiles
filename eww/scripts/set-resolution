@@ -1,0 +1,2 @@
+#!/bin/bash
+cat "../yuck/resolutions/$(xrandr | grep \* | awk '{print $1}' | cut -d 'x' -f 2)p.yuck" > "../yuck/resolution.yuck"

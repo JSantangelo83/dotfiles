@@ -1,5 +1,6 @@
-(include "variables.yuck")
-(include "workspaces.yuck")
+(include "yuck/variables.yuck")
+(include "yuck/workspaces.yuck")
+(include "yuck/resolution.yuck")
 ;;;;;;;;;;;;;; Variables Section ;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;; Widgets Section ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -80,7 +81,7 @@
   (box
     :class "env-selector"
     :orientation "horizontal"
-    (image 
+    (image
       :path "assets/arch-icon.png"
       :image-width 45
       :image-height 45
@@ -102,37 +103,7 @@
     :orientation "vertical"
     (workspace-selector)
     (other)
-    (other)
     (time)
   )
 )
 
-
-;;;;;;;;;Windows Section;;;;;;;;;;;;;;;;;;;;;
-
-(defwindow bar
-  :monitor 0
-  :geometry (geometry :x "22px"
-    :y "37px"
-    :width "43px"
-    :height "91%"
-  :anchor "left center")
-  :stacking "fg"
-  :reserve (struts :distance "87px" :side "left")
-  :wm-ignore false
-  (bar)
-)
-
-(defwindow env-selector
-  :monitor 0
-  :geometry (geometry
-    :x "7px"
-    :y "13px"
-    :width "70px"
-    :height "70px"
-  :anchor "left top")
-  :stacking "fg"
-  :wm-ignore false
-  (env-selector)
-  
-)

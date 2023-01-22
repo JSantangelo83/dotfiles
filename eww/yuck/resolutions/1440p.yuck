@@ -1,0 +1,33 @@
+(defwindow bar
+    :monitor 0
+    :geometry (geometry
+      :x "22px"
+      :y "37px"
+      :width "43px"
+      :height "91%"
+      :anchor "left center"
+    )
+    :stacking "fg"
+    :reserve (struts
+      :distance "87px"
+      :side "left"
+    )
+    :wm-ignore false
+    (bar)
+  )
+  
+  (defwindow env-selector
+    :monitor 0
+    :geometry (geometry
+      :x "7px"
+      :y "13px"
+      :width "70px"
+      :height "70px"
+      :anchor "left top"
+    )
+    :stacking "fg"
+    :wm-ignore false
+    (env-selector)
+    
+  )
+  

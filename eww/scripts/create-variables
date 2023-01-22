@@ -45,7 +45,7 @@ async function main() {
     let variablesYuck = buildVariables(finalObj, screensObj, workspacesIdxs);
     //saving yuck to 'variables.yuck' file
     fs = require('fs');
-    fs.writeFile("../variables.yuck", variablesYuck, function (err) {
+    fs.writeFile("../yuck/variables.yuck", variablesYuck, function (err) {
         if (err) {
             return console.log(err);
         }

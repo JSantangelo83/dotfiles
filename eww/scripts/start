@@ -1,10 +1,11 @@
 #!/bin/bash
 eww kill;
-cd .config/eww/scripts || exit 1;
+cd /home/js/.config/eww/scripts || exit 1;
 ./listeners stop;
 ./listeners start;
 ./create-variables;
 ./create-workspaces;
+./set-resolution;
 eww daemon;
 eww open bar;
 eww open env-selector;

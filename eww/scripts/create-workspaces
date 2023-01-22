@@ -9,4 +9,4 @@ while read -r icon; do
 done <<<"$(echo $workspaces_icons | tr ':' '\n')"
 
 #Final return 
-echo -ne "(defvar workspacesitems \"(box :class 'workspace-selector' :vexpand true :orientation 'vertical'  $yuck\n)\")" > ../workspaces.yuck
+echo -ne "(defvar workspacesitems \"(box :class 'workspace-selector' :vexpand true :orientation 'vertical'  $yuck\n)\")" > ../yuck/workspaces.yuck
