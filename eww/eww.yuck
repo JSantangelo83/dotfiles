@@ -148,6 +148,8 @@
               :class "icon-selector-icon"
               :onclick "eww update ws-data${IS-index}-icon=${IS-icons[i*2]}"
               (image
+                :image-height 25
+                :image-width 25
                 :style "padding:10px"
                 :path "${IS-icons[i*2]}-0.png" ;TOOD: make possible to pick between 0 and 1 (active and inactive)
               )
@@ -156,6 +158,8 @@
               :class "icon-selector-icon"
               :onclick "eww update ws-data${IS-index}-icon=${IS-icons[i*2+1]}"
               (image
+                :image-height 25
+                :image-width 25
                 :style "padding:10px"
                 :path "${IS-icons[i*2+1]}-0.png" ;TOOD: make possible to pick between 0 and 1 (active and inactive)
               )
