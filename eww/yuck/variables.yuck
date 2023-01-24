@@ -10,7 +10,7 @@
 
 (defvar ws-data2-monitor 0)
 (defvar ws-data2-alert false)
-(defvar ws-data2-windows 3)
+(defvar ws-data2-windows 1)
 (defvar ws-data2-icon "assets/workspaces/default/workspace2")
 
 (defvar ws-data3-monitor -1)
