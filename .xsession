@@ -37,6 +37,5 @@ pulseeffects --gapplication-service &
 xmodmap ~/.config/xremap &
 /home/js/.customscripts/next-wallpaper &
 sudo sh -c 'echo "abi.vsyscall32 = 0" >> /etc/sysctl.conf && sysctl -p' &
-sudo pacman -Syy &
 sudo mount -a &
 sudo updatedb &

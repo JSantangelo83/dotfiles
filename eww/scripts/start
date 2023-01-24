@@ -9,3 +9,4 @@ cd /home/js/.config/eww/scripts || exit 1;
 eww daemon;
 eww open bar;
 eww open env-selector;
+# eww open icon-selector;

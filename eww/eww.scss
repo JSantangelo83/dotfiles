@@ -1,10 +1,29 @@
 /* Colors */
 $BGColor: #353535;
 $BGDarkerColor: #282828;
-
+$SelectedColor: rgba(168,166,166,0.1);
 .env-selector {
 	background-color: $BGDarkerColor;
-	border-radius: 23px;
+	border-radius: 23px; //TODO: change when adding workspaces
+}
+
+.icon-selector-container {
+	background-color: $BGDarkerColor;
+	padding:0.3em 0 0.3em 0.7em;
+}
+
+.icon-selector-icon{
+	transition: all .2s ease;
+	border-radius: 5px;
+}
+
+.icon-selector-icon:hover{
+	transition: all .2s ease;
+	background-color: $SelectedColor;
+}
+.clickeable{
+	background-color: transparent;
+	border:none;
 }
 
 .bar {
@@ -63,8 +82,6 @@ $monitor3:#A8F0AE;
 	border-bottom:1px solid $monitor3; 
 }
 /* TODO: Las de ariba son clases residuales*/
-
-
 
 .warning-icon{
 	margin-right:14px; 

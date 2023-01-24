@@ -55,13 +55,14 @@ async function main() {
 
 //Builds yuck as a string
 function buildVariables(dataObj, screensObj, idxs) {
+    let environment = 'default'; //TODO: find a way to get this dynamically
     let yuckListeners = idxs.map(i => {
         item = dataObj.find(d => d.index == i);
         screen = screensObj.findIndex(s => s.group == i);
         return item ? 
-        [`(defvar ws-data${i}-monitor ${screen})`,`(defvar ws-data${i}-alert ${item.alert})`,`(defvar ws-data${i}-windows ${item.windows})`].join('\n')
+        [`(defvar ws-data${i}-monitor ${screen})`,`(defvar ws-data${i}-alert ${item.alert})`,`(defvar ws-data${i}-windows ${item.windows})`,`(defvar ws-data${i}-icon "assets/workspaces/${environment}/workspace${i}")`].join('\n')
         :
-        [`(defvar ws-data${i}-monitor ${screen})`,`(defvar ws-data${i}-alert false)`,`(defvar ws-data${i}-windows 0)`].join('\n')
+        [`(defvar ws-data${i}-monitor ${screen})`,`(defvar ws-data${i}-alert false)`,`(defvar ws-data${i}-windows 0)`, `(defvar ws-data${i}-icon "assets/workspaces/${environment}/workspace${i}")`].join('\n')
 
     }).join('\n\n');
 

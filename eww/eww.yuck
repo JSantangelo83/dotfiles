@@ -26,25 +26,22 @@
 :interval "1s"	"date '+%M'")
 ;;;;End of Rxhyn Widgets ;;;;
 
-(defwidget workspace-item [index monitor alert windows environment]
+(defwidget workspace-item [index monitor alert windows icon]
   (overlay
     ;;
     :halign 'center'
     (box
-      
       :class "workspace-item"
-      
       :hexpand true
-      
       :valign 'center'
       (button
-        
         :style "background-color:${monitor == 0 ? 'rgba(168,166,166,0.05)' : '#282828'}; border:none"
         ;TODO: make WM generic
         :onclick 'qtile cmd-obj -o screen -f toggle_group -a "${index}"'
+        :onrightclick 'scripts/icon-selector show ${index}'
         (image
           :class "workspace-icon"
-          :path "assets/${environment}/workspace${index}-${windows > 0 ? 1 : 0}.png" ;TODO: ver por que no se actualiza el icono
+          :path "${icon}-${windows > 0 ? 1 : 0}.png" 
           :image-width 21
           :image-height 21
         )
@@ -67,7 +64,6 @@
       :class "monitor-underline"
       :path "assets/monitor-${monitor}.png"
     )
-    ; (label :text {monitor})
   )
 )
 
@@ -76,18 +72,37 @@
   (literal :content workspacesitems)
 )
 
+(defvar env-selector-icon "js")
+
 (defwidget env-selector []
-  
-  (box
-    :class "env-selector"
-    :orientation "horizontal"
-    (image
-      :path "assets/arch-icon.png"
-      :image-width 45
-      :image-height 45
+  (eventbox
+    :onclick {env-selector-icon == "js" ? 'eww update env-selector-icon=arch' : 'eww update env-selector-icon=js'}
+    (overlay
+      (revealer
+        :reveal {env-selector-icon == "js"}
+        :class "env-selector"
+        :orientation "horizontal"
+        (image
+          :path "assets/js-icon.png"
+          :image-width 65
+          :image-height 65
+        )
+      )
+      
+      (revealer
+        :reveal {env-selector-icon == "arch"}
+        :class "env-selector"
+        :orientation "horizontal"
+        (image
+          :path "assets/arch-icon.png"
+          :image-width 45
+          :image-height 45
+        )
+      )
     )
   )
 )
+
 
 (defwidget other [?class]
   (box
@@ -95,15 +110,75 @@
   )
 )
 
-(defvar test 3)
-
 (defwidget bar []
   (box
     :class "bar"
     :orientation "vertical"
     (workspace-selector)
     (other)
+    (other)
     (time)
   )
 )
 
+
+
+;; Widgets and Windows
+(defvar IS-close-confirm false) ;If the icon selector is visible
+(defvar IS-index -1) ;The index of the workspace that is being edited
+(defvar IS-selected -1) ;The index of the icon that is selected
+(defvar IS-icons "[\"assets/workspaces/default/workspace3\",\"assets/workspaces/default/workspace7\",\"assets/workspaces/default/workspace5\",\"assets/workspaces/default/workspace6\",\"assets/workspaces/default/workspace1\",\"assets/workspaces/default/workspace4\",\"assets/workspaces/default/workspace0\",\"assets/workspaces/default/workspace2\"]"); The icons that are being displayed ;TODO: make this dynamic
+;number from 0 to 100
+(defvar numbers "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100]") ;Numbers for the for loop; TODO: find if there is a better way to do this
+
+(defwidget icon-selector []
+  (eventbox
+    :onhoverlost "scripts/icon-selector hide"
+    (scroll
+      :vscroll true
+      :hscroll false
+      :class "icon-selector-container"
+      (box
+        :orientation "vertical"
+        :spacing 3
+        :style "margin-right:0.7em;"
+        (for i in numbers
+          (box
+            :visible {i*2 < arraylength(IS-icons)}
+            :orientation "horizontal"
+            (eventbox
+              :class "icon-selector-icon"
+              :onclick "eww update ws-data${IS-index}-icon=${IS-icons[i*2]}"
+              (image
+                :style "padding:10px"
+                :path "${IS-icons[i*2]}-0.png" ;TOOD: make possible to pick between 0 and 1 (active and inactive)
+              )
+            )
+            (eventbox
+              :class "icon-selector-icon"
+              :onclick "eww update ws-data${IS-index}-icon=${IS-icons[i*2+1]}"
+              (image
+                :style "padding:10px"
+                :path "${IS-icons[i*2+1]}-0.png" ;TOOD: make possible to pick between 0 and 1 (active and inactive)
+              )
+            )
+          )
+        )
+        (box :visible false {IS-close-confirm}) ;Workaround to save unused variables to the Eww daemon
+      )
+    )
+  )
+)
+
+(defwindow icon-selector
+  :monitor 0
+  :geometry (geometry
+    :width "100px"
+    :height "200px"
+    :anchor "left top"
+  )
+  :stacking "fg"
+  :wm-ignore true
+  :windowtype 'dialog'
+  (icon-selector)
+)

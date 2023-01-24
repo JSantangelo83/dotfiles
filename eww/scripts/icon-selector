@@ -1,0 +1,47 @@
+#!/bin/bash
+
+
+
+#check if the first argument is hide and the second argument is bigger than 0
+if [ "$1" = "hide" ]; then
+    #close the icon selector and update variables
+    eww close icon-selector
+    eww update IS-visible=false
+    eww update IS-index=-1
+    
+    exit 0;
+fi
+
+#check if at least 2 arguments are provided
+
+if [ "$#" -lt 2 ]; then
+    echo "Illegal number of parameters"
+    exit 1
+fi
+
+if [ "$1" = "show" ]; then
+    #checking that second argument is a number
+    if ! [[ "$2" =~ ^[0-9]+$ ]]; then
+        echo "Second argument must be a number"
+        exit 1
+    fi
+    eww close icon-selector
+    eww update IS-visible=false
+    eww update IS-index=-1
+    
+    #Loading the icons from the assets
+    icons="$(find assets/workspaces/ -type l -name "*0.png" | sed 's/-0.png//g' | tr '\n' ',' | sed -E 's/(,|^)/\\",\\"/g' | cut -c 4-)"
+    icons="[${icons::-3}]"
+    echo "$icons";
+    # eww update IS-icons="$icons"  #TODO: add this functinoality
+    
+    #Open the icon selector and updating variables
+    eww update IS-visible=true
+    eww update IS-index="$2"
+    
+    eww open --pos="80x$((10 + 45 * $2))" icon-selector
+    exit 0;
+fi
+
+echo "No valid arguments provided"
+exit 1;
