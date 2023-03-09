@@ -25,30 +25,42 @@ key_bindings:
   - { key: M, mods: Control, chars: "toggleprompt;banner \r" }
 
 colors:
+
   # Default colors
   primary:
-    background: '#282a36'
-    foreground: '#f8f8f2'
+    background: '#282828'
+    foreground: '#fdf4c1'
 
   # Normal colors
   normal:
-    black: '#000000'
-    red: '#ff5555'
-    green: '#50fa7b'
-    yellow: '#f1fa8c'
-    blue: '#caa9fa'
-    magenta: '#ff79c6'
-    cyan: '#8be9fd'
-    white: '#bfbfbf'
+    black: '#282828'
+    red: '#9d0006'
+    green: '#79740e'
+    yellow: '#b57614'
+    blue: '#076678'
+    magenta: '#8f3f71'
+    cyan: '#00a7af'
+    white: '#fdf4c1'
 
   # Bright colors
   bright:
-    black: '#575b70'
-    red: '#ff6e67'
-    green: '#5af78e'
-    yellow: '#f4f99d'
-    blue: '#caa9fa'
-    magenta: '#ff92d0'
-    cyan: '#9aedfe'
-    white: '#e6e6e6'
-theme: Dracula
+    black: '#32302f'
+    red: '#fb4933'
+    green: '#b8bb26'
+    yellow: '#fabd2f'
+    blue: '#83a598'
+    magenta: '#d3869b'
+    cyan: '#3fd7e5'
+    white: '#ffffc8'
+
+  # Dim colors (Optional)
+  dim:
+    black: '#1d2021'
+    red: '#421e1e'
+    green: '#232b0f'
+    yellow: '#4d3b27'
+    blue: '#2b3c44'
+    magenta: '#4e3d45'
+    cyan: '#205161'
+    white: '#f4e8ba'
+theme: Darktooth

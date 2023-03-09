@@ -22,48 +22,57 @@ selectedEnvironment = environments.getEnv(persisted['environment'])()
 terminal = guess_terminal()
 
 
-# alert = 'true' if window.urgent else 'false'
-# environment = 'default' #TODO: Implement environment from persisted.json (change `Eww` to `default`)
-# monitor = window.group.screen.index
+@hook.subscribe.group_window_add
+def group_window_add(group, window):
+    # Guardar una referencia al workspace anterior en la ventana
+    window._group_from = window.qtile.current_group
 
-@hook.subscribe.client_managed
-def client_managed(window):
-    windows = str(len(window.group.windows))
-    updateEwwGroup(window.group.name, windows=windows)
+    # Actualizar el recuento de ventanas en el grupo actual
+    updateEwwGroup(group.name, windows=str(len(group.windows) + 1))
+
+    # Actualizar el recuento de ventanas en el grupo anterior (si lo hay)
+    group_from = window._group_from
+    if group_from != group:
+        updateEwwGroup(group_from.name, windows=str(len(group_from.windows)))
+
 
 @hook.subscribe.client_killed
 def client_killed(window):
-    windows = str(len(window.group.windows) -1)
+    windows = str(len(window.group.windows) - 1)
     updateEwwGroup(window.group.name, windows=windows)
+
 
 @hook.subscribe.client_urgent_hint_changed
 def client_urgent_hint_changed(window):
-    alert = 'true' if window.urgent else 'false'
+    alert = 'true' if window._demands_attention else 'false'
     updateEwwGroup(window.group.name, alert=alert)
+
 
 @hook.subscribe.setgroup
 def setgroup():
-    a = []
     for group in qtile.groups:
-        updateEwwGroup(group.name, monitor=group.screen.index if group.screen else '-1')
+        updateEwwGroup(
+            group.name, monitor=group.screen.index if group.screen else '-1')
+
 
 def updateEwwGroup(index, monitor=None, environment=None, alert=None, windows=None):
     port = int('1325' + str(index))
     # netcat('localhost', 2233, str(port))
-    pl=''
+    pl = ''
     if monitor is not None:
-        pl+=f"monitor={monitor} "
+        pl += f"monitor={monitor} "
     if environment is not None:
-        pl+=f"environment='{environment}' "
+        pl += f"environment='{environment}' "
     if alert is not None:
-        pl+=f"alert={alert} "
+        pl += f"alert={alert} "
     if windows is not None:
-        pl+=f"windows={windows} "
-    
-    pl=pl.strip()
-    pl+='\n'
+        pl += f"windows={windows} "
+
+    pl = pl.strip()
+    pl += '\n'
 
     netcat('localhost', port, pl)
+
 
 def netcat(hn, p, content):
     # initialize the connection
@@ -79,7 +88,6 @@ def openhtop():
     lazy.spawn('htop')
     lazy.spawn('nemo')
 
-
 keys = [
     # Switch between groups
     Key("M-C-<Right>", lazy.screen.next_group()),
@@ -93,6 +101,7 @@ keys = [
     Key("M-l", lazy.layout.right(), desc="Move focus to right"),
     Key("M-k", lazy.layout.down(), desc="Move focus down"),
     Key("M-i", lazy.layout.up(), desc="Move focus up"),
+
     Key("M-q", lazy.layout.next()),
 
     # Move Windows

@@ -109,7 +109,7 @@
     :class "${class}"
   )
 )
-(defvar test "[1,2,3,4]")
+
 (defwidget bar []
   (box
     :class "bar"

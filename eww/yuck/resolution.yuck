@@ -19,7 +19,7 @@
   (defwindow env-selector
     :monitor 0
     :geometry (geometry
-      :x "7px"
+      :x "9px"
       :y "13px"
       :width "70px"
       :height "70px"
