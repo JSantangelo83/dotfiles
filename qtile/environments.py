@@ -24,6 +24,8 @@ class Default:
                 corner_radius=16,                
                 num_columns=6,
                 insert_position=1,
+                wrap_focus_columns=False,
+                wrap_focus_rows=False,
             ),
             layout.Max(
                 margin=10,

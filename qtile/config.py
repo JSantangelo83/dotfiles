@@ -97,10 +97,11 @@ keys = [
     Key("M-C-y", lazy.next_screen()),
 
     # Switch between windows
-    Key("M-j", lazy.layout.left(), desc="Move focus to left"),
-    Key("M-l", lazy.layout.right(), desc="Move focus to right"),
-    Key("M-k", lazy.layout.down(), desc="Move focus down"),
-    Key("M-i", lazy.layout.up(), desc="Move focus up"),
+    Key("M-j", lazy.layout.left() if lazy.layout.left_edge() else lambda a:a, desc="Move focus to left"),
+    Key("M-l", lazy.layout.right() if lazy.layout.right_edge() else lambda a:a, desc="Move focus to right"),
+    Key("M-k", lazy.layout.down() if lazy.layout.down_edge() else lambda a:a, desc="Move focus down"),
+    Key("M-i", lazy.layout.up() if lazy.layout.up_edge() else lambda a:a, desc="Move focus up"),
+
 
     Key("M-q", lazy.layout.next()),
 
