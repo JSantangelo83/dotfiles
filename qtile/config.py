@@ -11,33 +11,34 @@ from libqtile import layout, hook
 from libqtile.command.client import InteractiveCommandClient
 from libqtile.config import Click, Drag, Key, Match
 from libqtile.utils import guess_terminal
-from libqtile.config import EzKey as Key
+from libqtile.config import EzKey as Key, Group
 from libqtile.lazy import lazy
 from libqtile.backend.base import Window
 from libqtile import qtile
+from libqtile.log_utils import logger
 
 persisted = json.load(open('/home/js/.config/qtile/persisted.json', 'r'))
 selectedEnvironment = environments.getEnv(persisted['environment'])()
 
 terminal = guess_terminal()
 
-
 @hook.subscribe.group_window_add
 def group_window_add(group, window):
     # Guardar una referencia al workspace anterior en la ventana
     window._group_from = window.qtile.current_group
 
-    # Actualizar el recuento de ventanas en el grupo actual
+    # Actualizar el recuento de ventanas en el grupo actual si no es un grupo temporal
     updateEwwGroup(group.name, windows=str(len(group.windows) + 1))
 
-    # Actualizar el recuento de ventanas en el grupo anterior (si lo hay)
+    # Actualizar el recuento de ventanas en el grupo anterior (si lo hay) y no es un grupo temporal
     group_from = window._group_from
+
     if group_from != group:
         updateEwwGroup(group_from.name, windows=str(len(group_from.windows)))
 
-
 @hook.subscribe.client_killed
 def client_killed(window):
+    remove_empty_tmp_groups()
     windows = str(len(window.group.windows) - 1)
     updateEwwGroup(window.group.name, windows=windows)
 
@@ -47,15 +48,92 @@ def client_urgent_hint_changed(window):
     alert = 'true' if window._demands_attention else 'false'
     updateEwwGroup(window.group.name, alert=alert)
 
+def remove_empty_tmp_groups():
+    # Get a list of group names that contain "tmp"
+    tmp_groups = [group.name for group in qtile.groups if "tmp" in group.name]
+
+    # Remove the "tmp" groups that have no windows
+    if(len(tmp_groups) > 0):
+        for group_name in tmp_groups:
+            group = qtile.groups_map[group_name]
+            if not group.windows:
+                qtile.delete_group(group_name)
 
 @hook.subscribe.setgroup
 def setgroup():
+    #TODO: check if is necessary to check all groups instead of just the current one
     for group in qtile.groups:
-        updateEwwGroup(
-            group.name, monitor=group.screen.index if group.screen else '-1')
+        updateEwwGroup(group.name, monitor=group.screen.index if group.screen else '-1')
 
+def getNextTmpGroup(create=False):
+        #current workspace number
+        parent_ws = qtile.current_screen.group.name[0]
+        if not create:
+            #if there is any temp workspace for the current group
+            if any(group.name.startswith(parent_ws) and 'tmp' in group.name for group in qtile.groups):
+                #If the group name lengths 1, that means that is a parent group
+                if(len(qtile.current_screen.group.name) == 1):
+                    return qtile.current_screen.group.name + 'tmp0'
+                else:
+                    #current index of the tmp group
+                    idx = int(qtile.current_screen.group.name[-1])
+                    #If there is a following tmp workspace i go to it
+                    if(any(group.name.endswith(str(idx + 1)) and group.name.startswith(parent_ws) and 'tmp' in group.name for group in qtile.groups)):
+                        idx = int(qtile.current_screen.group.name[-1]) + 1
+                    #If the current workspace is the last one, i go back to the parent one
+                    else:
+                        idx = -1
+                    
+                    return parent_ws + 'tmp' + str(idx) if idx > -1 else parent_ws
+            return parent_ws
+        else:
+            #ver si estoy en el parent
+            if(len(qtile.current_screen.group.name) == 1):
+                #devuelvo el primer temp
+                return qtile.current_screen.group.name + 'tmp0'
+            #ver si estoy en un temp
+            else:
+                #veo si el temp actual tiene mas de 1 ventana
+                if(len(qtile.current_screen.group.windows) > 1):
+                    #devuelvo el proximo temp
+                    return parent_ws + 'tmp' + str(int(qtile.current_screen.group.name[-1]) + 1)
+                else:
+                    #devuelvo el parent
+                    return parent_ws
+                        
+                    
+def moveWindowToGroup(window, group):
+    if group.name == window.group.name[0]:
+        group_to = getNextTmpGroup(True)
+        #check if the group exists and create it if not
+        if not any(group.name == group_to for group in qtile.groups):
+            qtile.add_group(group_to)
+        
+        window.togroup(group_to)
+    else:
+        window.togroup(group.name)
+    remove_empty_tmp_groups()
+
+def changeGroup(group):
+    if group.name == qtile.current_screen.group.name[0]:
+        group_to = getNextTmpGroup()
+        qtile.groups_map[group_to].cmd_toscreen()
+    else:
+        qtile.groups_map[group.name].cmd_toscreen()
+
+def log(msg):
+    logger.warning('')
+    logger.warning('')
+    logger.warning('-------------------')
+    logger.warning(msg)
+    logger.warning('-------------------')
+    logger.warning('')
+    logger.warning('')
 
 def updateEwwGroup(index, monitor=None, environment=None, alert=None, windows=None):
+    if 'tmp' in index:
+        return
+
     port = int('1325' + str(index))
     # netcat('localhost', 2233, str(port))
     pl = ''
@@ -220,10 +298,16 @@ keys = [
 extraKeys = ['<grave>', '1', '2', '8', '9', '0', '<minus>', '<equal>']
 groups = selectedEnvironment.getGroups()
 
+def handle_window_move_keybind(qtile, group):
+    moveWindowToGroup(qtile.current_window, group)
+
+def handle_group_change_keybind(qtile, group):
+    changeGroup(group)
+
 for i, group in enumerate(groups):
     keys.extend([
-        Key('M-' + str(extraKeys[i]), lazy.group[group.name].toscreen()),
-        Key('M-S-' + str(extraKeys[i]), lazy.window.togroup(group.name)),
+        Key('M-' + str(extraKeys[i]), lazy.function(handle_group_change_keybind, group=group)),
+        Key('M-S-' + str(extraKeys[i]), lazy.function(handle_window_move_keybind, group=group)),
     ])
 
 layouts = selectedEnvironment.getLayouts()

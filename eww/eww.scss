@@ -2,6 +2,13 @@
 $BGColor: #353535;
 $BGDarkerColor: #282828;
 $SelectedColor: rgba(168,166,166,0.1);
+
+.date-box{
+	background-color: $SelectedColor;
+	font-size: 12px;
+	font-weight: bold;
+}
+
 .env-selector {
 	background-color: $BGDarkerColor;
 	border-radius: 23px; //TODO: change when adding workspaces

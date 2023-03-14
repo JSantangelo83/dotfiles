@@ -14,7 +14,10 @@
     :class "time"
     
     :valign "end"
-    
+    (box 
+      :class "date-box" 
+      date
+    )
     (box hour)
     (box min)
   )
@@ -24,6 +27,8 @@
 :interval "1s"	"date '+%H'")
 (defpoll min
 :interval "1s"	"date '+%M'")
+
+(defpoll date :interval "1m" "date '+%d/%m'")
 ;;;;End of Rxhyn Widgets ;;;;
 
 (defwidget workspace-item [index monitor alert windows icon]
