@@ -1,5 +1,11 @@
-#Qtile Pycache 
+#Qtile
 qtile/__pycache__/*
+qtile/persisted.json
 
 #Eww temp data
 eww/data
+eww/yuck/variables.yuck
+
+#.ssh 
+.ssh/known_hosts
+
