@@ -84,7 +84,7 @@ alias msfconsole="msfconsole -x \"db_connect js@msf\""
 #nvm
 alias nvmi="source /usr/share/nvm/init-nvm.sh;nvm use 12.14"
 #htb
-export tip='';
+export tip='1.2.3.4'
 
 alias htbi="sudo openvpn ~/hacking/hackthebox/htb-vpn.ovpn"
 alias htbu="sudo /opt/htbExplorer/htbExplorer -v /home/js/hacking/hackthebox/htb-vpn.ovpn"
@@ -97,13 +97,23 @@ function uptip(){
 }
 
 function htbc() {
-	mkdir "/home/js/hacking/hackthebox/machines/$1";
-	mkdir "/home/js/hacking/hackthebox/machines/$1/recon";
-	mkdir "/home/js/hacking/hackthebox/machines/$1/content";
-	mkdir "/home/js/hacking/hackthebox/machines/$1/exploit";
-	cd "/home/js/hacking/hackthebox/machines/$1/recon";
-	uptip $2;
+	#Variables
+	machine_name="$1"
+	machine_lowername="$(echo $1 | awk '{print tolower($0)}')"
+	machine_ip="$2"
+
+	#Creating machine directories
+	mkdir "/home/js/hacking/hackthebox/machines/$machine_lowername"
+	cd "$_";
+	mkdir recon content exploit
 	
+	#Creating obsidian writeup and symlink
+	touch writeup.md
+	ln -s $(pwd)/writeup.md "/home/js/documents/obsidian/Hacking/Machines/HackTheBox - $machine_name"
+
+	#Cd into recon and updating target ip
+	cd recon;
+	uptip $machine_ip;
 }
 
 #python
