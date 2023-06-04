@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if pgrep openvpn > /dev/null; then
+  # VPN is running, so stop it and update Eww variable
+  sudo pkill openvpn
+  eww update vpn-connection=disconnected
+else
+  # VPN is not running, so start it and update Eww variable
+  sudo openvpn /home/js/hacking/hackthebox/htb-vpn.ovpn &
+  eww update vpn-connection=connected
+fi

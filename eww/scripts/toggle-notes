@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Get the PID of the Obsidian process
+obsidian_pid=$(pgrep -f "/usr/bin/obsidian /home/js/file")
+
+if [[ -n "$obsidian_pid" ]]; then
+  # Obsidian is running, so focus on its window
+  obsidian_winid=$(xdotool search --pid "$obsidian_pid" --class Obsidian | head -n 1)
+  xdotool windowactivate "$obsidian_winid"
+  
+  # Check if the window is floating in qtile and raise it to the top
+  qtile_wininfo=$(xwininfo -id "$obsidian_winid")
+  if [[ "$qtile_wininfo" == *"Floating"* ]]; then
+    qtile_windowname=$(echo "$qtile_wininfo" | grep "xwininfo: Window id:" | awk '{print $4}')
+    qtile cmd-floating-toggle "$qtile_windowname"
+  fi
+else
+  # Obsidian is not running, so start it
+  /usr/bin/obsidian /home/js/file &
+fi
