@@ -3,6 +3,17 @@ $BGColor: #353535;
 $BGDarkerColor: #282828;
 $SelectedColor: rgba(168,166,166,0.1);
 
+.env-widgets{
+	background-color: $BGDarkerColor;
+	margin-top:5em;
+	padding: 1em 0;
+}
+
+.env-widgets-title{
+	color: #636363;
+	font-size:11px;
+}
+
 .date-box{
 	background-color: $SelectedColor;
 	font-size: 12px;
