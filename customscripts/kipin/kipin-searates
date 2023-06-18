@@ -1,2 +1,0 @@
-#!/bin/bash
-cd /home/js/proyectos/kipin/searates; npm run dev

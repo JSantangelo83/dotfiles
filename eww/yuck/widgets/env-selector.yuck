@@ -1,0 +1,30 @@
+(defvar env-selector-icon "js")
+
+(defwidget env-selector []
+  (eventbox
+    :onclick {env-selector-icon == "js" ? 'eww update env-selector-icon=arch' : 'eww update env-selector-icon=js'}
+    (overlay
+      (revealer
+        :reveal {env-selector-icon == "js"}
+        :class "env-selector"
+        :orientation "horizontal"
+        (image
+          :path "assets/js-icon.png"
+          :image-width 65
+          :image-height 65
+        )
+      )
+      
+      (revealer
+        :reveal {env-selector-icon == "arch"}
+        :class "env-selector"
+        :orientation "horizontal"
+        (image
+          :path "assets/arch-icon.png"
+          :image-width 45
+          :image-height 45
+        )
+      )
+    )
+  )
+)

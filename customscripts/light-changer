@@ -1,0 +1,11 @@
+#!/bin/bash
+
+light_ip='192.168.1.50';
+
+rgb="$(gpick -so | tr -d '#' | awk '{gsub(/.{2}/,"& ")}1' | sed 's/ /\\x/g')"
+
+send_string="\x31\\x${rgb}00\x00\xf0\x0f\x00"
+
+printf $send_string | nc $light_ip 5577
+
+

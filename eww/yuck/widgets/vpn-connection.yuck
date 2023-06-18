@@ -1,0 +1,30 @@
+(defvar vpn-connection "disconnected")
+
+(defwidget vpn-connection []
+  (eventbox
+    :onclick 'scripts/vpn-toggle'
+    (overlay
+      (revealer
+        :reveal {vpn-connection == "connected"}
+        :class "vpn-connection"
+        :orientation "horizontal"
+        (image
+          :path "assets/vpn-connected.png"
+          :image-width 30
+          :image-height 30
+        )
+      )
+      
+      (revealer
+        :reveal {vpn-connection == "disconnected"}
+        :class "vpn-connection"
+        :orientation "horizontal"
+        (image
+          :path "assets/vpn-disconnected.png"
+          :image-width 30
+          :image-height 30
+        )
+      )
+    )
+  )
+)

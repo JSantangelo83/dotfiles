@@ -5,26 +5,29 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
+export EDITOR=nvim
+
 # cat ~/.cache/wal/sequences
 #system
 alias ls='exa --git --icons'
 alias ll='exa --git --icons --long --octal-permissions'
 alias lla='exa --git --icons --long --all --all --octal-permissions'
 alias tree='exa --git --icons --tree'
-alias bashrc='edtw ~/.bashrc'
-alias zshrc='edtw ~/.zshrc'
-alias py='python3 '
+alias bashrc="$EDITOR ~/.bashrc"
+alias zshrc="$EDITOR ~/.zshrc"
+alias py='python3'
 alias gip='ip a | grep 192.168 | awk "{print \$2}"'
 alias syst='sudo systemctl start'
 alias sysr='sudo systemctl restart'
 alias syso='sudo systemctl stop'
 alias sysa='sudo systemctl status'
-alias mhost='sudo micro /etc/hosts'
+alias mhost="$EDITOR /etc/hosts"
 alias sshn='ssh js@192.168.1.37'
 alias dotfiles='cd /home/js/.config/dotfiles'
 alias bridge='cd /home/js/bridge'
 alias rs='source /home/js/.zshrc'
 alias xterm-kitty='kitty'
+alias cat='bat'
 function memusage() top -o %MEM -b -n1 | tail +8 | head -n ${1:-6} | awk '{print toupper( substr( $12, 1, 1 ) ) substr( $12, 2 )" "$10"%"}'
 function cpusage() top -o %CPU -b -n1 | tail +8 | head -n ${1:-6} | awk '{print toupper( substr( $12, 1, 1 ) ) substr( $12, 2 )" "$9"%"}'
 #pacman
@@ -36,7 +39,7 @@ alias lstin="pacman -Qi | sed '/^Name/{ s/  *//; s/^.* //; H;N;d}; /^URL/,/^Buil
 alias aget='sudo apt install'
 alias arem='sudo apt remove'
 #qtile
-alias qtilec='edtw ~/.config/qtile/config.py'
+alias qtilec="$EDITOR ~/.config/qtile/config.py"
 alias qtilee='cat ~/.local/share/qtile/qtile.log | tail -n 40 | bat -l log'
 alias fqkey='bat ~/.config/qtile/keys | grep'
 #yay
@@ -46,8 +49,63 @@ alias yrem='yay -R'
 alias srem='sudo snap remove'
 alias sget='sudo snap install'
 #svn
-alias svnni="svn st | sed -e \"/^--- Changelist 'ignore'/,/^--- Changelist/d\" | grep '^[ADMR!]' | awk '{print \$2}'"
-alias svndiff="svnni | xargs svn diff | bat -l patch"
+alias svnni="svn st | sed -e \"/^--- Changelist 'ignore'/,/^--- Changelist/d\" | grep '^[ADMR!]' | sed 's/^[ADMR!]//g'"
+alias svndiff="svnni | xargs -I'file' svn diff \"file\" | bat -l patch"
+
+function svnci(){
+	
+	# Checks if the user is in production
+	if [[ $(pwd) =~ "kipin-prod" ]]; then
+		echo "You are in production, you can't commit here"
+		return 1
+	fi
+
+	# Checks if something was piped to the function
+	if [[ ! -p /dev/stdin || $# -lt 2 ]]; then
+		echo 'Usage: <files> | svnci <task_number> <msg>\n\nExample:\nsvnni | svnci 1234 "Fixing bug"'
+		return 1
+	fi
+
+	# Get the arguments
+	tarea="$1"
+	msj="$2"
+	local files	
+
+	# Read the piped files
+	while IFS= read -r line; do
+		line="${line#"${line%%[![:space:]]*}"}"   # Strip leading spaces
+		line="${line%"${line##*[![:space:]]}"}"   # Strip trailing spaces
+		files+=" '${line}'" # Add to the string
+	done
+
+	# Check if there are blacklisted words
+	svnni | xargs -I'file' svn diff "file" | grep -nE 'dump|var_dump|console.log|pito|pene'
+
+	commit='true';
+	
+	# If there are words that are not allowed, i ask if the user wants to continue
+	if [[ $? -eq 0 ]] then
+		commit=''
+		echo '------------------------------'
+		echo -ne "Blacklisted words found, do you want to commit anyway? (y/n): "; read res < /dev/tty
+
+		if [[ $res =~ ^[Yy]$ ]] then
+			commit='true'
+		fi
+	fi
+	echo $files;
+	
+	# If the user wants to commit, i do it
+	if [[ ! -z $commit ]] then
+		svn ci -m "$msj
+Tarea: $tarea" $files
+	fi
+
+# 		svnni | xargs -I'file' svn ci -m "$msj
+# Tarea: $tarea" "file"
+	
+	return 0;
+}
 #kipin
 alias kipin='~/.customscripts/kipin/init'
 alias betalog='initial_path=$(pwd) && cd /tmp && wget ftp://logsbeta%2540dattacargo.com:LogsBeta.2021@dattacargo.com/prod.log && cat ./prod.log | tac | head | bat -l log && rm ./prod.log && cd $initial_path'
@@ -85,8 +143,12 @@ alias msfconsole="msfconsole -x \"db_connect js@msf\""
 alias nvmi="source /usr/share/nvm/init-nvm.sh;nvm use 12.14"
 
 ### Hacking 
-export tip='1.2.3.4'
+export tip='10.129.177.14'
+export vhlist='/home/js/hacking/wordlists/SecLists/Discovery/DNS/subdomains-top1million-110000.txt'
+export dirlist='hacking/wordlists/dirbuster/directory-list-2.3-medium.txt'
+export rockyou='/home/js/hacking/wordlists/rockyou-utf-8.txt'
 
+alias cptip="echo $tip | xclip -sel c -r"
 alias htbi="sudo openvpn ~/hacking/hackthebox/htb-vpn.ovpn"
 alias getp="cat open | grep -oE '[0-9]+/'  | tr -d '/' | tr '\n' ','| xargs | xclip -sel c -r"
 
@@ -137,13 +199,15 @@ function grev(){
 			
 }
 
+alias gports="xmlstarlet sel -t -v '//port[state/@state=\"open\"]/@portid' -nl open | paste -s -d, -"
+
 #python
 alias pysv="sudo python -m http.server 9000"
 #php
 alias php='php72'
-alias phpc='sudo micro /etc/php72/php.ini'
+alias phpc="$EDITOR /etc/php72/php.ini"
 #apache
-alias httpdc="sudo micro /etc/httpd/conf/httpd.conf"
+alias httpdc="$EDITOR /etc/httpd/conf/httpd.conf"
 #discord
 alias rsds='pkill Discord && discord & disown && sleep 1 && exit'
 #Custom Scripts
@@ -157,11 +221,11 @@ PS2=$MIN_PROMPT
 
 #Variables
 export LC_ALL="C"
-export EDITOR=micro
 export BROWSER=firefox
 export TESSDATA_PREFIX='/usr/share/tessdata/'
 export dotfiles='/home/js/.config/dotfiles'
 export dirlist='/home/js/hacking/wordlists/dirbuster/directory-list-2.3-medium.txt'
+
 #bridge
 export nb="$(cat /home/js/bridge/data/nb/public-ip)"
 export lnb="$(cat /home/js/bridge/data/nb/private-ip)"
@@ -173,7 +237,7 @@ OPERAPLUGINWRAPPER_PRIORITY=0
 OPERA_KEEP_BLOCKED_PLUGIN=1
 GDK_NATIVE_WINDOWS=1
 trabu='/dev/tcp/25.5.126.209/1233'
-PATH="/usr/NX/bin/:${dotfiles}/customscripts:/opt/lampp:/home/js/perl5/bin${PATH:+:${PATH}}"; export PATH;
+PATH="/usr/NX/bin/:${dotfiles}/customscripts/kipin:${dotfiles}/customscripts:/opt/lampp:/home/js/perl5/bin${PATH:+:${PATH}}"; export PATH;
 PERL5LIB="/home/js/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
 PERL_LOCAL_LIB_ROOT="/home/js/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
 PERL_MB_OPT="--install_base \"/home/js/perl5\""; export PERL_MB_OPT;
@@ -192,9 +256,10 @@ setopt inc_append_history
 setopt share_history
 # Save and reload the history after each command finishes
 # export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
-
 HISTFILE=~/.zsh_history
 
+#Don't check for mails
+MAILCHECK=0
 
 #BINDKEYS
 bindkey  "^[[H"   beginning-of-line

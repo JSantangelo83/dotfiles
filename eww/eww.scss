@@ -140,13 +140,21 @@ $magenta: #BB9AF7;
 $cyan: #7DCFFF;
 $white: $foreground;
 
-.time {
+.time-box {
 	font-family: Comic Mono;
 	font-weight: bold;
-	font-size: 1.2em;
 	background-color: $BGColor;
-	color: $white;
 	border-radius: 50px;
 	padding: .7rem 0 .5rem 0;
 	margin: .5rem 0 .5rem 0;
-  }
+}
+
+.minute-value, .hour-value {
+	color: $white;
+	font-size: 1.5rem;
+}
+
+.minute-label, .hour-label{
+	color: $gray;
+	font-size: .8rem;
+}

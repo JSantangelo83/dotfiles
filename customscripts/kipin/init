@@ -1,4 +1,42 @@
 #!/bin/bash
-cd ~/proyectos/kipin || exit; 
-~/.customscripts/banner; 
-alacritty -e ~/.customscripts/kipin/kipin-socket & alacritty -e ~/.customscripts/kipin/kipin-front & alacritty -e ~/.customscripts/kipin/kipin-searates & sleep 2 & disown
+
+#Help function
+function help {
+    echo "Usage: kipin [OPTION]"
+    echo "Start kipin in dev or prod mode"
+    echo "  -h, --help      Show this help message"
+    echo "  -d, --dev       Start kipin in dev mode"
+    echo "  -p, --prod      Start kipin in prod mode"
+}
+
+#Check if there is an argument
+if [ $# -eq 0 ]; then
+    help
+    exit 1
+fi
+
+mode="$1";
+root_dir="/home/js/proyectos/kipin"
+
+#switch case over mode argument
+case $mode in
+    -d|--dev) root_dir="$root_dir-dev"; ;;
+    -p|--prod) root_dir="$root_dir-prod"; ;;
+    *)
+        help
+        exit 1
+        ;;
+esac
+
+#Change directory to root_dir
+cd $root_dir || exit; 
+banner; 
+
+# Start socketserver
+kitty -1 --detach --hold --title "Kipin SocketServer" zsh -c "kipin-socket '$root_dir/SOCKETSERVER_TS'" &
+
+# Start front end
+# kitty @ launch --title "Kipin WebApp" zsh -c "kipin-front '$root_dir/WEBAPP'" &
+kitty -1 --detach --hold --title "Kipin WebApp" zsh -c "kipin-front '$root_dir/WEBAPP'" &
+
+sleep 2 & disown

@@ -1,0 +1,14 @@
+(defvar notes-opened false)
+
+    (defwidget toggle-notes []
+      (button
+        :style "background-color:transparent; border:none; margin-top:0.2em"
+        :onclick "scripts/toggle-notes"
+        (image
+          :path "assets/workspaces/notes-${notes-opened ? '1' : '0'}.png"
+          :image-width 30
+          :image-height 30
+        )
+      )
+    )
+    

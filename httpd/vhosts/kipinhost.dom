@@ -1,12 +1,28 @@
 	<VirtualHost *:80>
 	    ServerAdmin joakinsant@gmail.com
-	    DocumentRoot "/home/js/proyectos/kipin/SERVER/public"
-	    ServerName kipinhost
-	    ServerAlias kipinhost
-	    ErrorLog "/home/js/proyectos/kipin/kipinhost-error_log"
-	    CustomLog "/home/js/proyectos/kipin/kipinhost-access_log" common
+	    DocumentRoot "/home/js/proyectos/kipin-dev/SERVER/public"
+	    ServerName dev.kipin
+	    ServerAlias dev.kipin
+	    ErrorLog "/home/js/proyectos/kipin-dev/kipin-error_log"
+	    CustomLog "/home/js/proyectos/kipin-dev/kipin-access_log" common
 
-	    <Directory "/home/js/proyectos/kipin/SERVER/public">
+	    <Directory "/home/js/proyectos/kipin-dev/SERVER/public">
+	    	DirectoryIndex index.php
+	        Require all granted
+	        AllowOverride all
+	        Options +Indexes +FollowSymLinks -MultiViews
+	    </Directory>
+	</VirtualHost>
+
+<VirtualHost *:80>
+	    ServerAdmin joakinsant@gmail.com
+	    DocumentRoot "/home/js/proyectos/kipin-prod/SERVER/public"
+	    ServerName prod.kipin
+	    ServerAlias prod.kipin
+	    ErrorLog "/home/js/proyectos/kipin-prod/kipin-error_log"
+	    CustomLog "/home/js/proyectos/kipin-prod/kipin-access_log" common
+
+	    <Directory "/home/js/proyectos/kipin-prod/SERVER/public">
 	    	DirectoryIndex index.php
 	        Require all granted
 	        AllowOverride all

@@ -262,6 +262,7 @@ keys = [
 
     # Color picker
     Key("M-S-c", lazy.spawn("/home/js/.config/dotfiles/customscripts/colorpicker")),
+    Key("M-S-C-c", lazy.spawn("/home/js/.config/dotfiles/customscripts/light-changer")),
 
     # Next Wallpaper
     Key("M-n", lazy.spawn("/home/js/.config/dotfiles/customscripts/next-wallpaper")),
@@ -291,6 +292,8 @@ keys = [
     Key("M-C-<BackSpace>", lazy.spawn("qtile cmd-obj -o cmd -f hide_show_bar")),
     Key("M-<BackSpace>", lazy.spawn("/home/js/.config/dotfiles/eww/scripts/start")),
     Key("M-S-<BackSpace>", lazy.spawn("/home/js/.config/dotfiles/eww/scripts/stop")),
+    Key("M-C-S-<BackSpace>", lazy.spawn("eww inspector")),
+
 
 
 ]

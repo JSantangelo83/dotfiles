@@ -1,35 +1,10 @@
 (include "yuck/variables.yuck")
 (include "yuck/workspaces.yuck")
 (include "yuck/resolution.yuck")
-;;;;;;;;;;;;;; Variables Section ;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;;;;;;;;;;;;;;; Widgets Section ;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;;;Rxhyn Widgets ;;;;
-(defwidget time []
-  (box
-    
-    :orientation "v"
-    
-    :class "time"
-    
-    :valign "end"
-    (box
-      :class "date-box"
-      date
-    )
-    (box hour)
-    (box min)
-  )
-)
-
-(defpoll hour
-:interval "1s"	"date '+%H'")
-(defpoll min
-:interval "1s"	"date '+%M'")
-
-(defpoll date :interval "1m" "date '+%d/%m'")
-;;;;End of Rxhyn Widgets ;;;;
+(include "yuck/widgets/time.yuck")
+(include "yuck/widgets/env-selector.yuck")
+(include "yuck/widgets/vpn-connection.yuck")
+(include "yuck/widgets/toggle-notes.yuck")
 
 (defwidget workspace-item [index monitor alert windows icon]
   (overlay
@@ -77,86 +52,9 @@
   (literal :content workspacesitems)
 )
 
-(defvar env-selector-icon "js")
-
-(defwidget env-selector []
-  (eventbox
-    :onclick {env-selector-icon == "js" ? 'eww update env-selector-icon=arch' : 'eww update env-selector-icon=js'}
-    (overlay
-      (revealer
-        :reveal {env-selector-icon == "js"}
-        :class "env-selector"
-        :orientation "horizontal"
-        (image
-          :path "assets/js-icon.png"
-          :image-width 65
-          :image-height 65
-        )
-      )
-      
-      (revealer
-        :reveal {env-selector-icon == "arch"}
-        :class "env-selector"
-        :orientation "horizontal"
-        (image
-          :path "assets/arch-icon.png"
-          :image-width 45
-          :image-height 45
-        )
-      )
-    )
-  )
-)
-
-
 (defwidget other [?class]
   (box
     :class "${class}"
-  )
-)
-
-(defvar vpn-connection "disconnected")
-
-(defwidget vpn-connection []
-  (eventbox
-    :onclick 'scripts/vpn-toggle'
-    (overlay
-      (revealer
-        :reveal {vpn-connection == "connected"}
-        :class "vpn-connection"
-        :orientation "horizontal"
-        (image
-          :path "assets/vpn-connected.png"
-          :image-width 30
-          :image-height 30
-        )
-      )
-      
-      (revealer
-        :reveal {vpn-connection == "disconnected"}
-        :class "vpn-connection"
-        :orientation "horizontal"
-        (image
-          :path "assets/vpn-disconnected.png"
-          :image-width 30
-          :image-height 30
-        )
-      )
-    )
-  )
-)
-
-(defvar notes-opened false)
-
-(defwidget toggle-notes []
-  (button
-    :style "background-color:transparent; border:none; margin-top:0.2em"
-    :onclick "scripts/toggle-notes"
-    (image
-      :path "assets/workspaces/notes-${notes-opened ? '1' : '0'}.png"
-      :image-width 30
-      :image-height 30
-    )
   )
 )
 
@@ -184,65 +82,15 @@
   )
 )
 
-
-
-;; Widgets and Windows
-(defvar IS-index -1) ;The index of the workspace that is being edited
-(defvar IS-icons "[]")
-;number from 0 to 100
-(defvar numbers "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100]") ;Numbers for the for loop; TODO: find if there is a better way to do this
-
-(defwidget icon-selector []
-  (eventbox
-    :onhoverlost "scripts/icon-selector hide"
-    (scroll
-      :vscroll true
-      :hscroll false
-      :class "icon-selector-container"
-      (box
-        :orientation "vertical"
-        :spacing 3
-        :style "margin-right:0.7em;"
-        (for i in numbers
-          (box
-            :visible {i*2 < arraylength(IS-icons)}
-            :orientation "horizontal"
-            (eventbox
-              :class "icon-selector-icon"
-              :onclick "eww update ws-data${IS-index}-icon=${IS-icons[i*2]}"
-              (image
-                :image-height 25
-                :image-width 25
-                :style "padding:10px"
-                :path "${IS-icons[i*2]}-0.png" ;TOOD: make possible to pick between 0 and 1 (active and inactive)
-              )
-            )
-            (eventbox
-              :class "icon-selector-icon"
-              :onclick "eww update ws-data${IS-index}-icon=${IS-icons[i*2+1]}"
-              (image
-                :image-height 25
-                :image-width 25
-                :style "padding:10px"
-                :path "${IS-icons[i*2+1]}-0.png" ;TOOD: make possible to pick between 0 and 1 (active and inactive)
-              )
-            )
-          )
-        )
-      )
-    )
-  )
-)
-
 (defwindow icon-selector
-  :monitor 0
-  :geometry (geometry
+    :monitor 0
+    :geometry (geometry
     :width "100px"
     :height "200px"
     :anchor "left top"
-  )
-  :stacking "fg"
-  :wm-ignore true
-  :windowtype 'dialog'
-  (icon-selector)
+    )
+    :stacking "fg"
+    :wm-ignore true
+    :windowtype 'dialog'
+    (icon-selector)
 )

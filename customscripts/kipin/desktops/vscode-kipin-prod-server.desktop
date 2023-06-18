@@ -1,8 +1,8 @@
 [Desktop Entry]
-Name=VS Code Kipin (Webapp)
+Name=VS Code Kipin Prod (Server)
 Comment=Code Editing. Refined.
 GenericName=Text Editor
-Exec=/opt/visual-studio-code/code --no-sandbox --unity-launch %F /home/js/proyectos/kipin/WEBAPP
+Exec=/opt/visual-studio-code/code --no-sandbox --unity-launch %F /home/js/proyectos/kipin-prod/SERVER
 Icon=visual-studio-code
 Type=Application
 StartupNotify=false

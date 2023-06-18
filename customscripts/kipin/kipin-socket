@@ -1,2 +1,14 @@
 #!/bin/bash
-cd ~/proyectos/kipin/socketserver_ts; npm start; sleep 10
+
+#Checking that first parameter is a valid path
+if [ ! -d "$1" ]; then
+    echo "Error: $1 is not a valid path"
+    exit 1
+fi
+root_dir="$1";
+
+# Change directory to root_dir
+cd "$root_dir" || exit; 
+
+# Start socketserver
+npm start; 

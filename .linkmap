@@ -6,6 +6,7 @@ $HOME/.Xresources:.Xresources
 $HOME/.zshrc:.zshrc
 $HOME/.config/alacritty:alacritty
 $HOME/.customscripts:customscripts
+/usr/share/applications:customscripts/kipin/desktops
 $HOME/.config/ranger:ranger
 $HOME/.config/fish:fish
 $HOME/.config/eww:eww
