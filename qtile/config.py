@@ -22,6 +22,11 @@ selectedEnvironment = environments.getEnv(persisted['environment'])()
 
 terminal = guess_terminal()
 
+#@hook.subscribe.startup_once
+#def autostart():
+#    home = os.path.expanduser('~/.customscripts/startup_once.sh') # path to my script, under my user directory
+#    subprocess.call([home])
+
 @hook.subscribe.group_window_add
 def group_window_add(group, window):
     # Guardar una referencia al workspace anterior en la ventana

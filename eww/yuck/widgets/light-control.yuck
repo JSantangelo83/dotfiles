@@ -1,0 +1,12 @@
+(defwidget light-control []
+  (box
+    :class "light-control"
+    :orientation "v"
+    :valign "center"
+    (image
+      :class "monitor-underline"
+      :path "assets/lightbulb-1.png"
+      :image-height 42
+    )
+  )
+)

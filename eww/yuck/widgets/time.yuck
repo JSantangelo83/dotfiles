@@ -3,40 +3,37 @@
 (defpoll date :interval "1m" "date '+%d/%m'")
 
 (defwidget time []
-    (box
-      
-      :orientation "v"
-      :class "time-box"
-      :valign "end"
-      
-      (box :class "date-box" date)
-      
-      (box :class "hour-box" 
-        (label 
-          :class "hour-value"
-          :text "${hour}"
-        )
-        ; (box 
-        ;   :class "hour-label" 
-        ;   :orientation "v"
-        ;   "h"
-        ;   "s"
-        ; )
+  (box
+    :orientation "v"
+    :class "time-box"
+    
+    ; (box :class "date-box" date)
+    
+    (overlay :class "hour-box"
+      (label
+        :class "hour-value"
+        :text "${hour} "
       )
-  
-      (box :class "minute-box" 
-        (label 
-          :class "minute-value"
-          :text "${minute}"
-        )
-        ; (label 
-        ;   :class "minute-label" 
-        ;   :wrap true
-        ;   :width 1
-        ;   :text "mn"
-        ; )
+      (overlay
+        :class "hour-label"
+        :orientation "v"
+        "h"
+        "s"
+      )
+    )
+    
+    (overlay :class "minute-box"
+      (label
+        :class "minute-value"
+        :text "${minute} "
+      )
+      (overlay
+        :class "minute-label"
+        :orientation "v"
+          "m"
+          "n"
       )
     )
   )
-  
-  
+)
+

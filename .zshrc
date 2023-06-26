@@ -101,9 +101,6 @@ function svnci(){
 Tarea: $tarea" $files
 	fi
 
-# 		svnni | xargs -I'file' svn ci -m "$msj
-# Tarea: $tarea" "file"
-	
 	return 0;
 }
 #kipin
@@ -121,6 +118,18 @@ toggleprompt(){
 	else
 		export PS1=$FULL_PROMPT
 	fi
+}
+
+viewcolors () {
+    colors=$(sed 's/#/\n/g' | grep -xv '')
+    for i in {1..2}
+    do
+        echo "$colors" | while read line
+        do
+            echo -ne "\e[48;2;$((0x${line:0:2}));$((0x${line:2:2}));$((0x${line:4:2}))m       \e[0m"
+        done
+        echo -ne "\n"
+    done
 }
 
 function dumprow () {

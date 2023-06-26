@@ -5,52 +5,9 @@
 (include "yuck/widgets/env-selector.yuck")
 (include "yuck/widgets/vpn-connection.yuck")
 (include "yuck/widgets/toggle-notes.yuck")
-
-(defwidget workspace-item [index monitor alert windows icon]
-  (overlay
-    ;;
-    :halign 'center'
-    (box
-      :class "workspace-item"
-      :hexpand true
-      :valign 'center'
-      (button
-        :style "background-color:${monitor == 0 ? 'rgba(168,166,166,0.05)' : '#282828'}; border:none"
-        ;TODO: make WM generic
-        :onclick 'qtile cmd-obj -o screen -f toggle_group -a "${index}"'
-        :onrightclick 'scripts/icon-selector show ${index}'
-        (image
-          :class "workspace-icon"
-          :path "${icon}-${windows > 0 ? 1 : 0}.png"
-          :image-width 21
-          :image-height 21
-        )
-      )
-    )
-    (label
-      :text "${windows}"
-      :class 'workspace-label'
-      :visible {windows > 0}
-    )
-    (image
-      :class "warning-icon"
-      :path "assets/warning.png"
-      :image-width 10
-      :image-height 8
-      :visible {alert && windows > 0}
-    )
-    (image
-      :visible {monitor > -1}
-      :class "monitor-underline"
-      :path "assets/monitor-${monitor}.png"
-    )
-  )
-)
-
-
-(defwidget workspace-selector []
-  (literal :content workspacesitems)
-)
+(include "yuck/widgets/icon-selector.yuck")
+(include "yuck/widgets/workspace-item.yuck")
+(include "yuck/widgets/light-control.yuck")
 
 (defwidget other [?class]
   (box
@@ -78,19 +35,25 @@
     (workspace-selector)
     (env-widgets)
     (other)
-    (time)
+    (box
+      :valign "end"
+      :spacing -15
+      :orientation "vertical"
+      (time)
+      (light-control)
+    )
   )
 )
 
 (defwindow icon-selector
-    :monitor 0
-    :geometry (geometry
+  :monitor 0
+  :geometry (geometry
     :width "100px"
     :height "200px"
     :anchor "left top"
-    )
-    :stacking "fg"
-    :wm-ignore true
-    :windowtype 'dialog'
-    (icon-selector)
+  )
+  :stacking "fg"
+  :wm-ignore true
+  :windowtype 'dialog'
+  (icon-selector)
 )

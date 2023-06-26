@@ -1,0 +1,68 @@
+#!/bin/bash
+
+light_ip='192.168.1.50';
+
+# Usage
+function usage {
+    echo "Usage: light-control <mode> [args]"
+    echo "Modes:"
+    echo "  pick:   Pick a color from the color picker"
+    echo "  rgb:    Set the color from rgb values"
+    echo "    Args: <red> <green> <blue>"
+    echo "  hc:     Set the hot and cold values"
+    echo "    Args: <hot> <cold>"
+    exit 1
+}
+
+#If mode is picker or rgb i get the rgb value
+if [ "$1" == "pick" ] || [ "$1" == "rgb" ]; then
+    #If mode is picker then get the rgb from the color picker
+    if [ "$1" == "pick" ]; then
+        rgb="$(gpick -so | tr -d '#' | awk '{gsub(/.{2}/,"& ")}1' | sed 's/ /\\x/g')"
+    fi
+
+    #If mode is rgb then get the rgb from the 3 arguments
+    if [ "$1" == "rgb" ]; then
+        # If the number of arguments is not 3
+        if [ "$#" -ne 4 ]; then
+            usage
+        fi
+        #If the rgb values are not valid
+        if [ "$2" -gt 255 ] || [ "$3" -gt 255 ] || [ "$4" -gt 255 ]; then
+            echo "Invalid rgb values"
+            echo "Rgb values must be between 0 and 255"
+            exit 1
+        fi
+        rgb="$2\\x$3\\x$4\\x"
+    fi
+    
+    send_string="\x31\\x${rgb}00\x00\xf0\x0f\x00"
+
+# If mode is hc then i get the hot and calid value from args
+elif [ "$1" == "hc" ]; then
+    # If the number of arguments is not 3
+    if [ "$#" -ne 3 ]; then
+        usage
+    fi
+    
+    #If the hot and cold values are not valid
+    if [ "$2" -gt 100 ] || [ "$3" -gt 100 ]; then
+        echo "Invalid hot and cold values"
+        echo "Hot and cold values must be between 0 and 100"
+        exit 1
+    fi
+    hot="$2"
+    cold="$3"
+
+    send_string="\x31\x00\x00\x00\\x${hot}\\x${cold}\x0f\xf0\x00"
+elif [ "$1" == "off" ]; then
+    send_string="\x31\x00\x00\x00\x00\x00\x0f\xf0\x00"
+
+else
+    echo "Invalid mode"
+    usage
+fi
+
+
+printf $send_string | nc $light_ip 5577
+exit 0
