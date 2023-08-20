@@ -1,0 +1,59 @@
+#!/bin/bash
+
+usage() {
+    # Display the usage and exit. (it must be inside a kipin project)
+    echo "Create the translations files for a component"
+    echo "Usage: $0 <component_path>"
+    echo "  component_path: Path to the component file"
+    echo;
+    echo "Example: $0 src/app/components/MyComponent.ts"
+    exit 1
+}
+
+componentPath="$1"
+
+# Validate that the current path is a valid kipin project
+if [[ ! -f "package.json" ]]; then
+    echo "You must be inside a Kipin Webapp project"
+    usage
+fi
+
+# Validate that the path is valid a typescript file
+if [[ ! -f "$componentPath" || "${componentPath: -3}" != ".ts" ]]; then
+    echo "Invalid file"
+    usage
+fi
+
+# Get the class name
+className=$(grep -oP '(?<=export class ).*' "$componentPath" | awk '{print $1}')
+# Remove the 'Component' suffix
+rawClassName=${className%Component};
+# Create the interface name
+interfaceName="$rawClassName"TraduccionInterface;
+
+
+# Create the main translations files (without the 'Component' suffix)
+# Create the interface file
+interfaceFileContent="import { GeneralTraduccionInterface } from './GeneralTraduccionInterface';
+
+export interface $interfaceName extends GeneralTraduccionInterface {
+    
+}
+"
+echo "$interfaceFileContent" > "$(pwd)/src/app/lang/interfaces/$interfaceName".ts
+
+# Creating specific translations files
+for lang in $(ls src/app/lang/); do
+    if [[ "$lang" != "interfaces" ]]; then
+        # Create the file
+        fileContent="import GeneralTraduccion from './GeneralTraduccion';
+import { $interfaceName } from '../interfaces/$interfaceName';
+
+export default class $rawClassName extends GeneralTraduccion implements $interfaceName {
+    
+}
+"
+
+        echo "$fileContent" > "$(pwd)/src/app/lang/$lang/$rawClassName"Traduccion.ts
+    fi
+done;

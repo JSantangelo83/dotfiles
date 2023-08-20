@@ -42,13 +42,7 @@ class Default:
                     self.customScreens()[0]["top"]["widgets"]
                     + [
                         widget.WidgetBox(
-                            widgets=[
-                                widget.Systray(
-                                    icon_size=16,
-                                    padding=10,
-                                ),
-                                smallSpacer(),
-                            ],
+                            widgets=[],
                             text_closed="",
                             text_open="",
                             close_button_location="right",
@@ -140,26 +134,7 @@ class Eww(Default):
         return '?'
 
     def customLayouts(self):
-        return [
-            # layout.MonadTall(
-                # margin=10,
-                # border_width=0,
-                # border_focus="#E8C7DE",
-                # single_margin=10,
-                # single_border_width=0,
-                # corner_radius=16,
-            # ),
-            # layout.Columns(
-                # margin=10,
-                # border_width=0,
-                # border_focus="#E8C7DE",
-                # single_margin=10,
-                # single_border_width=0,
-                # corner_radius=16,
-                # num_columns=6,
-                # insert_position=1,
-            # )
-        ]
+        return []
     def customGroups(self):
         return [Group(i) for i in ['0','1','2','3','4','5','6','7']]
 
@@ -180,16 +155,6 @@ class Code(Default):
                 # single_border_width=0,
                 # corner_radius=16,
             # ),
-            # layout.Columns(
-                # margin=10,
-                # border_width=0,
-                # border_focus="#E8C7DE",
-                # single_margin=10,
-                # single_border_width=0,
-                # corner_radius=16,
-                # num_columns=6,
-                # insert_position=1,
-            # )
         ]
 
     def customScreens(self):
@@ -197,6 +162,11 @@ class Code(Default):
             {
                 "top": {
                     "widgets": [
+                        widget.Systray(
+                            icon_size=16,
+                            padding=10,
+                        ),
+                        smallSpacer(),
                         widget.GroupBox(
                             fontsize=16,
                             background="#282C34",

@@ -3,7 +3,8 @@ $HOME/.vimrc:.vimrc
 $HOME/.bashrc:.bashrc
 $HOME/.xsession:.xsession
 $HOME/.Xresources:.Xresources
-$HOME/.zshrc:.zshrc
+$HOME/.zshrc:zsh/.zshrc
+$HOME/.config/zsh/:zsh/
 $HOME/.config/alacritty:alacritty
 $HOME/.customscripts:customscripts
 /usr/share/applications:customscripts/kipin/desktops

@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 generate_colors() {

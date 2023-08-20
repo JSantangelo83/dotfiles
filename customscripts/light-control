@@ -1,6 +1,6 @@
 #!/bin/bash
 
-light_ip='192.168.1.50';
+light_ip='192.168.1.40';
 
 # Usage
 function usage {
@@ -11,7 +11,12 @@ function usage {
     echo "    Args: <red> <green> <blue>"
     echo "  hc:     Set the hot and cold values"
     echo "    Args: <hot> <cold>"
+    echo "  off:    Turn off the light"
     exit 1
+}
+
+function tohex {
+    printf '%02x' $1
 }
 
 #If mode is picker or rgb i get the rgb value
@@ -33,7 +38,9 @@ if [ "$1" == "pick" ] || [ "$1" == "rgb" ]; then
             echo "Rgb values must be between 0 and 255"
             exit 1
         fi
-        rgb="$2\\x$3\\x$4\\x"
+        
+        # Parsing rgb values to hex
+        rgb="$(tohex $2)\\x$(tohex $3)\\x$(tohex $4)\\x"
     fi
     
     send_string="\x31\\x${rgb}00\x00\xf0\x0f\x00"
@@ -46,17 +53,28 @@ elif [ "$1" == "hc" ]; then
     fi
     
     #If the hot and cold values are not valid
-    if [ "$2" -gt 100 ] || [ "$3" -gt 100 ]; then
+    if [ "$2" -gt 255 ] || [ "$3" -gt 255 ]; then
         echo "Invalid hot and cold values"
         echo "Hot and cold values must be between 0 and 100"
         exit 1
     fi
-    hot="$2"
-    cold="$3"
-
+    hot="$(tohex $2)"
+    cold="$(tohex $3)"
+    
     send_string="\x31\x00\x00\x00\\x${hot}\\x${cold}\x0f\xf0\x00"
 elif [ "$1" == "off" ]; then
-    send_string="\x31\x00\x00\x00\x00\x00\x0f\xf0\x00"
+    send_string="\x71\x24\x95"
+elif [ "$1" == "max" ]; then
+    send_string="\x31\x00\x00\x00\xff\xff\x0f\xf0\x00"
+elif [ "$1" == "status" ]; then
+    state=(0x81 0x8a 0x8b 0x96)
+
+    #send_string="\x81\x8a\x8b\x96"
+    #printf $send_string > /dev/tcp/$light_ip/5577
+    echo -ne "$(printf '\\x%02x' "${state[@]}")" > /dev/tcp/"$light_ip"/5577
+
+    response=$(dd bs=1 count=14 <&3 2>/dev/null)
+    echo $response;
 
 else
     echo "Invalid mode"

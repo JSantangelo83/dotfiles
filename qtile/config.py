@@ -267,7 +267,7 @@ keys = [
 
     # Color picker
     Key("M-S-c", lazy.spawn("/home/js/.config/dotfiles/customscripts/colorpicker")),
-    Key("M-S-C-c", lazy.spawn("/home/js/.config/dotfiles/customscripts/light-changer")),
+    Key("M-S-C-c", lazy.spawn("/home/js/.config/dotfiles/customscripts/light-control pick")),
 
     # Next Wallpaper
     Key("M-n", lazy.spawn("/home/js/.config/dotfiles/customscripts/next-wallpaper")),
@@ -279,8 +279,8 @@ keys = [
         "/home/js/.config/dotfiles/customscripts/usb-toggle-server/connect keymouse")),
 
     # Volume
-    Key("<XF86AudioLowerVolume>", lazy.spawn("pamixer --decrease 5")),
-    Key("<XF86AudioRaiseVolume>", lazy.spawn("pamixer --increase 5")),
+    Key("<XF86AudioLowerVolume>", lazy.spawn("pamixer --allow-boost --decrease 5")),
+    Key("<XF86AudioRaiseVolume>", lazy.spawn("pamixer --allow-boost --increase 5")),
     Key("<XF86AudioMute>", lazy.spawn("pamixer --toggle-mute")),
 
     # Media control
