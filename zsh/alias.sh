@@ -8,6 +8,7 @@ alias httpdc="sudo -E -s $EDITOR /etc/httpd/conf/httpd.conf"
 alias bashrc="$EDITOR ~/.bashrc"
 alias zshrc="$EDITOR ~/.zshrc"
 alias qtilec="$EDITOR ~/.config/qtile/config.py"
+alias sshdc="sudo -E -s $EDITOR /etc/ssh/sshd_config"
 # Enter to the config folder
 alias dotfiles='cd /home/js/.config/dotfiles'
 alias bridge='cd /home/js/bridge'
