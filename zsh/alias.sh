@@ -13,8 +13,6 @@ alias sshdc="sudo -E -s $EDITOR /etc/ssh/sshd_config"
 alias dotfiles='cd /home/js/.config/dotfiles'
 alias bridge='cd /home/js/bridge'
 
-
-
 ## Beautify commands
 # ls
 alias ls='exa --git --icons'
@@ -59,7 +57,7 @@ alias pysv="sudo python -m http.server 9000"
 # get ips
 alias gprivip='ip a | grep 192.168 | awk "{print \$2}"'
 alias gtunip="ip a | grep -A2 'tun0: <' |tail -n1 | awk '{print \$2}' | sed 's/\/.*//g'"
-alias gpubip="dig @resolver4.opendns.com myip.opendns.com +short"
+alias gpubip="dig @resolver4.opendns.com myip.opendns.com +short | sed 's/\/.*//g'"
 # others
 alias msfconsole="msfconsole -x \"db_connect js@msf\""
 alias htbi="sudo openvpn ~/hacking/hackthebox/htb-vpn.ovpn"
