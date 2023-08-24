@@ -26,7 +26,7 @@ cd "/home/js/bridge/data/$device" || exit 1;
 #Deleting old data
 
 dig @resolver4.opendns.com myip.opendns.com +short > public-ip
-ip a | grep 192.168 | awk "{print \$2}" > private-ip
+ip a | grep 192.168 | awk "{print \$2}" | sed 's/\/.*//g' > private-ip
 
 #Pushing changes
 git add .;
