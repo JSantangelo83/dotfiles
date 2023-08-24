@@ -22,13 +22,55 @@ function dumprow () {
 	fi
 }
 
+# Prompt things
 function toggleprompt(){
-	if [ "$PS1" \=\= "$FULL_PROMPT" ]; then
-		export PS1=$MIN_PROMPT
+	if $PROMPT_FULLED; then
+		PS1=$MIN_PROMPT
+    PROMPT_FULLED=false;
 	else
-		export PS1=$FULL_PROMPT
+		PS1=$FULL_PROMPT
+    PROMPT_FULLED=true;
 	fi
+  zle reset-prompt;
 }
+
+format_milliseconds() {
+    local input_ms=$1
+
+    if (( input_ms < 1000 )); then
+        echo "${input_ms}ms"
+    elif (( input_ms < 60000 )); then
+        local seconds=$((input_ms / 1000))
+        local milliseconds=$((input_ms % 1000))
+        echo "${seconds}s ${milliseconds}ms"
+    elif (( input_ms < 3600000 )); then
+        local minutes=$((input_ms / 60000))
+        local seconds=$(( (input_ms % 60000) / 1000 ))
+        echo "${minutes}min ${seconds}s"
+    else
+        local hours=$((input_ms / 3600000))
+        local minutes=$(( (input_ms % 3600000) / 60000 ))
+        local seconds=$(( (input_ms % 60000) / 1000 ))
+        echo "${hours}h ${minutes}min ${seconds}s"
+    fi
+}
+
+preexec() {
+    ts=$(date +%s%N) }
+
+precmd() {
+   exit_code=$?;
+   if [ -z $ts ]; then return; fi;
+     
+   local tt=$((($(date +%s%N) - $ts)/1000000));
+
+   if [ $exit_code -eq 0 ] ; then
+     RPROMPT="%F{green}% [ $(format_milliseconds $tt) ]%f"
+   else
+     RPROMPT="%F{red}% [ $(format_milliseconds $tt) ]%f"
+   fi
+
+ }
 
 function viewcolors () {
     colors=$(sed 's/#/\n/g' | grep -xv '')
@@ -106,3 +148,4 @@ function kill-path-word(){
   zle exchange-point-and-mark           # swap "mark" and "cursor"
   zle kill-region                       # delete marked region
 }
+

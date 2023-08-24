@@ -3,9 +3,11 @@
 #
 
 # Source my custom scripts
-source ~/.fzf.zsh
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+export EDITOR=nvim
+
+source ~/.fzf.zsh;
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh;
+source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh;
 source ~/.config/zsh/perm_variables.sh;
 source ~/.config/zsh/alias.sh;
 source ~/.config/zsh/functions.sh;
@@ -13,7 +15,6 @@ source ~/.config/zsh/hacking.sh;
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
-export EDITOR=nvim
 export LC_ALL="C"
 export BROWSER=firefox
 export TESSDATA_PREFIX='/usr/share/tessdata/'
@@ -42,15 +43,17 @@ MAILCHECK=0
 
 ## Prompt
 FULL_PROMPT=$' %{\e[1;3;35m%}%~ %{\e[31m%} %{\e[0%}m'
-MIN_PROMPT=$' %{\e[1;31m%} %{\e[0%}m'
+MIN_PROMPT=$' %{\e[1;3;35m%}%1d %{\e[31m%} %{\e[0%}m'
 PS1=$FULL_PROMPT
-PS2=$MIN_PROMPT
+PS2=$' %{\e[31m%} %{\e[0%}m'
+PROMPT_FULLED=true;
 
+if [ $SHELL != '/bin/zsh' ]; then
+  shopt -s checkwinsize
+  #History
+  shopt -s histappend                      
+fi
 
-
-shopt -s checkwinsize
-#History
-shopt -s histappend                      
 # append to history, don't overwrite it
 # Appends every command to the history file once it is executed
 setopt inc_append_history
@@ -65,11 +68,11 @@ bindkey  "^[[H"   beginning-of-line
 bindkey  "^[[F"   end-of-line
 bindkey  "^[[3~"  delete-char
 bindkey "^d" kill-path-word
+bindkey "^p" toggleprompt
 
-
+zle -N toggleprompt
 # Zsh Plugins and Functions
 zle -N kill-path-word
-
 # Pushd's to the starting_path if there is any
 if ! [ -z $starting_path ]; then
    builtin pushd $starting_path
@@ -77,4 +80,3 @@ fi
 
 # Programs to execute at the start of zsh
 banner
-

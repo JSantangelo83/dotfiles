@@ -97,6 +97,24 @@ function sshcreds() {
   bash -c "$ssh_command";
 }
 
+decode_base64_url() {
+  local len=$((${#1} % 4))
+  local result="$1"
+  if [ $len -eq 2 ]; then result="$1"'=='
+  elif [ $len -eq 3 ]; then result="$1"'=' 
+  fi
+  echo "$result" | tr '_-' '/+' | openssl enc -d -base64
+}
+
+decode_jwt(){
+   decode_base64_url $(echo -n $2 | cut -d "." -f $1) | jq .
+}
+
+# Decode JWT header
+alias jwth="decode_jwt 1"
+
+# Decode JWT Payload
+alias jwtp="decode_jwt 2"
 
 ### Variables
 export vhlist='/home/js/hacking/wordlists/SecLists/Discovery/DNS/subdomains-top1million-110000.txt'
@@ -105,3 +123,5 @@ export rockyou='/home/js/hacking/wordlists/rockyou-utf-8.txt'
 export userlist='/home/js/hacking/wordlists/SecLists/Usernames/xato-net-10-million-usernames-dup.txt'
 export lfi_payloads='/home/js/hacking/wordlists/lfi_payloads.txt'
 export lfi_files='/home/js/hacking/wordlists/lfi-files.txt'
+export dotdotpwn='/home/js/hacking/wordlists/dotdotpwn.txt'
+export secrets='/home/js/hacking/wordlists/jwt.secrets.list'

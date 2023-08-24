@@ -140,7 +140,7 @@ def updateEwwGroup(index, monitor=None, environment=None, alert=None, windows=No
         return
 
     port = int('1325' + str(index))
-    # netcat('localhost', 2233, str(port))
+    
     pl = ''
     if monitor is not None:
         pl += f"monitor={monitor} "

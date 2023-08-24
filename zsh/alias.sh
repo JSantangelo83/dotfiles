@@ -56,8 +56,9 @@ alias mkmigration="php bin/console make:migration | grep \"new migration\" | awk
 alias py='python3'
 alias pysv="sudo python -m http.server 9000"
 # get ips
-alias gip='ip a | grep 192.168 | awk "{print \$2}"'
-alias gtunip="$(ip a | grep -A3 tun0 | grep inet | awk '{print $2}' | cut -d '/' -f 1 | head -n 1)"
+alias gprivip='ip a | grep 192.168 | awk "{print \$2}"'
+alias gtunip="ip a | grep -A2 'tun0: <' |tail -n1 | awk '{print \$2}'"
+alias gpubip="dig @resolver4.opendns.com myip.opendns.com +short"
 # others
 alias msfconsole="msfconsole -x \"db_connect js@msf\""
 alias htbi="sudo openvpn ~/hacking/hackthebox/htb-vpn.ovpn"
