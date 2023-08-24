@@ -22,3 +22,4 @@ $HOME/.config/qtile:qtile
 /etc/lightdm:lightdm
 $HOME/.config/xremap:xremap
 $HOME/.config/lite-xl:lite-xl
+$HOME/.config/nvim:nvim

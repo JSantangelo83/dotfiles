@@ -57,7 +57,7 @@ alias py='python3'
 alias pysv="sudo python -m http.server 9000"
 # get ips
 alias gprivip='ip a | grep 192.168 | awk "{print \$2}"'
-alias gtunip="ip a | grep -A2 'tun0: <' |tail -n1 | awk '{print \$2}'"
+alias gtunip="ip a | grep -A2 'tun0: <' |tail -n1 | awk '{print \$2}' | sed 's/\/.*//g'"
 alias gpubip="dig @resolver4.opendns.com myip.opendns.com +short"
 # others
 alias msfconsole="msfconsole -x \"db_connect js@msf\""
