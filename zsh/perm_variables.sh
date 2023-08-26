@@ -71,5 +71,5 @@ function upvar(){
 }
 
 ### Actual Variables: 
-export tip='10.129.101.175'
+export tip='10.129.127.227'
 export starting_path='/home/js/hacking/hackthebox/machines/cybermonday/content'
