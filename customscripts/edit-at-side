@@ -1,11 +1,24 @@
 #!/bin/zsh -i
-cmd=$(history | fzf --height ${FZF_TMUX_HEIGHT:-40%} --tac --no-sort | awk '{$1=""; print $0}')
+
+EDITOR=micro #TODO: DELETE THIS LINE
+# Resetting size to it's default
+kitty @ resize-window -a reset
+
+# Calculating the ~30% of the screen and resizing
 current_cols=$(stty size | awk '{print $2}');
-target_cols=100;
-step=$(expr $target_cols - $current_cols)
+target_cols=$((current_cols * 75 / 100))
+step=$((target_cols - current_cols))
 kitty @ resize-window -i "$step"
+
+
+# Getting cmd from the fzf selector
+cmd=$(history | fzf --height ${FZF_TMUX_HEIGHT:-40%} --tac --no-sort | awk '{$1=""; print $0}')
+
+# Generating a random name for the tmp file
 name="$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1).sh"
 echo -e "$cmd" > "/tmp/$name"
+# Formating the file
 shfmt --write -ci -bn -fn -ln bash "/tmp/$name"
-micro "/tmp/$name" && kitty @ send-text -m recent:1 "$(cat /tmp/$name)"
+# Editing and returning command to the main kitty instance
+$EDITOR "/tmp/$name" && kitty @ send-text -m recent:1 "$(cat /tmp/$name)"
 

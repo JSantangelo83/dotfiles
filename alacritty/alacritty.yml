@@ -25,30 +25,30 @@ key_bindings:
   - { key: M, mods: Control, chars: "toggleprompt;banner \r" }
 
 colors:
-  name: hund
-  author: hund
+  # Default colors
   primary:
-    background: "#161616"
-    foreground: "#FFFFFF"
-  cursor:
-    text: "#161616"
-    cursor: "#FFFFFF"
+    background: '#282a36'
+    foreground: '#f8f8f2'
+
+  # Normal colors
   normal:
-    black: "#222222"
-    red: "#E84F4F"
-    green: "#B7CE42"
-    yellow: "#FEA63C"
-    blue: "#66AABB"
-    magenta: "#B7416E"
-    cyan: "#6D878D"
-    white: "#DDDDDD"
+    black: '#000000'
+    red: '#ff5555'
+    green: '#50fa7b'
+    yellow: '#f1fa8c'
+    blue: '#caa9fa'
+    magenta: '#ff79c6'
+    cyan: '#8be9fd'
+    white: '#bfbfbf'
+
+  # Bright colors
   bright:
-    black: "#666666"
-    red: "#D23D3D"
-    green: "#BDE077"
-    yellow: "#FFE863"
-    blue: "#AACCBB"
-    magenta: "#E16A98"
-    cyan: "#42717B"
-    white: "#CCCCCC"
-theme: Hund
+    black: '#575b70'
+    red: '#ff6e67'
+    green: '#5af78e'
+    yellow: '#f4f99d'
+    blue: '#caa9fa'
+    magenta: '#ff92d0'
+    cyan: '#9aedfe'
+    white: '#e6e6e6'
+theme: Dracula
