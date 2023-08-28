@@ -12,16 +12,17 @@ alias sshdc="sudo -E -s $EDITOR /etc/ssh/sshd_config"
 # Enter to the config folder
 alias dotfiles='cd /home/js/.config/dotfiles'
 alias bridge='cd /home/js/bridge'
-
+alias pkill='pkill -ife'
 ## Beautify commands
 # ls
 alias ls='exa --git --icons'
 alias ll='exa --git --icons --long --octal-permissions'
 alias lla='exa --git --icons --long --all --all --octal-permissions'
 alias tree='exa --git --icons --tree'
-# cat
-alias cat='bat'
 
+# better commands
+alias cat='bat'
+alias grep='grep --color=auto'
 
 
 ## Simplify commands
@@ -61,7 +62,6 @@ alias gpubip="dig @resolver4.opendns.com myip.opendns.com +short"
 # others
 alias msfconsole="msfconsole -x \"db_connect js@msf\""
 alias htbi="sudo openvpn ~/hacking/hackthebox/htb-vpn.ovpn"
-alias grep='grep --color=auto'
 alias lc='light-control'
 alias ocr="/home/js/.customscripts/ocr-selection"
 alias sshn='ssh js@192.168.1.37'
