@@ -1,43 +1,36 @@
 #!/bin/bash
 
-echo '[+] Updating bridge';
+function checkIp {
+  # Checking that the ip was fetched correctly
+  if [ -z "$1" ]; then
+    echo '[x] There was an error fetching the ip, exiting...'
+    exit 1
+  else
+    echo "[+] Ok: $1"
+  fi
+}
 
-# Getting updated ips
-update-bridge 1 &>/dev/null
-
-# Checking that the bridge was updated correctly
-if [ $? -gt 0 ]; then
-  echo '[x] There was an error updating the bridge, exiting...';
-  exit 1;
-fi
-
-echo '[+] Fetching updated ips...';
-
-# Updating ip's variables
-pubip="$(dig @resolver4.opendns.com myip.opendns.com +short)"
-echo '[+] Fetching public ip'
+echo "[+] Fetching PC's public IP";
+pc_pubip=$(ssh -o ConnectTimeout=10 "$vpc" "curl -s ifconfig.me/ip" 2>/dev/null);
 
 # Checking that the ip was fetched correctly
-if [ -z "$pubip" ]; then
-  echo '[x] There was an error fetching the public ip, exiting...'
-  exit 1
-fi
+checkIp "$pc_pubip"
+
+echo "[+] Fetching NB's public IP";
+nb_pubip=$(curl -ks ifconfig.me/ip);
+
+# Checking that the ip was fetched correctly
+checkIp "$nb_pubip"
 
 # Adding the rule to the sever
-ssh -o ConnectTimeout=10 "$vpc" "sudo ufw allow from $pubip to any port 22 proto tcp; sudo ufw reload";
+ssh -o ConnectTimeout=10 "$vpc" "sudo ufw allow from $nb_pubip to any port 22 proto tcp; sudo ufw reload";
 
 # Checking that the rules were updated correctly
-if [ $? -gt 0 ]; then
+if [ $? -ne 0 ]; then
   echo '[x] There was an error updating the ufw rules, exiting...'
   exit 1
 fi
 
-pc=$(cat /home/js/bridge/data/pc/public-ip);
-
-# Checking that the public ip is setted
-if [ -z "$pc" ]; then
-  echo '[x] No valid public ip found, exiting...'
-fi
-
 # Logging with the public ip
-ssh -o ConnectTimeout=10 $pc 2>/dev/null || echo '[x] There was an error logging with the public ip, exiting...'
+ssh -o ConnectTimeout=10 "$pc_pubip" 2>/dev/null || echo '[x] There was an error logging with the public ip, exiting...'
+
