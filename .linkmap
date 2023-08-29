@@ -1,4 +1,3 @@
-$HOME/.ssh:.ssh
 $HOME/.vimrc:.vimrc
 $HOME/.bashrc:.bashrc
 $HOME/.xsession:.xsession
