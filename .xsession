@@ -40,3 +40,4 @@ sudo sh -c 'echo "abi.vsyscall32 = 0" >> /etc/sysctl.conf && sysctl -p' &
 sudo mount -a &
 sudo updatedb &
 bash /home/js/.config/wacom/init.sh & 
+/home/js/.customscripts/start-ufw &
