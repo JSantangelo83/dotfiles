@@ -139,8 +139,6 @@ def updateEwwGroup(index, monitor=None, environment=None, alert=None, windows=No
     if 'tmp' in index:
         return
 
-    port = int('1325' + str(index))
-    
     pl = ''
     if monitor is not None:
         pl += f"monitor={monitor} "
@@ -154,13 +152,13 @@ def updateEwwGroup(index, monitor=None, environment=None, alert=None, windows=No
     pl = pl.strip()
     pl += '\n'
 
-    netcat('localhost', port, pl)
+    netcat('/tmp/eww-', index, pl)
 
 
-def netcat(hn, p, content):
+def netcat(sock_name, id, content):
     # initialize the connection
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((hn, p))
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    sock.connect(sock_name+id + '.sock')
 
     sock.sendall(content.encode())
     sock.shutdown(socket .SHUT_WR)

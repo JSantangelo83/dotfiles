@@ -18,6 +18,12 @@ M.general = {
   }
 }
 
+M.hoop = {
+  n = {
+    ["$"]= {"<cmd>lua require'hop'.hint_words()<cr>", "Hop"},
+  },
+}
+
 M.nvimtree = {
   plugin = true,
   n = {

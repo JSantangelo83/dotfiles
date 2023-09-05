@@ -15,6 +15,15 @@ local plugins={
     end,
   },
   {
+    'phaazon/hop.nvim',
+    lazy=false,
+    as = 'hop',
+  config = function()
+    -- you can configure Hop the way you like here; see :h hop-config
+    require'hop'.setup { keys = 'etovxqpdygfblzhckisuran' }
+  end
+  },
+  {
   "neovim/nvim-lspconfig",
    dependencies = {
      "jose-elias-alvarez/null-ls.nvim",
