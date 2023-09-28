@@ -22,6 +22,18 @@ function dumprow () {
 	fi
 }
 
+function column() {
+  if [ -z "$1" ]; then
+    echo -n "Usage: $0 <column number> [separator]\nEx: $0 1 ';'"
+  fi
+
+  if [ -n "$2" ]; then
+    awk -F"$2" "{print \$$1}" /dev/stdin
+  else
+    awk "{print \$$1}" /dev/stdin
+  fi
+}
+
 # Prompt things
 function toggleprompt(){
 	if $PROMPT_FULLED; then
