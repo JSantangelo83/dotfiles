@@ -37,14 +37,16 @@ def group_window_add(group, window):
 
     # Actualizar el recuento de ventanas en el grupo anterior (si lo hay) y no es un grupo temporal
     group_from = window._group_from
-
+    log(f'group_from: {group_from.name}, windows: {str(len(group_from.windows) + 1)}')
     if group_from != group:
+        log('entre aca?')
         updateEwwGroup(group_from.name, windows=str(len(group_from.windows)))
 
 @hook.subscribe.client_killed
 def client_killed(window):
     remove_empty_tmp_groups()
-    windows = str(len(window.group.windows) - 1)
+    windows = str(len(window.group.windows))
+    log(f'group_name: {window.group.name}, windows: {len(window.group.windows)}')
     updateEwwGroup(window.group.name, windows=windows)
 
 

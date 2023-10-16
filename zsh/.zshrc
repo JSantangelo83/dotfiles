@@ -76,8 +76,11 @@ zle -N toggleprompt
 # Zsh Plugins and Functions
 zle -N kill-path-word
 # Pushd's to the starting_path if there is any
-if ! [ -z $starting_path ]; then
-   builtin pushd $starting_path
+
+if [ $(ps -o ppid= | wc -l) -eq 4 ]; then
+  if ! [ -z $starting_path ]; then
+     builtin pushd $starting_path
+  fi
 fi
 
 # Programs to execute at the start of zsh

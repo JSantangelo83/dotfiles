@@ -10,6 +10,19 @@ function tobin() echo "obase=2;$1" | bc
 function fromhex() echo "obase=10;ibase=16;$1" | bc
 function frombin() echo "obase=10;ibase=2;$1" | bc
 
+function pysv(){
+  addr="$(gtunip):9000"
+  # The first param sets if thhe addr should be copied to thhe clipboard
+  [ "$1" ] && echo -n "$addr" | xclip -sel c -r
+  echo -e "[+] Listening on: $addr\n"
+  python -m http.server 9000 1>/dev/null
+  
+}
+
+function nocolor(){
+ sed -r 's/\x1B\[[0-9;]*[JKmsu]//g'
+}
+
 function dumprow () {
 	if [[ $# -eq 0 ]] then
 		echo 'No params supplied'
@@ -25,6 +38,7 @@ function dumprow () {
 function column() {
   if [ -z "$1" ]; then
     echo -n "Usage: $0 <column number> [separator]\nEx: $0 1 ';'"
+    exit 1;
   fi
 
   if [ -n "$2" ]; then

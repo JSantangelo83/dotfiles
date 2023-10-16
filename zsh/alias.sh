@@ -54,7 +54,6 @@ alias migrate='php bin/console doctrine:migrations:migrate'
 alias mkmigration="php bin/console make:migration | grep \"new migration\" | awk -F'\"' '{print \$2}'"
 # python
 alias py='python3'
-alias pysv="sudo python -m http.server 9000"
 # get ips
 alias gprivip='ip a | grep 192.168 | awk "{print \$2}"'
 alias gtunip="ip a | grep -A2 'tun0: <' |tail -n1 | awk '{print \$2}' | sed 's/\/.*//g'"

@@ -71,5 +71,5 @@ function upvar(){
 }
 
 ### Actual Variables: 
-export tip='10.129.102.66'
-export starting_path='/home/js/hacking/hackthebox/machines/zipping'
+export tip='10.13.37.11'
+export starting_path='/home/js/proyectos/kipin-dev'

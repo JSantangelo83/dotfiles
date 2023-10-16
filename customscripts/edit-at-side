@@ -1,6 +1,5 @@
 #!/bin/zsh -i
 
-EDITOR=micro #TODO: DELETE THIS LINE
 # Resetting size to it's default
 kitty @ resize-window -a reset
 
