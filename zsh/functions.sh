@@ -4,11 +4,36 @@
 function memusage() top -o %MEM -b -n1 | tail +8 | head -n ${1:-6} | awk '{print toupper( substr( $12, 1, 1 ) ) substr( $12, 2 )" "$10"%"}'
 function cpusage() top -o %CPU -b -n1 | tail +8 | head -n ${1:-6} | awk '{print toupper( substr( $12, 1, 1 ) ) substr( $12, 2 )" "$9"%"}'
 
+show_dicts() {
+	sed -n '/# Dicts/,/# \/Dicts/p' $dotfiles/zsh/hacking.sh | grep -vE "# Dicts|# /Dicts" | sed 's/export //g' | tr '=' ' ' | awk '{print "\033[1;32m" $1 "\033[0m" " - " "\033[1;34m" $2 "\033[0m"}'
+}
+
+function getchar() {
+  if [ -z "$1" ]; then
+    echo '[x] You must specifiy a number of chars to copy to clipboard, exiting...'
+    exit 1;
+  fi
+  
+  python3 -c "print('A' * $1)" | clp
+}
+
 # Convertions between bases
 function tohex() echo "obase=16;$1" | bc
 function tobin() echo "obase=2;$1" | bc
 function fromhex() echo "obase=10;ibase=16;$1" | bc
 function frombin() echo "obase=10;ibase=2;$1" | bc
+
+function dir_back() {
+  if [[ $PWD != "/" ]]; then
+      pushd ../ &>/dev/null || return 1
+      zle reset-prompt;
+  fi
+}
+
+function dir_fwd() {
+  popd &>/dev/null || return 1
+  zle reset-prompt;
+}
 
 function pysv(){
   addr="$(gtunip):9000"

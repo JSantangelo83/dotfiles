@@ -6,8 +6,8 @@
 export EDITOR=nvim
 
 source ~/.fzf.zsh;
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh;
-source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh;
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh;
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh;
 source ~/.config/zsh/perm_variables.sh;
 source ~/.config/zsh/alias.sh;
 source ~/.config/zsh/functions.sh;
@@ -19,11 +19,11 @@ export LC_ALL="C"
 export BROWSER=firefox
 export TESSDATA_PREFIX='/usr/share/tessdata/'
 export dotfiles='/home/js/.config/dotfiles'
-export nb="$(cat /home/js/bridge/data/nb/public-ip)"
-export lnb="$(cat /home/js/bridge/data/nb/private-ip)"
+# export nb="$(cat /home/js/bridge/data/nb/public-ip)"
+# export lnb="$(cat /home/js/bridge/data/nb/private-ip)"
 export vnb="10.243.249.178"
-export pc="$(cat /home/js/bridge/data/pc/public-ip)"
-export lpc="$(cat /home/js/bridge/data/pc/private-ip)"
+# export pc="$(cat /home/js/bridge/data/pc/public-ip)"
+# export lpc="$(cat /home/js/bridge/data/pc/private-ip)"
 export vpc="10.243.246.143"
 export light='192.168.1.50'
 PATH="/usr/NX/bin/:${dotfiles}/customscripts/kipin/utilities:${dotfiles}/customscripts/kipin:${dotfiles}/customscripts:/opt/lampp:/home/js/perl5/bin${PATH:+:${PATH}}"; export PATH;
@@ -61,6 +61,7 @@ fi
 setopt inc_append_history
 # Reloads the history whenever you use it
 setopt share_history
+setopt HIST_IGNORE_SPACE
 # Save and reload the history after each command finishes
 HISTFILE=~/.zsh_history
 
@@ -71,7 +72,11 @@ bindkey  "^[[F"   end-of-line
 bindkey  "^[[3~"  delete-char
 bindkey "^d" kill-path-word
 bindkey "^p" toggleprompt
-
+bindkey "^[[1;5D" dir_back
+bindkey "^[[1;5C" dir_fwd
+#
+zle -N dir_back
+zle -N dir_fwd
 zle -N toggleprompt
 # Zsh Plugins and Functions
 zle -N kill-path-word
@@ -79,9 +84,11 @@ zle -N kill-path-word
 
 if [ $(ps -o ppid= | wc -l) -eq 4 ]; then
   if ! [ -z $starting_path ]; then
-     builtin pushd $starting_path
+     cd $starting_path
   fi
 fi
-
+eval $(ssh-agent -s)                                                                         [ 4ms ]
+ssh-add ~/.ssh/id_rsa                                                                        [ 4ms ]
+ssh-add ~/.ssh/ip_provider   
 # Programs to execute at the start of zsh
 banner

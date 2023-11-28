@@ -71,5 +71,5 @@ function upvar(){
 }
 
 ### Actual Variables: 
-export tip='10.13.37.11'
+export tip='10.129.55.163'
 export starting_path='/home/js/proyectos/kipin-dev'

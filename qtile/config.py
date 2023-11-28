@@ -37,16 +37,13 @@ def group_window_add(group, window):
 
     # Actualizar el recuento de ventanas en el grupo anterior (si lo hay) y no es un grupo temporal
     group_from = window._group_from
-    log(f'group_from: {group_from.name}, windows: {str(len(group_from.windows) + 1)}')
     if group_from != group:
-        log('entre aca?')
         updateEwwGroup(group_from.name, windows=str(len(group_from.windows)))
 
 @hook.subscribe.client_killed
 def client_killed(window):
     remove_empty_tmp_groups()
     windows = str(len(window.group.windows))
-    log(f'group_name: {window.group.name}, windows: {len(window.group.windows)}')
     updateEwwGroup(window.group.name, windows=windows)
 
 
@@ -340,7 +337,7 @@ mouse = [
 
 dgroups_key_binder = None
 dgroups_app_rules = []  # type: List
-follow_mouse_focus = True
+# follow_mouse_focus = True
 bring_front_click = False
 cursor_warp = False
 floating_layout = layout.Floating(
@@ -358,6 +355,7 @@ floating_layout = layout.Floating(
 auto_fullscreen = True
 focus_on_window_activation = "smart"
 reconfigure_screens = True
+cursor_warp = True
 
 # If things like steam games want to auto-minimize themselves when losing
 # focus, should we respect this or not?

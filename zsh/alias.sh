@@ -57,9 +57,10 @@ alias py='python3'
 # get ips
 alias gprivip='ip a | grep 192.168 | awk "{print \$2}"'
 alias gtunip="ip a | grep -A2 'tun0: <' |tail -n1 | awk '{print \$2}' | sed 's/\/.*//g'"
+alias ghamip="ip a | grep -A2 'ham0: <' |tail -n1 | awk '{print \$2}' | sed 's/\/.*//g'"
 alias gpubip="dig @resolver4.opendns.com myip.opendns.com +short"
+alias gtrabuip="hamachi list | head -n2 | tail -n1 | column 4"
 # others
-alias msfconsole="msfconsole -x \"db_connect js@msf\""
 alias htbi="sudo openvpn ~/hacking/hackthebox/htb-vpn.ovpn"
 alias lc='light-control'
 alias ocr="/home/js/.customscripts/ocr-selection"
@@ -67,7 +68,9 @@ alias sshn='ssh js@192.168.1.37'
 alias rs='source /home/js/.zshrc'
 alias kipin='~/.customscripts/kipin/init'
 alias tgp='toggleprompt'
-
+alias clp='xclip -sel c -r'
+alias ddp='dotdotpwn'
+alias cd='dirs -c; cd'
 
 
 ## Error logs

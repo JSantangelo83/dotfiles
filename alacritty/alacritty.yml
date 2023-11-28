@@ -25,30 +25,30 @@ key_bindings:
   - { key: M, mods: Control, chars: "toggleprompt;banner \r" }
 
 colors:
-  name: hund
-  author: hund
+  name: Ashes (dark)
+  author: Chris Kempson
   primary:
-    background: "#161616"
-    foreground: "#FFFFFF"
+    background: "#1c2023"
+    foreground: "#c7ccd1"
   cursor:
-    text: "#161616"
-    cursor: "#FFFFFF"
+    text: "#1c2023"
+    cursor: "#c7ccd1"
   normal:
-    black: "#222222"
-    red: "#E84F4F"
-    green: "#B7CE42"
-    yellow: "#FEA63C"
-    blue: "#66AABB"
-    magenta: "#B7416E"
-    cyan: "#6D878D"
-    white: "#DDDDDD"
+    black: "#1c2023"
+    red: "#c7ae95"
+    green: "#95c7ae"
+    yellow: "#aec795"
+    blue: "#ae95c7"
+    magenta: "#c795ae"
+    cyan: "#95aec7"
+    white: "#c7ccd1"
   bright:
-    black: "#666666"
-    red: "#D23D3D"
-    green: "#BDE077"
-    yellow: "#FFE863"
-    blue: "#AACCBB"
-    magenta: "#E16A98"
-    cyan: "#42717B"
-    white: "#CCCCCC"
-theme: Hund
+    black: "#747c84"
+    red: "#c7ae95"
+    green: "#95c7ae"
+    yellow: "#aec795"
+    blue: "#ae95c7"
+    magenta: "#c795ae"
+    cyan: "#95aec7"
+    white: "#f3f4f5"
+theme: Ashes.dark

