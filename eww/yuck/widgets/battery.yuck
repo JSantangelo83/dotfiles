@@ -1,0 +1,19 @@
+(defvar battery-icons "[\"󱟩\",\"󰁺\",\"󰁻\",\"󰁼\",\"󰁽\",\"󰁾\",\"󰁿\",\"󰂀\",\"󰂁\",\"󰂂\",\"󰁹\",\"󰢟\",\"󰢜\",\"󰂆\",\"󰂇\",\"󰂈\",\"󰢝\",\"󰂉\",\"󰢞\",\"󰂊\",\"󰂋\",\"󰂅\"]")
+(defvar colors "[\"#dc3545\",\"#ffc107\",\"#61d97c\"]")
+(defpoll status :interval '1m' `cat /sys/class/power_supply/BAT1/status | tail -n 1 | grep -o Dis >/dev/null && echo 0 || echo 1`)
+(defpoll capacity :interval '1m' `cat /sys/class/power_supply/BAT1/capacity`)
+
+(defwidget battery []
+  (box
+    :class "battery"
+    :style "
+            color:${colors[round((capacity/100) * 2,0)]};
+            margin-right:${6 * status}px;
+           "
+    :orientation "v"
+    :valign "center"
+    :tooltip "${capacity}%"
+
+    "${battery-icons[round((capacity / 100)*10,0) + (11 * status)]}"
+  )
+)

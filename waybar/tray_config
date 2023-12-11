@@ -1,0 +1,12 @@
+{
+  "position":"left",
+  "height": 730,
+  "width": 30,
+  "mode":"hide",
+  "margin-left":37,
+  "modules-right": ["tray"],
+  "tray": {
+    "icon-size": 24,
+    "spacing": 14
+  },
+}

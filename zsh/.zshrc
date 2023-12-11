@@ -5,7 +5,7 @@
 # Source my custom scripts
 export EDITOR=nvim
 
-source ~/.fzf.zsh;
+source /usr/share/zsh/plugins/fzf-zsh-plugin/fzf-zsh-plugin.plugin.zsh
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh;
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh;
 source ~/.config/zsh/perm_variables.sh;
@@ -81,14 +81,14 @@ zle -N toggleprompt
 # Zsh Plugins and Functions
 zle -N kill-path-word
 # Pushd's to the starting_path if there is any
-
-if [ $(ps -o ppid= | wc -l) -eq 4 ]; then
-  if ! [ -z $starting_path ]; then
-     cd $starting_path
-  fi
-fi
-eval $(ssh-agent -s)                                                                         [ 4ms ]
-ssh-add ~/.ssh/id_rsa                                                                        [ 4ms ]
-ssh-add ~/.ssh/ip_provider   
+cd $starting_path 
+# if [ $(ps -o ppid= | wc -l) -eq 4 ]; then
+#   if ! [ -z $starting_path ]; then
+#      cd $starting_path
+#   fi
+# fi
+eval $(ssh-agent -s) &>/dev/null                                                                         [ 4ms ]
+ssh-add ~/.ssh/id_rsa &>/dev/null                                                                        [ 4ms ]
+ssh-add ~/.ssh/ip_provider   &>/dev/null
 # Programs to execute at the start of zsh
 banner

@@ -3,6 +3,11 @@ $BGColor: #353535;
 $BGDarkerColor: #202020;
 $SelectedColor: rgba(168,166,166,0.1);
 
+.button-no-style{
+	background-color: transparent;
+	border: none;
+}
+
 .env-widgets{
 	background-color: $BGDarkerColor;
 	margin-top:5em;
@@ -53,7 +58,7 @@ $SelectedColor: rgba(168,166,166,0.1);
 
 .workspace-selector{
 	background-color: $BGDarkerColor;
-	padding-top:0.5em;
+	padding-top:1em;
 	border-radius:20px 20px 0 0;
 }
 
@@ -64,7 +69,7 @@ $SelectedColor: rgba(168,166,166,0.1);
 	margin-top:9px;
 }
 
-.monitor-test{
+.screen-test{
 	color:red;
 }
 
@@ -77,27 +82,27 @@ $SelectedColor: rgba(168,166,166,0.1);
 }
 
 
-.monitor-underline{
-	margin-top:30px;
+.screen-underline{
+	margin-top:26px;
 }
 
 /* TODO: Clases residuales, ahora no se usan mas los borders */
-$monitor0:#B15656;
-$monitor1:#566AB1;
-$monitor2:#B1AD56;
-$monitor3:#A8F0AE;
-.monitor-0 { 
-	border-bottom:1px solid $monitor0; 
+$screen0:#B15656;
+$screen1:#566AB1;
+$screen2:#B1AD56;
+$screen3:#A8F0AE;
+.screen-0 { 
+	border-bottom:1px solid $screen0; 
 } 
-.monitor-1 { 
-	border-bottom:1px solid $monitor1; 
+.screen-1 { 
+	border-bottom:1px solid $screen1; 
 } 
 
-.monitor-2 { 
-	border-bottom:1px solid $monitor2; 
+.screen-2 { 
+	border-bottom:1px solid $screen2; 
 } 
-.monitor-3 { 
-	border-bottom:1px solid $monitor3; 
+.screen-3 { 
+	border-bottom:1px solid $screen3; 
 }
 /* TODO: Las de ariba son clases residuales*/
 
@@ -169,4 +174,9 @@ $white: $foreground;
 
 .light-control {
 	margin-bottom: 0.8em;
+}
+
+.battery {
+	margin-bottom:-0.2em;
+	font-size:2.5rem;
 }

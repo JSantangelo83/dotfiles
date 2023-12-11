@@ -4,7 +4,7 @@
     :orientation "v"
     :valign "center"
     (image
-      :class "monitor-underline"
+      :class "screen-underline"
       :path "assets/lightbulb-1.png"
       :image-height 42
     )

@@ -1,21 +1,20 @@
-(defwidget workspace-item [index monitor alert windows icon]
+(defwidget workspace-item [index alert windows icon]
   (overlay
-    ;;
     :halign 'center'
-    (box
-      :class "workspace-item"
+    (button
+      :class "workspace-item button-no-style"
       :hexpand true
       :valign 'center'
-      (button
-        :style "background-color:${monitor == 0 ? 'rgba(168,166,166,0.05)' : '#202020'}; border:none"
+      (eventbox
+        :style "background-color:${screen-0 == index ? 'rgba(168,166,166,0.05)' : '#202020'}; border:none"
         ;TODO: make WM generic
         :onclick 'qtile cmd-obj -o screen -f toggle_group -a "${index}"'
         :onrightclick 'scripts/icon-selector show ${index}'
         (image
           :class "workspace-icon"
           :path "${icon}-${windows > 0 ? 1 : 0}.png"
-          :image-width 21
-          :image-height 21
+          :image-width 20
+          :image-height 20
         )
       )
     )
@@ -32,9 +31,9 @@
       :visible {alert && windows > 0}
     )
     (image
-      :visible {monitor > -1}
-      :class "monitor-underline"
-      :path "assets/monitor-${monitor}.png"
+      :visible {screen-0 == index}
+      :class "screen-underline"
+      :path "assets/monitor-${screen-0 == index ? '0' : '-1'}.png"
     )
   )
 )

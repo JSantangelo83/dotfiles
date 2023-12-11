@@ -66,10 +66,11 @@ function upvar(){
     echo "The variable doesn't exists"
   fi
   
-	sed -i --follow-symlinks "s+^export $name='.*+export $name='$value'+g" ~/.config/zsh/perm_variables.sh;
+	sed -i --follow-symlinks "s@^export $name='.*@export $name='$value'@g" ~/.config/zsh/perm_variables.sh;
   source ~/.config/zsh/perm_variables.sh;
 }
 
 ### Actual Variables: 
 export tip='10.129.55.163'
-export starting_path='/home/js/proyectos/kipin-dev'
+export starting_path='/home/js/.config/dotfiles/waybar'
+export pc='192.168.1.59'

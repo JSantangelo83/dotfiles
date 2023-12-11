@@ -1,97 +1,42 @@
-#!/usr/bin/env node
-const { exec } = require("child_process");
+#!/usr/bin/python3
+import subprocess
+import json
+import os
 
-//Entry point of the script
-async function main() {
-    let [windows, screens] = await Promise.all([
-        systemExec('qtile cmd-obj -o cmd -f windows'),
-        systemExec('qtile cmd-obj -o cmd -f screens'),
-    ]);
+workspaces_count = 7
 
-    let windowsObj = pythonStrToObject(windows);
-    let screensObj = pythonStrToObject(screens);
+# Initializing the workspaces (empty)
+total_workspaces = [{"id": i, "screenID": -1, "windows": 0,"alert":False} for i in range(0, workspaces_count+1)]
 
-    //getting data grouped by group
-    let groupObj = windowsObj.reduce((acc, item) => {
-        if (item.group) {
-            if (!acc[item.group]) {
-                acc[item.group] = [];
-            }
-            if (item.group)
-                acc[item.group].push(item);
-        }
-        return acc;
-    }, {});
+# Getting the real workspaces from hyprctl
+command = subprocess.Popen(["hyprctl", "workspaces", "-j"], stdout=subprocess.PIPE)
+output = command.communicate()[0]
+workspaces = json.loads(output)
 
-    windowsAlerts = (await Promise.all(windowsObj.map(w =>
-        systemExec(`if [ -z "$(xprop -id '${w.id}' | grep _NET_WM_STATE_DEMANDS_ATTENTION)" ]; then echo false; else echo true; fi`)))
-    )
-        .map((status, i) =>
-            new Object({
-                id: windowsObj[i].id,
-                status: status.replace('\n', ''),
-            })
-        )
+# Getting the current workspace from hyprctl
+command = subprocess.Popen(["hyprctl", "activeworkspace", "-j"], stdout=subprocess.PIPE)
+output = command.communicate()[0]
+active_workspace = json.loads(output)
 
-    let finalObj = Object.keys(groupObj).map(k => {
-        return new Object({
-            index: k,
-            windows: groupObj[k].length,
-            alert: groupObj[k].map(w => windowsAlerts.find(w2 => w.id == w2.id).status).includes('true'),
-        })
-    });
-    workspacesIdxs = [0, 1, 2, 3, 4, 5, 6, 7];
-    // let listenersYuck = buildListeners(finalObj, screensObj, workspacesIdxs);
-    let variablesYuck = buildVariables(finalObj, screensObj, workspacesIdxs);
-    //saving yuck to 'variables.yuck' file
-    fs = require('fs');
-    fs.writeFile("../yuck/variables.yuck", variablesYuck, function (err) {
-        if (err) {
-            return console.log(err);
-        }
-        console.log("The file was saved!");
-    });
-}
+# Setting active workspace (-1 because hyprland does not allow workspace 0)
+total_workspaces[active_workspace["id"] - 1]['screenID'] = 0
 
-//Builds yuck as a string
-function buildVariables(dataObj, screensObj, idxs) {
-    let environment = 'default'; //TODO: find a way to get this dynamically
-    let yuckListeners = idxs.map(i => {
-        item = dataObj.find(d => d.index == i);
-        screen = screensObj.findIndex(s => s.group == i);
-        return item ? 
-        [`(defvar ws-data${i}-monitor ${screen})`,`(defvar ws-data${i}-alert ${item.alert})`,`(defvar ws-data${i}-windows ${item.windows})`,`(defvar ws-data${i}-icon "assets/workspaces/${environment}/workspace${i}")`].join('\n')
-        :
-        [`(defvar ws-data${i}-monitor ${screen})`,`(defvar ws-data${i}-alert false)`,`(defvar ws-data${i}-windows 0)`, `(defvar ws-data${i}-icon "assets/workspaces/${environment}/workspace${i}")`].join('\n')
+# Merging the workspaces with the empty workspaces
+for workspace in workspaces:
+    total_workspaces[workspace["id"] - 1]['windows'] = workspace['windows'] # (-1 because hyprland does not allow workspace 0)
+    # total_workspaces[workspace["id"]]['alert'] = workspace['alert']
+    
+# Creating the yuck variable
+yuck="(defvar screen-0 0)\n\n"
+for workspace in total_workspaces:
+    # Extracting the data from the workspace
+    idx = workspace["id"]
+    windows = workspace["windows"]
+    # alert = workspace["alert"]
+    
+    # Updating the yuck variable
+    yuck += f'(defvar ws-data{idx}-alert false)\n(defvar ws-data{idx}-windows {windows})\n(defvar ws-data{idx}-icon "assets/workspaces/default/workspace{idx}")\n\n'
 
-    }).join('\n\n');
-
-    return yuckListeners;
-}
-
-//executes a command in the terminal and returns a promise
-function systemExec(cmd) {
-    return new Promise((resolve, reject) => {
-        exec(cmd, (error, stdout, stderr) => {
-            if (error) reject(`error: ${error.message}`);
-            if (stderr) reject(`stderr: ${stderr}`);
-
-            resolve(stdout);
-        });
-    });
-}
-
-
-//Parses from python object in string format to javascript object and fixes qtile parser error
-function pythonStrToObject(json) {
-    return eval(json
-        .replaceAll('False', 'false')
-        .replaceAll('True', 'true')
-        .replaceAll('None', 'null')
-        //Qtile parser error
-        .replaceAll(/'\s+'/g, " "));
-
-}
-
-//executes main function
-main();
+# Saving yuck variable to variables.yuck file
+with open(os.path.dirname(os.path.realpath(__file__)) + "/../yuck/variables.yuck", "w") as f:
+    f.write(yuck)

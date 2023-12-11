@@ -2,6 +2,7 @@
 
     (defwidget toggle-notes []
       (button
+        :class "button-no-style"
         :style "background-color:transparent; border:none; margin-top:0.2em"
         :onclick "scripts/toggle-notes"
         (image

@@ -1,0 +1,138 @@
+
+device_name = "AT Translated Set 2 keyboard"
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_J"]
+output = ["KEY_LEFT"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_K"]
+output = ["KEY_DOWN"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_L"]
+output = ["KEY_RIGHT"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_I"]
+output = ["KEY_UP"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_H"]
+output = ["KEY_END"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_F"]
+output = ["KEY_HOME"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_U"]
+output = ["KEY_PAGEDOWN"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_O"]
+output = ["KEY_PAGEUP"]
+
+#
+## CTRL Support
+#
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTCTRL", "KEY_J"]
+output = ["KEY_LEFTCTRL", "KEY_LEFT"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTCTRL", "KEY_K"]
+output = ["KEY_LEFTCTRL", "KEY_DOWN"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTCTRL", "KEY_L"]
+output = ["KEY_LEFTCTRL", "KEY_RIGHT"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTCTRL", "KEY_I"]
+output = ["KEY_LEFTCTRL", "KEY_UP"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTCTRL", "KEY_H"]
+output = ["KEY_LEFTCTRL", "KEY_END"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTCTRL", "KEY_F"]
+output = ["KEY_LEFTCTRL", "KEY_HOME"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTCTRL", "KEY_U"]
+output = ["KEY_LEFTCTRL", "KEY_PAGEDOWN"]
+
+#
+## SHIFT Support
+#
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_J"]
+output = ["KEY_LEFTSHIFT", "KEY_LEFT"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_K"]
+output = ["KEY_LEFTSHIFT", "KEY_DOWN"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_L"]
+output = ["KEY_LEFTSHIFT", "KEY_RIGHT"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_I"]
+output = ["KEY_LEFTSHIFT", "KEY_UP"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_H"]
+output = ["KEY_LEFTSHIFT", "KEY_END"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_F"]
+output = ["KEY_LEFTSHIFT", "KEY_HOME"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_U"]
+output = ["KEY_LEFTSHIFT", "KEY_PAGEDOWN"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_O"]
+output = ["KEY_LEFTSHIFT", "KEY_PAGEUP"]
+
+#
+## CTRL + SHIFT Support
+#
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTCTRL", "KEY_LEFTSHIFT", "KEY_J"]
+output = ["KEY_LEFTCTRL", "KEY_LEFTSHIFT", "KEY_LEFT"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTCTRL", "KEY_LEFTSHIFT", "KEY_K"]
+output = ["KEY_LEFTCTRL", "KEY_LEFTSHIFT", "KEY_DOWN"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTCTRL", "KEY_LEFTSHIFT", "KEY_L"]
+output = ["KEY_LEFTCTRL", "KEY_LEFTSHIFT", "KEY_RIGHT"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTCTRL", "KEY_LEFTSHIFT", "KEY_I"]
+output = ["KEY_LEFTCTRL", "KEY_LEFTSHIFT", "KEY_UP"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTCTRL", "KEY_LEFTSHIFT", "KEY_H"]
+output = ["KEY_LEFTCTRL", "KEY_LEFTSHIFT", "KEY_END"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTCTRL", "KEY_LEFTSHIFT", "KEY_F"]
+output = ["KEY_LEFTCTRL", "KEY_LEFTSHIFT", "KEY_HOME"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTCTRL", "KEY_LEFTSHIFT", "KEY_U"]
+output = ["KEY_LEFTCTRL", "KEY_LEFTSHIFT", "KEY_PAGEDOWN"]
+
+[[remap]]
+input = ["KEY_LEFTALT", "KEY_LEFTCTRL", "KEY_LEFTSHIFT", "KEY_O"]
+output = ["KEY_LEFTCTRL", "KEY_LEFTSHIFT", "KEY_PAGEUP"]

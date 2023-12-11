@@ -22,3 +22,5 @@ $HOME/.config/qtile:qtile
 $HOME/.config/xremap:xremap
 $HOME/.config/lite-xl:lite-xl
 $HOME/.config/nvim:nvim
+$HOME/.config/waybar:waybar
+/etc/evremap.toml:evremap.toml

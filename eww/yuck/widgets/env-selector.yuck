@@ -7,7 +7,6 @@
       (revealer
         :reveal {env-selector-icon == "js"}
         :class "env-selector"
-        :orientation "horizontal"
         (image
           :path "assets/js-icon.png"
           :image-width 65
@@ -18,7 +17,6 @@
       (revealer
         :reveal {env-selector-icon == "arch"}
         :class "env-selector"
-        :orientation "horizontal"
         (image
           :path "assets/arch-icon.png"
           :image-width 45

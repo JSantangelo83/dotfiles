@@ -30,6 +30,7 @@ alias grep='grep --color=auto'
 alias syst='sudo systemctl start'
 alias sysr='sudo systemctl restart'
 alias syso='sudo systemctl stop'
+alias syse='sudo systemctl enable'
 alias sysa='sudo systemctl status'
 # pacman
 alias get='sudo pacman -S'
@@ -71,7 +72,7 @@ alias tgp='toggleprompt'
 alias clp='xclip -sel c -r'
 alias ddp='dotdotpwn'
 alias cd='dirs -c; cd'
-
+alias bat='cat /sys/class/power_supply/BAT1/capacity'
 
 ## Error logs
 alias qtilee='cat ~/.local/share/qtile/qtile.log | tail -n 40 | bat -l log'
