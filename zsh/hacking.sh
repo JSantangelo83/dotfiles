@@ -66,7 +66,7 @@ function htbc() {
 
 	#Creating machine directories
 	mkdir "/home/js/hacking/hackthebox/machines/$machine_lowername"
-	cd "$_" || exit
+	\cd "$_" || exit
 	mkdir recon content exploit recon/wfuzz
 
 	#Creating obsidian writeup and symlink
@@ -245,4 +245,5 @@ export springboot='/home/js/hacking/wordlists/SecLists/Discovery/Web-Content/spr
 export names='/home/js/hacking/wordlists/SecLists/Usernames/Names/names.txt'
 export iis='/home/js/hacking/wordlists/iisfinal.txt'
 export common='/home/js/hacking/wordlists/SecLists/Discovery/Web-Content/common.txt'
+export big='/home/js/hacking/wordlists/wfuzz/general/big.txt'
 # /Dicts

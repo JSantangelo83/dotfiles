@@ -71,5 +71,6 @@ function upvar(){
 }
 
 ### Actual Variables: 
-export tip='10.129.55.163'
-export starting_path='/home/js/proyectos/kipin-dev'
+export tip='10.129.210.194'
+export nb='192.168.1.63'
+export starting_path='/home/js/proyectos/fullstack/MEVN-challenge'
