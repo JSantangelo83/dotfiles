@@ -2,13 +2,13 @@
 
 ## Config files/folders
 # Edit files
-alias mhost="sudo -E -s $EDITOR /etc/hosts"
-alias phpc="sudo -E -s $EDITOR /etc/php72/php.ini"
-alias httpdc="sudo -E -s $EDITOR /etc/httpd/conf/httpd.conf"
-alias bashrc="$EDITOR ~/.bashrc"
-alias zshrc="$EDITOR ~/.zshrc"
-alias qtilec="$EDITOR ~/.config/qtile/config.py"
-alias sshdc="sudo -E -s $EDITOR /etc/ssh/sshd_config"
+alias mhost="mdfy /etc/hosts 1"
+alias phpc="mdfy /etc/php72/php.ini 1"
+alias httpdc="mdfy /etc/httpd/conf/httpd.conf 1"
+alias bashrc="mdfy ~/.bashrc"
+alias zshrc="mdfy ~/.zshrc"
+alias qtilec="mdfy ~/.config/qtile/config.py"
+alias sshdc="mdfy /etc/ssh/sshd_config 1"
 # Enter to the config folder
 alias dotfiles='cd /home/js/.config/dotfiles'
 alias bridge='cd /home/js/bridge'
@@ -56,7 +56,7 @@ alias mkmigration="php bin/console make:migration | grep \"new migration\" | awk
 # python
 alias py='python3'
 # get ips
-alias gprivip='ip a | grep 192.168 | awk "{print \$2}"'
+alias gprivip="ip a | grep -A2 -E '(enp5s0|wlan0): <' |tail -n1 | awk '{print \$2}' | sed 's/\/.*//g'"
 alias gtunip="ip a | grep -A2 'tun0: <' |tail -n1 | awk '{print \$2}' | sed 's/\/.*//g'"
 alias ghamip="ip a | grep -A2 'ham0: <' |tail -n1 | awk '{print \$2}' | sed 's/\/.*//g'"
 alias gpubip="dig @resolver4.opendns.com myip.opendns.com +short"
@@ -72,7 +72,7 @@ alias tgp='toggleprompt'
 alias clp='xclip -sel c -r'
 alias ddp='dotdotpwn'
 alias cd='dirs -c; cd'
-alias bat='cat /sys/class/power_supply/BAT1/capacity'
+alias nvmi='source /usr/share/nvm/init-nvm.sh'
 
 ## Error logs
 alias qtilee='cat ~/.local/share/qtile/qtile.log | tail -n 40 | bat -l log'

@@ -6,3 +6,6 @@ qtile/persisted.json
 eww/data
 eww/yuck/variables.yuck
 
+# Alacritty colors
+alacritty/alacritty.yml
+

@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# This script creates a desktop file for an application
+if [ -z "$1" ]; then
+  echo '[x] Error: You must specify an application name'; 
+  exit 1;
+fi
+
+path=$(pwd)
+name="$1";
+file_name="autocreated-desktop-$RANDOM.desktop"
+
+# If the second argument is a directory, use it as the path
+if [[ -n "$2" && -d "$2" ]]; then
+  path="$2";
+fi 
+
+# If the third argument exists, use it as the file name
+if [ -n "$3" ]; then
+  file_name="$3"
+fi
+
+# Get the absolute path
+absolute_path=$(readlink -f "$path")
+
+# Create the desktop file template
+desktop_template="
+[Desktop Entry]
+Name=$1
+Comment=Code Editing. Refined.
+GenericName=Text Editor
+Exec=/opt/visual-studio-code/code --no-sandbox --unity-launch %F $absolute_path
+Icon=visual-studio-code
+Type=Application
+StartupNotify=false
+StartupWMClass=Code
+Categories=Utility;TextEditor;Development;IDE;
+MimeType=text/plain;inode/directory;application/x-visual-studio-code-workspace;
+Actions=new-empty-window;
+Keywords=vscode;
+
+[Desktop Action new-empty-window]
+Name=New Empty Window
+Exec=/opt/visual-studio-code/code --no-sandbox --new-window %F
+Icon=visual-studio-code
+"
+
+# Check that the file wasn't created previously (name like autocreated-desktop-*.desktop and EXEC contains the path)
+if grep -r "$absolute_path" /home/js/.local/share/applications/ | grep -q "autocreated-desktop-.*.desktop"; then
+  echo '[x] Error: The desktop file already exists'
+  exit 1
+fi
+
+# Create the desktop file
+dot_desktop_path="/home/js/.local/share/applications/$file_name"
+echo "$desktop_template" > "$dot_desktop_path"
+
+# Check if the file was created successfully
+if ! [ -f "$dot_desktop_path" ]; then
+  echo '[x] There was an error creating the desktop file'
+  exit 1
+fi
+
+echo 'Desktop file created successfully!'
+
+
+
+
+
+
+
+  

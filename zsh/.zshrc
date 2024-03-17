@@ -5,7 +5,8 @@
 # Source my custom scripts
 export EDITOR=nvim
 
-source /usr/share/zsh/plugins/fzf-zsh-plugin/fzf-zsh-plugin.plugin.zsh
+# source /usr/share/zsh/plugins/fzf-zsh-plugin/fzf-zsh-plugin.plugin.zsh;
+source ~/.fzf.zsh
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh;
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh;
 source ~/.config/zsh/perm_variables.sh;
