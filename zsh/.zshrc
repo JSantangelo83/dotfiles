@@ -88,8 +88,8 @@ cd $starting_path
 #      cd $starting_path
 #   fi
 # fi
-eval $(ssh-agent -s) &>/dev/null                                                                         [ 4ms ]
-ssh-add ~/.ssh/id_rsa &>/dev/null                                                                        [ 4ms ]
+eval $(ssh-agent -s) &>/dev/null                                                                        
+ssh-add ~/.ssh/id_rsa &>/dev/null                                                                        
 ssh-add ~/.ssh/ip_provider   &>/dev/null
 # Programs to execute at the start of zsh
 banner

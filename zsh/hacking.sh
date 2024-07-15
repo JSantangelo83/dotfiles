@@ -218,8 +218,40 @@ superfuzz() {
 	# Fuzz directories
 	if [[ $dirs == true ]]; then
 		echo "[+] Fuzzing directories..."
-		ffuf -w $dirlist -u $1/FUZZ -o $output -of html -t 200 -c -v
+		ffuf -w $dirlist -u "$tip/FUZZ" -o "$output" -of html -t 200 -c -v
 	fi
+}
+
+addhost() {
+    # Check if $tip and $1 are set
+    if [ -z "$tip" ]; then
+        echo "Error: \$tip environment variable is not set."
+        return 1
+    fi
+
+    if [ -z "$1" ]; then
+        echo "Error: No hostname provided."
+        return 1
+    fi
+
+    # Assign hostname to a variable
+    hostname=$1
+
+    if grep -q "$hostname" /etc/hosts; then
+        echo "The hostname $hostname already exists in /etc/hosts."
+        return 0
+    fi
+
+    # Check if the IP address already exists in /etc/hosts
+    if grep -q "$tip" /etc/hosts; then
+        # Append the hostname to the existing line with the same IP address
+        sudo sed -i "/$tip/s/$/ $hostname/" /etc/hosts
+        echo "Added $hostname to the existing $tip entry in /etc/hosts."
+    else
+        # Add the new entry to /etc/hosts
+        echo "$tip    $hostname" | sudo tee -a /etc/hosts > /dev/null
+        echo "Added $hostname to /etc/hosts."
+    fi
 }
 
 # Decode JWT header
@@ -232,8 +264,8 @@ alias sd="show_dicts"
 
 ### Variables
 # Dicts
-export vhlist='/home/js/hacking/wordlists/SecLists/Discovery/DNS/subdomains-top1million-110000.txt'
-export dirlist='/home/js/hacking/wordlists/dirbuster/directory-list-2.3-medium.txt'
+export vhlist='/usr/share/SecLists/Discovery/DNS/subdomains-top1million-110000.txt'
+export dirlist='/usr/share/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt'
 export rockyou='/home/js/hacking/wordlists/rockyou-utf-8.txt'
 export userlist='/home/js/hacking/wordlists/SecLists/Usernames/xato-net-10-million-usernames-dup.txt'
 export lfi_payloads='/home/js/hacking/wordlists/lfi_payloads.txt'
@@ -244,6 +276,6 @@ export nginx='/home/js/hacking/wordlists/nginx.txt'
 export springboot='/home/js/hacking/wordlists/SecLists/Discovery/Web-Content/spring-boot.txt'
 export names='/home/js/hacking/wordlists/SecLists/Usernames/Names/names.txt'
 export iis='/home/js/hacking/wordlists/iisfinal.txt'
-export common='/home/js/hacking/wordlists/SecLists/Discovery/Web-Content/common.txt'
+export common='/usr/share/SecLists/Discovery/Web-Content/common.txt'
 export big='/home/js/hacking/wordlists/wfuzz/general/big.txt'
 # /Dicts

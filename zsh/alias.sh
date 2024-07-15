@@ -47,12 +47,12 @@ alias sget='sudo snap install'
 alias aget='sudo apt install'
 alias arem='sudo apt remove'
 # svn
-alias svnni="svn st | sed -e \"/^--- Changelist 'ignore'/,/^--- Changelist/d\" | grep '^[ADMR!]' | sed 's/^[ADMR!]//g'"
+alias svnni="svn st | sed -e \"/^--- Changelist 'ignore'/,/^--- Changelist/d\" | grep '^[ADMR!]' | sed 's/^[ADMR!]//g' | xargs -I{} echo '\"{}\"' "
 alias svndiff="svnni | xargs -I'file' svn diff \"file\" | bat -l patch"
 # php
 alias php='php72'
-alias migrate='php bin/console doctrine:migrations:migrate'
-alias mkmigration="php bin/console make:migration | grep \"new migration\" | awk -F'\"' '{print \$2}'"
+alias migrate='sudo docker compose exec backend-service php bin/console doctrine:migrations:migrate'
+alias mkmigration="sudo docker compose exec backend-service php bin/console make:migration | grep \"new migration\" | awk -F'\"' '{print \$2}'"
 # python
 alias py='python3'
 # get ips
