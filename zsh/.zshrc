@@ -82,14 +82,14 @@ zle -N toggleprompt
 # Zsh Plugins and Functions
 zle -N kill-path-word
 # Pushd's to the starting_path if there is any
-
-if [ $(ps -o ppid= | wc -l) -eq 4 ]; then
-  if ! [ -z $starting_path ]; then
-     cd $starting_path
-  fi
-fi
-eval $(ssh-agent -s)                                                                         [ 4ms ]
-ssh-add ~/.ssh/id_rsa                                                                        [ 4ms ]
-ssh-add ~/.ssh/ip_provider   
+cd $starting_path 
+# if [ $(ps -o ppid= | wc -l) -eq 4 ]; then
+#   if ! [ -z $starting_path ]; then
+#      cd $starting_path
+#   fi
+# fi
+eval $(ssh-agent -s) &>/dev/null                                                                        
+ssh-add ~/.ssh/id_rsa &>/dev/null                                                                        
+ssh-add ~/.ssh/ip_provider   &>/dev/null
 # Programs to execute at the start of zsh
 banner
