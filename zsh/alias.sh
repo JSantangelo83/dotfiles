@@ -11,8 +11,8 @@ alias qtilec="mdfy ~/.config/qtile/config.py"
 alias sshdc="mdfy /etc/ssh/sshd_config 1"
 
 # Enter to the config folder
-alias dotfiles='cd /home/js/.config/dotfiles'
-alias bridge='cd /home/js/bridge'
+alias dotfiles="cd $HOME/.config/dotfiles"
+alias bridge="cd $HOME/bridge"
 alias pkill='pkill -ife'
 
 ## Beautify commands
@@ -76,9 +76,9 @@ alias dc="sudo docker compose"
 ## Others
 alias htbi="sudo openvpn ~/hacking/hackthebox/htb-vpn.ovpn"
 alias lc='light-control'
-alias ocr="/home/js/.customscripts/ocr-selection"
+alias ocr="$HOME/.customscripts/ocr-selection"
 alias sshn='ssh js@192.168.1.37'
-alias rs='source /home/js/.zshrc'
+alias rs="source $HOME/.zshrc"
 alias kipin='~/.customscripts/kipin/init'
 alias tgp='toggleprompt'
 alias clp='xclip -sel c -r'

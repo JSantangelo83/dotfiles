@@ -1,6 +1,6 @@
 #!/bin/bash
 function usage {
-       echo "Usage: dfinstall -s dotfiles_path [-c config_file][-v]
+       echo "Usage: dfi -s dotfiles_path [-c config_file][-v]
          -s                          path of the dotfiles DIRECTORY.
          -c                          config file (mapping) 
                                      format:
@@ -8,11 +8,11 @@ function usage {
                                           src:destination
                                           src:destination
                                           EOF
-                                   [default: dotfiles_path/.linkmap]
+                                   [default: dotfiles_path/.dfirc]
          -h                          Display this help message.
          -v                          Increase verbosity level
 
-dfinstall installs all the dotfiles mapped at .linkmap in the source folder"
+dfi installs all the dotfiles mapped at .dfirc in the source folder"
        exit 0
 }
 
@@ -46,8 +46,8 @@ export -f log;
 
 #Validating config file
 if [[ -z $config_file ]]; then
-       log "[!] No config file specified, using $dotfiles_path.linkmap..."
-       config_file=$dotfiles_path.linkmap
+       log "[!] No config file specified, using $dotfiles_path.dfirc..."
+       config_file=$dotfiles_path.dfirc
 fi
 if ! [[ -f $config_file ]]; then >&2 echo "[x] No valid config file found ($config_file), exiting...";exit 1; fi
 
@@ -107,7 +107,7 @@ do
        elif [[ -f $target ]]; then
           linkfile $source $target;
        #When linking files, copy it if not exists in dotfiles folder 
-       #(This allows install the dotfile only by putting it in the .linkmap file)
+       #(This allows install the dotfile only by putting it in the .dfirc file)
        elif [ -f $source ] && [ ! -f $target ]; then
        		cp $source $target;
        		linkfile $source $target;
