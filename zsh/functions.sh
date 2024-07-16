@@ -65,9 +65,9 @@ function dumprow () {
 	if [[ $# -eq 0 ]] then
 		echo 'No params supplied'
 	elif [[ $# -eq 1 ]] then
-		mysqldump --compact -u js dattacargo33 -t "$1"
+		mariadb-dump -u root -h 127.0.1 -P 3306 --compact -u js dattacargo33 -t "$1"
 	elif [[ $# -eq 2 ]] then
-		mysqldump --compact -u js dattacargo33 -t "$1" --where "$2"
+		mariadb-dump -u root -h 127.0.1 -P 3306 --compact -u js dattacargo33 -t "$1" --where "$2"
 	else
 		echo 'Only 1 or 2 params accepted'
 	fi

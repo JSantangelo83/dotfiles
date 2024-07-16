@@ -278,4 +278,5 @@ export names='/home/js/hacking/wordlists/SecLists/Usernames/Names/names.txt'
 export iis='/home/js/hacking/wordlists/iisfinal.txt'
 export common='/usr/share/SecLists/Discovery/Web-Content/common.txt'
 export big='/home/js/hacking/wordlists/wfuzz/general/big.txt'
+export laravel='/home/js/hacking/wordlists/SecLists/Discovery/Web-Content/WebTechnologyPaths-Trickest-Wordlists/laravel.txt'
 # /Dicts
