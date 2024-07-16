@@ -28,7 +28,7 @@ function validate_name_value(){
 }
 
 function validate_exists(){
-  if cat ~/.config/zsh/perm_variables.sh | grep -q "export $1="; then
+  if cat ~/.config/zsh/variables.sh | grep -q "export $1="; then
     return 0
   fi
   return 1
@@ -42,8 +42,8 @@ function createvar(){
     echo "The variable name already exists"
   fi
 
-  echo "export $name=''" >> ~/.config/zsh/perm_variables.sh
-  source ~/.config/zsh/perm_variables.sh;  
+  echo "export $name=''" >> ~/.config/zsh/variables.sh
+  source ~/.config/zsh/variables.sh;  
 }
 
 # Deletes perm variable
@@ -54,8 +54,8 @@ function delvar(){
     echo "The variable doesn't exists"
   fi
 
-  sed -i --follow-symlinks "/^export $name=/d" ~/.config/zsh/perm_variables.sh
-  source ~/.config/zsh/perm_variables.sh;  
+  sed -i --follow-symlinks "/^export $name=/d" ~/.config/zsh/variables.sh
+  source ~/.config/zsh/variables.sh;  
 }
 
 # Updates variable value
@@ -66,11 +66,6 @@ function upvar(){
     echo "The variable doesn't exists"
   fi
   
-	sed -i --follow-symlinks "s@^export $name='.*@export $name='$value'@g" ~/.config/zsh/perm_variables.sh;
-  source ~/.config/zsh/perm_variables.sh;
+	sed -i --follow-symlinks "s+^export $name='.*+export $name='$value'+g" ~/.config/zsh/variables.sh;
+  source ~/.config/zsh/variables.sh;
 }
-
-### Actual Variables: 
-export tip='10.129.55.163'
-export starting_path='/home/js/.config/dotfiles/waybar'
-export pc='192.168.1.59'

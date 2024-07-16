@@ -9,3 +9,6 @@ eww/yuck/variables.yuck
 # Alacritty colors
 alacritty/alacritty.yml
 
+# Zsh variables
+zsh/variables.sh
+

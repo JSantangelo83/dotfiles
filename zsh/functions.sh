@@ -65,11 +65,13 @@ function dumprow () {
 	if [[ $# -eq 0 ]] then
 		echo 'No params supplied'
 	elif [[ $# -eq 1 ]] then
-		mariadb-dump -u root -h 127.0.1 -P 3306 --compact -u js dattacargo33 -t "$1"
+		mariadb-dump -u root -h 127.0.1 -P 3306 --skip-ssl --compact dattacargo33 -t "$1"
 	elif [[ $# -eq 2 ]] then
-		mariadb-dump -u root -h 127.0.1 -P 3306 --compact -u js dattacargo33 -t "$1" --where "$2"
+		mariadb-dump -u root -h 127.0.1 -P 3306 --skip-ssl --compact dattacargo33 -t "$1" --where "$2"
+	elif [[ $# -eq 3 ]] then
+		mariadb-dump -u root -h 127.0.1 -P 3306 --skip-ssl --compact "$3" -t "$1" --where "$2"
 	else
-		echo 'Only 1 or 2 params accepted'
+		echo 'Only 1 (table), 2 (where) or 3 (database) params accepted'
 	fi
 }
 

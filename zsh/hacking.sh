@@ -65,13 +65,13 @@ function htbc() {
 	machine_ip="$2"
 
 	#Creating machine directories
-	mkdir "/home/js/hacking/hackthebox/machines/$machine_lowername"
+	mkdir "$HOME/hacking/hackthebox/machines/$machine_lowername"
 	\cd "$_" || exit
 	mkdir recon content exploit recon/wfuzz
 
 	#Creating obsidian writeup and symlink
 	touch writeup.md
-	ln -s "$(pwd)/writeup.md" "/home/js/documents/obsidian/Hacking/Machines/HackTheBox - $machine_name.md"
+	ln -s "$(pwd)/writeup.md" "$HOME/documents/obsidian/Hacking/Machines/HackTheBox - $machine_name.md"
 
 	#Cd into recon and updating target ip
 	cd recon || exit
@@ -266,17 +266,17 @@ alias sd="show_dicts"
 # Dicts
 export vhlist='/usr/share/SecLists/Discovery/DNS/subdomains-top1million-110000.txt'
 export dirlist='/usr/share/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt'
-export rockyou='/home/js/hacking/wordlists/rockyou-utf-8.txt'
-export userlist='/home/js/hacking/wordlists/SecLists/Usernames/xato-net-10-million-usernames-dup.txt'
-export lfi_payloads='/home/js/hacking/wordlists/lfi_payloads.txt'
-export lfi_files='/home/js/hacking/wordlists/lfi-files.txt'
-export dotdotpwn='/home/js/hacking/wordlists/dotdotpwn.txt'
-export secrets='/home/js/hacking/wordlists/jwt.secrets.list'
-export nginx='/home/js/hacking/wordlists/nginx.txt'
-export springboot='/home/js/hacking/wordlists/SecLists/Discovery/Web-Content/spring-boot.txt'
-export names='/home/js/hacking/wordlists/SecLists/Usernames/Names/names.txt'
-export iis='/home/js/hacking/wordlists/iisfinal.txt'
-export common='/usr/share/SecLists/Discovery/Web-Content/common.txt'
-export big='/home/js/hacking/wordlists/wfuzz/general/big.txt'
-export laravel='/home/js/hacking/wordlists/SecLists/Discovery/Web-Content/WebTechnologyPaths-Trickest-Wordlists/laravel.txt'
+export rockyou="$HOME/hacking/wordlists/rockyou-utf-8.txt"
+export userlist="$HOME/hacking/wordlists/SecLists/Usernames/xato-net-10-million-usernames-dup.txt"
+export lfi_payloads="$HOME/hacking/wordlists/lfi_payloads.txt"
+export lfi_files="$HOME/hacking/wordlists/lfi-files.txt"
+export dotdotpwn="$HOME/hacking/wordlists/dotdotpwn.txt"
+export secrets="$HOME/hacking/wordlists/jwt.secrets.list"
+export nginx="$HOME/hacking/wordlists/nginx.txt"
+export springboot="$HOME/hacking/wordlists/SecLists/Discovery/Web-Content/spring-boot.txt"
+export names="$HOME/hacking/wordlists/SecLists/Usernames/Names/names.txt"
+export iis="$HOME/hacking/wordlists/iisfinal.txt"
+export common="/usr/share/SecLists/Discovery/Web-Content/common.txt"
+export big="$HOME/hacking/wordlists/wfuzz/general/big.txt"
+export laravel="$HOME/hacking/wordlists/SecLists/Discovery/Web-Content/WebTechnologyPaths-Trickest-Wordlists/laravel.txt"
 # /Dicts

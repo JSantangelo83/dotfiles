@@ -21,7 +21,7 @@ if [[ \
   ]]; then
   
   while ! [[ -f /tmp/stopalarm ]] ; do
-    pw-play --volume 15 /home/js/documents/audio/siren.mp3
+    pw-play --volume 15 $HOME/documents/audio/siren.mp3
   done
 fi
 done
