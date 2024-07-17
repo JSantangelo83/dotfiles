@@ -1,4 +1,10 @@
+#!/bin/zsh
+
 # Validates if the variable name was specified
+if ! [ -f "${0:a:h}/variables.sh" ]; then
+  touch "${0:a:h}/variables.sh"
+fi
+
 function validate_name(){
   # Check if the function was called with at least one parameter
   if [ -z "$1" ]; then
