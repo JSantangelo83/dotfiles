@@ -18,9 +18,11 @@ $HOME/.config/kitty:kitty
 $HOME/.config/picom:picom
 $HOME/.config/qtile:qtile
 /etc/ssh:ssh
-/etc/lightdm:lightdm
 $HOME/.config/xremap:xremap
 $HOME/.config/lite-xl:lite-xl
 $HOME/.config/nvim:nvim
 $HOME/.config/waybar:waybar
 /etc/evremap.toml:evremap.toml
+/etc/vconsole.conf:vconsole.conf
+$HOME/.config/hypr:hypr
+$HOME/.config/ags:ags

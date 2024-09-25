@@ -6,7 +6,7 @@ if [ -z "$1" ]; then
   exit 1;
 fi
 
-path=$(pwd)
+path=$(pwd -P)
 name="$1";
 file_name="autocreated-desktop-$RANDOM.desktop"
 
@@ -46,8 +46,11 @@ Icon=visual-studio-code
 "
 
 # Check that the file wasn't created previously (name like autocreated-desktop-*.desktop and EXEC contains the path)
-if grep -r "$absolute_path" /home/js/.local/share/applications/ | grep -q "autocreated-desktop-.*.desktop"; then
-  echo '[x] Error: The desktop file already exists'
+desktopfile="$(grep -rl "$absolute_path$" /home/js/.local/share/applications/ | grep "autocreated-desktop-.*.desktop")"
+
+if [ "$desktopfile" ]; then
+  >&2 echo -e "[x] Error: The desktop file already exists:"
+  echo "$desktopfile"
   exit 1
 fi
 
@@ -57,7 +60,7 @@ echo "$desktop_template" > "$dot_desktop_path"
 
 # Check if the file was created successfully
 if ! [ -f "$dot_desktop_path" ]; then
-  echo '[x] There was an error creating the desktop file'
+  >&2 echo '[x] There was an error creating the desktop file'
   exit 1
 fi
 

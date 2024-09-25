@@ -2,13 +2,13 @@
 
 ## Config files/folders
 # Edit files
-alias mhost="mdfy /etc/hosts 1"
-alias phpc="mdfy /etc/php72/php.ini 1"
-alias httpdc="mdfy /etc/httpd/conf/httpd.conf 1"
+alias mhost="mdfy /etc/hosts"
+alias phpc="mdfy /etc/php72/php.ini"
+alias httpdc="mdfy /etc/httpd/conf/httpd.conf"
 alias bashrc="mdfy ~/.bashrc"
 alias zshrc="mdfy ~/.zshrc"
 alias qtilec="mdfy ~/.config/qtile/config.py"
-alias sshdc="mdfy /etc/ssh/sshd_config 1"
+alias sshdc="mdfy /etc/ssh/sshd_config"
 
 # Enter to the config folder
 alias dotfiles="cd $HOME/.config/dotfiles"

@@ -31,16 +31,20 @@ bindkey  "^[[F"   end-of-line
 bindkey  "^[[3~"  delete-char
 bindkey "^d" kill-path-word
 bindkey "^p" toggleprompt
+bindkey "^x" update-starting-path
 bindkey "^[[1;5D" dir_back
 bindkey "^[[1;5C" dir_fwd
 #
 zle -N dir_back
 zle -N dir_fwd
 zle -N toggleprompt
+zle -N update-starting-path
 # Zsh Plugins and Functions
 zle -N kill-path-word
 # Pushd's to the starting_path if there is any
 cd $starting_path
+# sudo systemctl disable sshd
+# sudo systemctl stop sshd
 
 eval $(ssh-agent -s) &>/dev/null                                                                        
 ssh-add ~/.ssh/id_rsa &>/dev/null                                                                        

@@ -9,7 +9,7 @@ function mdfy(){
   dir=$(dirname $1)
   file=$(basename $1)
   pushd $dir; 
-  [[ -n $2 ]] && sudo -sE $EDITOR $file || $EDITOR $file; 
+  [[ -w "$file" ]] && $EDITOR $file || sudo -sE $EDITOR $file;
   popd; 
 }
 
@@ -20,6 +20,44 @@ function cpusage() top -o %CPU -b -n1 | tail +8 | head -n ${1:-6} | awk '{print 
 show_dicts() {
 	sed -n '/# Dicts/,/# \/Dicts/p' $dotfiles/zsh/hacking.sh | grep -vE "# Dicts|# /Dicts" | sed 's/export //g' | tr '=' ' ' | awk '{print "\033[1;32m" $1 "\033[0m" " - " "\033[1;34m" $2 "\033[0m"}'
 }
+
+function search_db(){
+  needle="$1"
+  if [ -z "$needle" ]; then
+    echo -e "\nUsage: $0 <db to find>\nEx: $0 transmodal"
+    # exit 1
+  fi
+  found=0
+  while read uri; do
+    protocol="$(echo $uri | grep :// | sed -e's,^\(.*://\).*,\1,g')"
+    url="$(echo ${uri/$protocol/})"
+    user="$(echo $url | grep @ | cut -d@ -f1 | cut -d: -f1)"
+    password="$(echo $url | grep @ | cut -d@ -f1 | cut -d: -f2)"
+    hostport="$(echo $url | grep @ | cut -d@ -f2 | cut -d/ -f1)"
+    host="$(echo $hostport | cut -d: -f1)"
+    port="$(echo $hostport | cut -d: -f2)"    
+    pass="$([[ -z "$password" ]] && echo -n 'root' || echo -n "$password")"
+    echo "[!] Looking in $host..."
+    if mariadb -u $user -p$pass -h $host -P $port -e 'show databases;' --skip-ssl 2>&1 | tail -n +3 | grep -v 'WARNING' | grep -wq "$needle"; then
+      echo "Found: $host ($user:$pass)"
+      found=1     
+      break;
+    fi
+  done <<< "$(cat docker-compose.yml | grep -oE 'mysql://(.)+\s' | sort -u)"
+  
+  if [ $found -eq 1 ]; then
+    echo -n "Do you want to connect to the database? [Y/n]: "
+    read response
+    response=${response:-Y}
+
+    if [[ $response =~ ^[Yy]$ ]]; then
+      echo "Connecting to the database..."
+      mycli -u "$user" -p$pass -h "$host" -P "$port" "$needle"
+    fi
+  fi
+
+}
+
 
 function getchar() {
   if [ -z "$1" ]; then
@@ -73,6 +111,10 @@ function dumprow () {
 	else
 		echo 'Only 1 (table), 2 (where) or 3 (database) params accepted'
 	fi
+}
+
+function update-starting-path() {
+  upvar starting_path "$(pwd)"
 }
 
 function column() {
