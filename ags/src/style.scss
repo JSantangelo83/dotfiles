@@ -1,0 +1,104 @@
+$bg: #353535;
+$bg-dark: #202020;
+$foreground: #A8B0CD;
+$foreground-dark: #4C536A;
+$foreground-2: #FFFFFF;
+$selected: rgba(168, 166, 166, 0.1);
+$disabled: #6A6A6A;
+$accents: (
+  0: #673434,
+  1: #304079,
+  2: #6E6E2C,
+  3: #50885B,
+);
+$danger: #DC3545;
+$warning: #FFFFFF;
+$success: #61D97C;
+$border-radius: 20px;
+$border-radius-2: 25px;
+
+$padding: 15px;
+
+.bar-element {
+  &.container {
+    background-color: transparent;
+  }
+  
+  .bar {
+    background-color: $bg;
+    padding-bottom:$padding;
+    border-radius: $border-radius;
+  }
+}
+
+.head-element {
+  &.container {
+    background-color: $bg-dark;
+    border-radius: $border-radius-2;
+  }
+}
+
+.clock-element {
+
+  &.container {
+    background-color: $bg-dark;
+    font-family: 'JetBrains Mono', monospace;
+    padding: .7rem 0.1rem;
+
+  }
+
+  .hourmin {
+    color: $foreground;
+    font-size: 1.5rem;
+  }
+
+  .label {
+    color: $foreground-dark;
+    font-size: .6rem;
+    margin-left: 0.5em;
+  }
+}
+
+.workspace-element {
+  $ws-spacing: 5px;
+  $ws-underscore-spacing: 9px;
+
+  &.container {
+    background-color: $bg-dark;
+    padding-top: $padding;
+    border-radius: $border-radius $border-radius 0 0;
+    border-bottom: 2px dashed $foreground-dark;
+  }
+
+  .item {
+    margin-bottom: $ws-spacing;
+
+    .icon {
+      color: $foreground;
+      font-size: 1.5rem;
+      padding-bottom: $ws-underscore-spacing;
+    }
+
+    .label {
+      color: white;
+      font-size: 8px;
+      font-weight: bold;
+    }
+
+    @for $i from 0 through 3 {
+      &.monitor-#{$i} {
+        $accent: map-get($accents, $i);
+
+        .icon {
+          border-bottom: 2px solid $accent;
+          padding-bottom: $ws-underscore-spacing - 2px;
+
+        }
+      }
+    }
+  }
+
+  .hover {
+    background-color: $selected;
+  }
+}
