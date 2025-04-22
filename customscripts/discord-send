@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo $1
-webhook_url='https://discord.com/api/webhooks/1215721030564184137/jfibQyI18dybvXx_8Q7m_cP_Hfl2LAlFZE6ENPIi8PsqZWCm58JC45i2blVCJ9_z3f5I'
+webhook_url='https://discord.com/api/webhooks/1331567274712109096/t1pk1c90_ezV30BbY4Xm-DZa_uoGDypP__vSKD3xtPlhvKtC1_ISJssOELUPVZinCcBz'
 
 pl="{\"attachments\":[],\"content\":\"$1\",\"embeds\":null}"
 
