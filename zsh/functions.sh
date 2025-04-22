@@ -21,10 +21,21 @@ show_dicts() {
 	sed -n '/# Dicts/,/# \/Dicts/p' $dotfiles/zsh/hacking.sh | grep -vE "# Dicts|# /Dicts" | sed 's/export //g' | tr '=' ' ' | awk '{print "\033[1;32m" $1 "\033[0m" " - " "\033[1;34m" $2 "\033[0m"}'
 }
 
+
+function svndiff {
+  if [ -z $1 ]; then
+    svnni | xargs -I'file' svn diff --force \"file\" | bat -l patch
+  else
+    rev="$1"
+    svn diff -r"$rev:$((rev-1))" | bat -l patch
+  fi
+}
+
 function search_db(){
   needle="$1"
+  
   if [ -z "$needle" ]; then
-    echo -e "\nUsage: $0 <db to find>\nEx: $0 transmodal"
+    echo -e "\nUsage: $0 <db to find> [verbosity]\nEx: $0 transmodal 1"
     # exit 1
   fi
   found=0
@@ -38,12 +49,19 @@ function search_db(){
     port="$(echo $hostport | cut -d: -f2)"    
     pass="$([[ -z "$password" ]] && echo -n 'root' || echo -n "$password")"
     echo "[!] Looking in $host..."
-    if mariadb -u $user -p$pass -h $host -P $port -e 'show databases;' --skip-ssl 2>&1 | tail -n +3 | grep -v 'WARNING' | grep -wq "$needle"; then
-      echo "Found: $host ($user:$pass)"
+   
+    if [ "$#" -gt 1 ]; then
+      mariadb -u $user -p$pass -h $host -P $port -e 'show databases;' --skip-ssl | tail -n +3
+    fi
+    
+    db_found="$(mariadb -u $user -p$pass -h $host -P $port -e 'show databases;' --skip-ssl 2>&1 | tail -n +3 | grep -i "$needle" | head -n1)"
+    
+    if [ -n "$db_found" ]; then
+      print -P "Found!: '%F{red}$db_found%F{white}' on: $host ($user:$pass)"
       found=1     
       break;
     fi
-  done <<< "$(cat docker-compose.yml | grep -oE 'mysql://(.)+\s' | sort -u)"
+  done <<< "$(cat docker-compose.yml | grep -oE 'mysql://(.)+' | sort -u | grep -v 'root')"
   
   if [ $found -eq 1 ]; then
     echo -n "Do you want to connect to the database? [Y/n]: "
@@ -52,8 +70,10 @@ function search_db(){
 
     if [[ $response =~ ^[Yy]$ ]]; then
       echo "Connecting to the database..."
-      mycli -u "$user" -p$pass -h "$host" -P "$port" "$needle"
+      mycli -u "$user" -p$pass -h "$host" -P "$port" "$db_found"
     fi
+  else
+    echo -e  "\n[x] No database found for: '$needle'"
   fi
 
 }

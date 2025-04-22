@@ -1,4 +1,4 @@
-# If not running interactively, don't do anything
+#If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 # Source my custom scripts
 source ~/.config/zsh/env-variables.sh;
@@ -45,6 +45,9 @@ zle -N kill-path-word
 cd $starting_path
 # sudo systemctl disable sshd
 # sudo systemctl stop sshd
+
+# TODO: matar esto de aca, banana solutionno va
+export LC_ALL='C.UTF-8'
 
 eval $(ssh-agent -s) &>/dev/null                                                                        
 ssh-add ~/.ssh/id_rsa &>/dev/null                                                                        

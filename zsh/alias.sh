@@ -25,8 +25,9 @@ alias tree='exa --git --icons --tree'
 # better commands
 alias cat='bat'
 alias grep='grep --color=auto'
-
-
+alias cp='advcp -g'
+alias mv='advmv -g'
+alias camera='mpv av://v4l2:/dev/video0'
 ## Simplify commands
 # systemctl
 alias syst='sudo systemctl start'
@@ -55,8 +56,7 @@ alias arem='sudo apt remove'
 
 # svn
 alias svnni="svn st | sed -e \"/^--- Changelist 'ignore'/,/^--- Changelist/d\" | grep '^[ADMR!]' | sed 's/^[ADMR!]//g' | xargs -I{} echo '\"{}\"' "
-alias svndiff="svnni | xargs -I'file' svn diff \"file\" | bat -l patch"
-
+alias svnnew="svn st | grep '^?' | column 2 | grep -vE 'logo|DOCKER|image'"
 # php
 alias php='php72'
 alias migrate='dc exec backend-service php bin/console doctrine:migrations:migrate'
@@ -86,6 +86,7 @@ alias clp='xclip -sel c -r'
 alias ddp='dotdotpwn'
 alias cd='dirs -c; cd'
 alias nvmi='source /usr/share/nvm/init-nvm.sh'
+alias buildprod="npx --node-options='--max-old-space-size=5048' ng build --prod"
 
 ## Error logs
 alias qtilee='cat ~/.local/share/qtile/qtile.log | tail -n 40 | bat -l log'
