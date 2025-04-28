@@ -24,10 +24,10 @@ show_dicts() {
 
 function svndiff {
   if [ -z $1 ]; then
-    svnni | xargs -I'file' svn diff --force \"file\" | bat -l patch
+    svnni | xargs svn diff --force | bat -l patch
   else
     rev="$1"
-    svn diff -r"$rev:$((rev-1))" | bat -l patch
+    svn diff -r"$((rev-1)):$rev" | bat -l patch
   fi
 }
 
