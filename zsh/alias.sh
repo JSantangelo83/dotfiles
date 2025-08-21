@@ -22,6 +22,9 @@ alias ll='exa --git --icons --long --octal-permissions'
 alias lla='exa --git --icons --long --all --all --octal-permissions'
 alias tree='exa --git --icons --tree'
 
+# ffuf
+alias ffuf='ffuf -c -ic -t 300'
+
 # better commands
 alias cat='bat'
 alias grep='grep --color=auto'
@@ -54,8 +57,8 @@ alias arem='sudo apt remove'
 
 # svn
 alias svnni="svn st | sed -e \"/^--- Changelist 'ignore'/,/^--- Changelist/d\" | grep '^[ADMR!]' | sed 's/^[ADMR!]//g' | xargs -I{} echo '\"{}\"' "
-alias svndiff="svnni | xargs -I'file' svn diff \"file\" | bat -l patch"
-
+alias svndiff="svnni | xargs -I'file' svn diff --force \"file\" | bat -l patch"
+alias svnnew="svn st | grep '?' | grep -vE 'patch|DOCKER|imagenes|images' | tr -d '?'"
 # php
 alias php='php72'
 alias migrate='dc exec backend-service php bin/console doctrine:migrations:migrate'
