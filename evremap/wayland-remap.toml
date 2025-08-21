@@ -1,5 +1,6 @@
 
-device_name = "AT Translated Set 2 keyboard"
+# device_name = "AT Translated Set 2 keyboard"
+device_name = "Lemokey  Lemokey Link  Keyboard"
 
 [[remap]]
 input = ["KEY_LEFTALT", "KEY_J"]

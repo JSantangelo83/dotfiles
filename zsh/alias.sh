@@ -56,11 +56,10 @@ alias arem='sudo apt remove'
 
 # svn
 alias svnni="svn st | sed -e \"/^--- Changelist 'ignore'/,/^--- Changelist/d\" | grep '^[ADMR!]' | sed 's/^[ADMR!]//g' | xargs -I{} echo '\"{}\"' "
-alias svnnew="svn st | grep '^?' | column 2 | grep -vE 'logo|DOCKER|image'"
+alias svnnew="svn st | grep '^?' | column 2 | grep -vE 'logo|DOCKER|image|dumps'"
 # php
-alias php='php72'
+# alias php='php72'
 alias migrate='dc exec backend-service php bin/console doctrine:migrations:migrate'
-alias mkmigration="dc exec backend-service php bin/console make:migration | grep \"new migration\" | awk -F'\"' '{print \$2}'"
 
 # python
 alias py='python3'
@@ -82,7 +81,7 @@ alias sshn='ssh js@192.168.1.37'
 alias rs="source $HOME/.zshrc"
 alias kipin='~/.customscripts/kipin/init'
 alias tgp='toggleprompt'
-alias clp='xclip -sel c -r'
+alias clp='wl-copy'
 alias ddp='dotdotpwn'
 alias cd='dirs -c; cd'
 alias nvmi='source /usr/share/nvm/init-nvm.sh'

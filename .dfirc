@@ -26,3 +26,4 @@ $HOME/.config/waybar:waybar
 /etc/vconsole.conf:vconsole.conf
 $HOME/.config/hypr:hypr
 $HOME/.config/ags:ags
+$HOME/.config/resources:resources

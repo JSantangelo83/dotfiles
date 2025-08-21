@@ -1,7 +1,0 @@
-#!/bin/bash
-alsa_in -j MAudioIn -d hw:CARD=CODEC -r 48000 &
-alsa_out -j MAudioOut -d hw:CARD=CODEC -r 48000 &
-sleep 5 && 
-jack_mixer -c /home/js/.local/share/jack_mixer/default.xml &
-sleep 2 &&
-/home/js/.customscripts/audio/make-jack-connections

@@ -1,5 +1,5 @@
 #!/bin/bash
-
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-${(%):-%N}}")" && pwd)"
 # Modify file with editor and sudo -sE (if specified)
 function mdfy(){
   if [ -z $1 ]; then
@@ -210,6 +210,13 @@ function viewcolors () {
         done
         echo -ne "\n"
     done
+}
+
+mkmigration() {
+  file="$kipin/SERVER/$(dc exec backend-service php bin/console make:migration | grep 'new migration' | awk -F'"' '{print $2}')"
+  blacklist="$SCRIPT_DIR/../resources/migrations_blacklist.txt"
+  grep -vxFf "$blacklist" "$file" > "$file.tmp" && /usr/bin/mv "$file.tmp" "$file"
+  echo "$file";
 }
 
 function svnci(){
