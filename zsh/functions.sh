@@ -1,5 +1,14 @@
 #!/bin/bash
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-${(%):-%N}}")" && pwd)"
+
+
+info()  { echo -e "\e[32m[+] $1\e[0m"; }
+warn()  { echo -e "\e[33m[!] $1\e[0m"; }
+error() {
+    echo -e "\e[31m[-] $1, exiting...\e[0m" >&2
+    kill -s TERM "$$";
+}
+
 # Modify file with editor and sudo -sE (if specified)
 function mdfy(){
   if [ -z $1 ]; then
@@ -224,11 +233,20 @@ function viewcolors () {
     done
 }
 
+
+
 mkmigration() {
   file="$kipin/SERVER/$(dc exec backend-service php bin/console make:migration | grep 'new migration' | awk -F'"' '{print $2}')"
   blacklist="$SCRIPT_DIR/../resources/migrations_blacklist.txt"
-  grep -vxFf "$blacklist" "$file" > "$file.tmp" && /usr/bin/mv "$file.tmp" "$file"
-  echo "$file";
+  if [[ -z $1 ]]; then
+    # TODO: improve to 'sponge'
+    grep -vxFf "$blacklist" "$file" > "$file.tmp" && /usr/bin/mv "$file.tmp" "$file"
+    echo "$file";
+  else
+    tail -n -17 "$file" | grep -vE '^[[:blank:]]*($|[{}/]|public)|abortIf' > $blacklist
+    rm $file
+    info 'Blacklist file updated successfully'
+  fi
 }
 
 function svnci(){
