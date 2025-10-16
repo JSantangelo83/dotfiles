@@ -19,7 +19,6 @@ $HOME/.config/picom:picom
 $HOME/.config/qtile:qtile
 /etc/ssh:ssh
 $HOME/.config/xremap:xremap
-$HOME/.config/lite-xl:lite-xl
 $HOME/.config/nvim:nvim
 $HOME/.config/waybar:waybar
 /etc/evremap.toml:evremap.toml

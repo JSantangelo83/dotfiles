@@ -1,1 +1,0 @@
-return {recents={[1]="/home/js/proyectos/kipin/SERVER/src",[2]="/home/js/proyectos/kipin/WEBAPP/src",[3]="/home/js/proyectos/test",[4]="/home/js/proyectos/kipin/SERVER",[5]="/home/js/proyectos/kipin/WEBAPP"}, window={[1]=2453,[2]=1420,[3]=865,[4]=2170,["n"]=4}, window_mode="normal", previous_find={[1]="*k$",[2]="$",[3]="*",[4]="construc"}, previous_replace={}}
