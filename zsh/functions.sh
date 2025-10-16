@@ -31,52 +31,64 @@ function svndiff {
   fi
 }
 
-function search_db(){
-  needle="$1"
+search_db() {
+  needle=$1
   
   if [ -z "$needle" ]; then
     echo -e "\nUsage: $0 <db to find> [verbosity]\nEx: $0 transmodal 1"
-    # exit 1
+    return 1
   fi
+
   found=0
-  while read uri; do
-    protocol="$(echo $uri | grep :// | sed -e's,^\(.*://\).*,\1,g')"
-    url="$(echo ${uri/$protocol/})"
-    user="$(echo $url | grep @ | cut -d@ -f1 | cut -d: -f1)"
-    password="$(echo $url | grep @ | cut -d@ -f1 | cut -d: -f2)"
-    hostport="$(echo $url | grep @ | cut -d@ -f2 | cut -d/ -f1)"
-    host="$(echo $hostport | cut -d: -f1)"
-    port="$(echo $hostport | cut -d: -f2)"    
-    pass="$([[ -z "$password" ]] && echo -n 'root' || echo -n "$password")"
+  while IFS= read -r uri; do
+    # strip protocol (everything up to and including '://')
+    protocol=${uri%%://*}://
+    url=${uri#*://}
+
+    # split user[:password]@host[:port]/db
+    userpass=${url%%@*}
+    hostpath=${url#*@}
+
+    user=${userpass%%:*}
+    password=${userpass#*:}
+    [ "$userpass" = "$password" ] && password=   # no ':' means no password
+
+    hostport=${hostpath%%/*}
+    host=${hostport%%:*}
+    port=${hostport#*:}
+    [ "$hostport" = "$port" ] && port=3306       # default if missing
+
+    pass=${password:-root}
     echo "[!] Looking in $host..."
-   
-    if [ "$#" -gt 1 ]; then
-      mariadb -u $user -p$pass -h $host -P $port -e 'show databases;' --skip-ssl | tail -n +3
+
+    if [ $# -gt 1 ]; then
+      mariadb -u "$user" -p"$pass" -h "$host" -P "$port" -e 'show databases;' --skip-ssl | tail -n +3
     fi
-    
-    db_found="$(mariadb -u $user -p$pass -h $host -P $port -e 'show databases;' --skip-ssl 2>&1 | tail -n +3 | grep -i "$needle" | head -n1)"
-    
+
+    db_found=$(mariadb -u "$user" -p"$pass" -h "$host" -P "$port" -e 'show databases;' --skip-ssl 2>/dev/null \
+      | tail -n +3 | grep -i "$needle" | head -n1)
+
     if [ -n "$db_found" ]; then
       print -P "Found!: '%F{red}$db_found%F{white}' on: $host ($user:$pass)"
-      found=1     
-      break;
+      found=1
+      break
     fi
-  done <<< "$(cat docker-compose.yml | grep -oE 'mysql://(.)+' | sort -u | grep -v 'root')"
-  
+  done <<< "$(grep -oE 'mysql://[^ ]+' docker-compose.yml | sort -u | grep -v 'root')"
+
   if [ $found -eq 1 ]; then
-    echo -n "Do you want to connect to the database? [Y/n]: "
-    read response
+    printf "Do you want to connect to the database? [Y/n]: "
+    read -r response
     response=${response:-Y}
 
-    if [[ $response =~ ^[Yy]$ ]]; then
+    if [ "$response" = Y ] || [ "$response" = y ]; then
       echo "Connecting to the database..."
-      mycli -u "$user" -p$pass -h "$host" -P "$port" "$db_found"
+      mycli -u "$user" -p"$pass" -h "$host" -P "$port" "$db_found"
     fi
   else
-    echo -e  "\n[x] No database found for: '$needle'"
+    echo -e "\n[x] No database found for: '$needle'"
   fi
-
 }
+
 
 
 function getchar() {

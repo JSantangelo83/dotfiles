@@ -56,7 +56,8 @@ alias arem='sudo apt remove'
 
 # svn
 alias svnni="svn st | sed -e \"/^--- Changelist 'ignore'/,/^--- Changelist/d\" | grep '^[ADMR!]' | sed 's/^[ADMR!]//g' | xargs -I{} echo '\"{}\"' "
-alias svnnew="svn st | grep '^?' | column 2 | grep -vE 'logo|DOCKER|image|dumps'"
+alias svnst="svn st | sed -e \"/^--- Changelist 'ignore'/,/^--- Changelist/d\""
+alias svnnew="svn st | grep '^?' | column 2 | grep -vE 'logo|DOCKER|image|dumps'| xargs -I{} echo '\"{}\"' "
 # php
 # alias php='php72'
 alias migrate='dc exec backend-service php bin/console doctrine:migrations:migrate'
@@ -86,6 +87,7 @@ alias ddp='dotdotpwn'
 alias cd='dirs -c; cd'
 alias nvmi='source /usr/share/nvm/init-nvm.sh'
 alias buildprod="npx --node-options='--max-old-space-size=5048' ng build --prod"
+alias mc="sudo mycli dattacargo33"
 
 ## Error logs
 alias qtilee='cat ~/.local/share/qtile/qtile.log | tail -n 40 | bat -l log'
