@@ -4,14 +4,13 @@ function usage(){
 
 function start(){
     pkill waybar;
-    ags --quit;
-    # ags &> /tmp/pijota
-    ags & (sleep 1 && waybar -c /home/js/.config/waybar/tray_config -s /home/js/.config/waybar/style.css);
+    ags quit;
+    ags run /home/js/.config/ags/src/main.ts --gtk 4 & (sleep 1 && waybar -c /home/js/.config/waybar/tray_config -s /home/js/.config/waybar/style.css);
 }
 
 function stop(){
     pkill waybar
-    ags --quit
+    ags quit
 }
 
 if [ $# -ne 1 ]; then
