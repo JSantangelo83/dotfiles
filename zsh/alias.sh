@@ -22,6 +22,9 @@ alias ll='exa --git --icons --long --octal-permissions'
 alias lla='exa --git --icons --long --all --all --octal-permissions'
 alias tree='exa --git --icons --tree'
 
+# ffuf
+alias ffuf='ffuf -c -ic -t 300'
+
 # better commands
 alias cat='bat'
 alias grep='grep --color=auto'
@@ -94,8 +97,6 @@ alias mc="sudo mycli dattacargo33"
 ## Error logs
 alias qtilee='cat ~/.local/share/qtile/qtile.log | tail -n 40 | bat -l log'
 alias betalog='initial_path=$(pwd) && cd /tmp && wget ftp://logsbeta%2540dattacargo.com:LogsBeta.2021@dattacargo.com/prod.log && cat ./prod.log | tac | head | bat -l log && rm ./prod.log && cd $initial_path'
-
-
 
 ## Kill processes
 alias kds='pkill -f discord; pkill -f Discord'

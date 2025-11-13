@@ -1,0 +1,16 @@
+[Unit]
+Description=Ambilight Service
+After=network.target
+
+[Service]
+Type=simple
+User=js
+WorkingDirectory=/home/js/.config/dotfiles/ambilight
+ExecStart=/home/js/.config/dotfiles/ambilight/start_ambilight.sh
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=default.target
+

@@ -42,8 +42,8 @@ function recon() {
 	# Does initial scan
 	sudo nmap -sS --min-rate 5000 -p- --open -n -Pn $tip -vvv -oX open &&
 
-		# Does deeper scan
-		sudo nmap -sCV -p$(gports) -Pn -oN details $tip -vvv
+	# Does deeper scan
+	sudo nmap -sCV -p$(gports) -Pn -oN details $tip -vvv
 
 	# Creates the initial writeup.md file
 	writeup="# Ports"
@@ -62,8 +62,10 @@ function htbc() {
 	#Variables
 	machine_name="$1"
 	machine_lowername="$(echo $1 | awk '{print tolower($0)}')"
-	machine_ip="$2"
+	machine_hostname="$3"
 
+	machine_ip="$(htb-cli start --batch -m "$machine_name" | grep 'Target: ' | awk '{print $2}')"
+	
 	#Creating machine directories
 	mkdir "$HOME/hacking/hackthebox/machines/$machine_lowername"
 	\cd "$_" || exit
@@ -71,12 +73,22 @@ function htbc() {
 
 	#Creating obsidian writeup and symlink
 	touch writeup.md
-	ln -s "$(pwd)/writeup.md" "$HOME/documents/obsidian/Hacking/Machines/HackTheBox - $machine_name.md"
+	if [ -d "$HOME/documents/obsidian/Hacking/Machines" ]; then
+		ln -s "$(pwd)/writeup.md" "$HOME/documents/obsidian/Hacking/Machines/HackTheBox - $machine_name.md"
+	fi
 
+	# If the machine hostname is not provided, it will be the machine name
+	if [ -z "$machine_hostname" ]; then
+		machine_hostname="$machine_lowername.htb"
+	fi
+	
 	#Cd into recon and updating target ip
 	cd recon || exit
 	upvar tip "$machine_ip"
 	upvar starting_path "$(pwd)"
+
+	# Adding the machine to /etc/hosts
+	addhost "$machine_hostname"
 }
 
 function guser(){ guserpass "$1" | column 1 ':'; }
@@ -176,12 +188,14 @@ superfuzz() {
 			echo "  -o  Output file"
 			echo "  -e  Extensions to fuzz (comma separated)"
 	}
+	
 	# If no arguments are provided, use the default ones
 	if [[ $# -eq 0 ]]; then
 		dirs=true
 		vhosts=true
-		extensions="txt,json,yaml"
+		extensions=".txt,.json,.yaml"
 		output="fuzz.txt"
+		url="$1"
 	fi
 
 	while getopts ":hvde:o:" opt; do
@@ -219,7 +233,51 @@ superfuzz() {
 	if [[ $dirs == true ]]; then
 		echo "[+] Fuzzing directories..."
 		ffuf -w $dirlist -u "$tip/FUZZ" -o "$output" -of html -t 200 -c -v
+		# TODO: Ver que version dejar (residual del merge)
+		# ffuf -w $dirlist -u "http://$tip/FUZZ" -o "dirs-$output" -of html -c -v -e "$extensions" -t 200 &>/dev/null &
 	fi
+
+	# Fuzz vhosts
+	if [[ $vhosts == true ]]; then
+		if [ -z "$url" ]; then
+			echo "No URL provided, not fuzzing virtual hosts."
+			return 1
+		fi
+		echo "[+] Fuzzing Virtual Hosts..."
+		ffuf -w $vhlist -u "http://$url" -H "Host: FUZZ.$url" -o "vhosts-$output" -of html -t 200 -c -v -e &>/dev/null
+	fi
+}
+
+addhost() {
+    # Check if $tip and $1 are set
+    if [ -z "$tip" ]; then
+        echo "Error: \$tip environment variable is not set."
+        return 1
+    fi
+
+    if [ -z "$1" ]; then
+        echo "Error: No hostname provided."
+        return 1
+    fi
+
+    # Assign hostname to a variable
+    hostname=$1
+
+    if grep -q "$hostname" /etc/hosts; then
+        echo "The hostname $hostname already exists in /etc/hosts."
+        return 0
+    fi
+
+    # Check if the IP address already exists in /etc/hosts
+    if grep -q "$tip" /etc/hosts; then
+        # Append the hostname to the existing line with the same IP address
+        sudo sed -i "/$tip/s/$/ $hostname/" /etc/hosts
+        echo "Added $hostname to the existing $tip entry in /etc/hosts."
+    else
+        # Add the new entry to /etc/hosts
+        echo "$tip    $hostname" | sudo tee -a /etc/hosts > /dev/null
+        echo "Added $hostname to /etc/hosts."
+    fi
 }
 
 addhost() {
@@ -264,8 +322,10 @@ alias sd="show_dicts"
 
 ### Variables
 # Dicts
-export vhlist='/usr/share/SecLists/Discovery/DNS/subdomains-top1million-110000.txt'
-export dirlist='/usr/share/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt'
+# export vhlist='/usr/share/SecLists/Discovery/DNS/subdomains-top1million-110000.txt'
+# export dirlist='/usr/share/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt'
+export vhlist='/home/js/hacking/wordlists/SecLists/Discovery/DNS/subdomains-top1million-110000.txt'
+export dirlist='/home/js/hacking/wordlists/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt'
 export rockyou="$HOME/hacking/wordlists/rockyou-utf-8.txt"
 export userlist="$HOME/hacking/wordlists/SecLists/Usernames/xato-net-10-million-usernames-dup.txt"
 export lfi_payloads="$HOME/hacking/wordlists/lfi_payloads.txt"

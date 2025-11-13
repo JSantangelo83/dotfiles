@@ -22,6 +22,19 @@ function mdfy(){
   popd; 
 }
 
+# Modify file with editor and sudo -sE (if specified)
+function mdfy(){
+  if [ -z $1 ]; then
+    echo '[x] You must specify a file to edit' >&2
+    return
+  fi
+  dir=$(dirname $1)
+  file=$(basename $1)
+  pushd $dir; 
+  [[ -n $2 ]] && sudo -sE $EDITOR $file || $EDITOR $file; 
+  popd; 
+}
+
 # Resources usages
 function memusage() top -o %MEM -b -n1 | tail +8 | head -n ${1:-6} | awk '{print toupper( substr( $12, 1, 1 ) ) substr( $12, 2 )" "$10"%"}'
 function cpusage() top -o %CPU -b -n1 | tail +8 | head -n ${1:-6} | awk '{print toupper( substr( $12, 1, 1 ) ) substr( $12, 2 )" "$9"%"}'
