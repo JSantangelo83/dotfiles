@@ -8,14 +8,9 @@ lower_line=$(echo "$line" | tr '[:upper:]' '[:lower:]')
 if [[ \
   "$lower_line" == *"estefano"* || \
   "$lower_line" == *"naranjujeli"* || \
-  # "$lower_line" == *"abuaf"* || \
-  "$lower_line" == *"francobonda"* || \
-  # "$lower_line" == *"leandro"* || \
   "$lower_line" == *"alejandro"* || \
   "$lower_line" == *"fede"* || \
-  "$lower_line" == *"juana"* || \
   "$lower_line" == *"matimed"* || \
-  "$lower_line" == *"youshallwakeup"* || \
   "$lower_line" == *"mention"* || \
   "$lower_line" == *"joa"* || \
   "$lower_line" == *"daniel"* \

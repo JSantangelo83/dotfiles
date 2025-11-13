@@ -43,8 +43,6 @@ zle -N update-starting-path
 zle -N kill-path-word
 # Pushd's to the starting_path if there is any
 cd $starting_path
-# sudo systemctl disable sshd
-# sudo systemctl stop sshd
 
 # TODO: matar esto de aca, banana solutionno va
 export LC_ALL='C.UTF-8'
