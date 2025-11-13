@@ -72,7 +72,9 @@ alias ghamip="ip a | grep -A2 'ham0: <' |tail -n1 | awk '{print \$2}' | sed 's/\
 alias gpubip="dig @resolver4.opendns.com myip.opendns.com +short"
 alias gtrabuip="hamachi list | head -n2 | tail -n1 | column 4"
 # docker
-alias dc="sudo docker compose"
+alias dc="docker compose"
+alias dcd="docker compose --profile dev"
+
 
 ## Others
 alias htbi="sudo openvpn ~/hacking/hackthebox/htb-vpn.ovpn"
