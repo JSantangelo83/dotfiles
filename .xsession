@@ -41,3 +41,4 @@ sudo mount -a &
 sudo updatedb &
 bash /home/js/.config/wacom/init.sh & 
 /home/js/.customscripts/start-ufw &
+/home/js/.config/dotfiles/ambilight/start_ambilight.sh &
