@@ -7,7 +7,12 @@ export GDK_NATIVE_WINDOWS=1
 export MAILCHECK=0
 export EDITOR='nvim'
 export dotfiles="$HOME/.config/dotfiles"
-export PATH="/usr/NX/bin/:${dotfiles}/customscripts/kipin/utilities:${dotfiles}/customscripts/kipin:${dotfiles}/customscripts:/opt/lampp:$HOME/perl5/bin${PATH:+:${PATH}}"; 
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH:/usr/NX/bin/:${dotfiles}/customscripts:/opt/lampp:$HOME/perl5/bin${PATH:+:${PATH}}"; 
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+
+eval "$(pyenv init - zsh)"
+
 export BROWSER=firefox
 
 # Opera

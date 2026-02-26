@@ -1,40 +1,30 @@
-import app from "ags/gtk4/app"
-import { Astal, Gtk, Gdk } from "ags/gtk4"
-import { execAsync } from "ags/process"
-import { createPoll } from "ags/time"
-import Hyprland from "gi://AstalHyprland"
+import { Astal, Gtk } from "ags/gtk4"
 
-export default function Bar(gdkmonitor: Gdk.Monitor) {
-  const time = createPoll("", 1000, "date")
-  const { TOP, LEFT, RIGHT } = Astal.WindowAnchor
+export default function Bar(monitor: any) {
+  const barWidth = 40
 
   return (
     <window
+      cssName="Bar"
+      monitor={monitor}
       visible
-      name="bar"
-      class="Bar"
-      gdkmonitor={gdkmonitor}
+      anchor={
+        Astal.WindowAnchor.TOP |
+        Astal.WindowAnchor.BOTTOM |
+        Astal.WindowAnchor.LEFT
+      }
+      widthRequest={barWidth}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
-      anchor={TOP | LEFT | RIGHT}
-      application={app}
     >
-      <centerbox cssName="centerbox">
-        <button
-          $type="start"
-          onClicked={() => execAsync("echo hello").then(console.log)}
-          hexpand
-          halign={Gtk.Align.CENTER}
-        >
-          <label label="Welcome to AGS!" />
-        </button>
-        <box $type="center" />
-        <menubutton $type="end" hexpand halign={Gtk.Align.CENTER}>
-          <label label={time} />
-          <popover>
-            <Gtk.Calendar />
-          </popover>
-        </menubutton>
-      </centerbox>
+      <box
+        vexpand
+        orientation={Gtk.Orientation.VERTICAL}
+        cssName="container"
+      >
+        <box cssName="top" />
+        <box cssName="spacer" />
+        <box vexpand cssName="stick" />
+      </box>
     </window>
   )
 }

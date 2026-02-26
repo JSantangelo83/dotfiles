@@ -6,14 +6,8 @@ sudo pkill dunst;
 dunst -print | while read -r line; do 
 lower_line=$(echo "$line" | tr '[:upper:]' '[:lower:]')
 if [[ \
-  "$lower_line" == *"estefano"* || \
-  "$lower_line" == *"naranjujeli"* || \
-  "$lower_line" == *"alejandro"* || \
-  "$lower_line" == *"fede"* || \
-  "$lower_line" == *"matimed"* || \
-  "$lower_line" == *"mention"* || \
   "$lower_line" == *"joa"* || \
-  "$lower_line" == *"daniel"* \
+  "$lower_line" == *"fran"* \
   ]]; then
   
   while ! [[ -f /tmp/stopalarm ]] ; do

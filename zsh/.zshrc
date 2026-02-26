@@ -53,3 +53,12 @@ ssh-add ~/.ssh/ip_provider   &>/dev/null
 
 # Programs to execute at the start of zsh
 banner
+alias eli="eluter-tooling"
+
+# pnpm
+export PNPM_HOME="/home/js/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end

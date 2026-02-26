@@ -10,9 +10,11 @@ alias zshrc="mdfy ~/.zshrc"
 alias qtilec="mdfy ~/.config/qtile/config.py"
 alias sshdc="mdfy /etc/ssh/sshd_config"
 
-# Enter to the config folder
+# Shorthand cd's
 alias dotfiles="cd $HOME/.config/dotfiles"
 alias bridge="cd $HOME/bridge"
+alias dwn="cd $HOME/Downloads"
+
 alias pkill='pkill -ife'
 
 ## Beautify commands
@@ -85,12 +87,11 @@ alias lc='light-control'
 alias ocr="$HOME/.customscripts/ocr-selection"
 alias sshn='ssh js@192.168.1.37'
 alias rs="source $HOME/.zshrc"
-alias kipin='~/.customscripts/kipin/init'
+alias kp='cd $kipin'
 alias tgp='toggleprompt'
 alias clp='wl-copy'
 alias ddp='dotdotpwn'
 alias cd='dirs -c; cd'
-alias nvmi='source /usr/share/nvm/init-nvm.sh'
 alias buildprod="npx --node-options='--max-old-space-size=5048' ng build --prod"
 alias mc="sudo mycli dattacargo33"
 

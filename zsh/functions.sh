@@ -43,6 +43,9 @@ show_dicts() {
 	sed -n '/# Dicts/,/# \/Dicts/p' $dotfiles/zsh/hacking.sh | grep -vE "# Dicts|# /Dicts" | sed 's/export //g' | tr '=' ' ' | awk '{print "\033[1;32m" $1 "\033[0m" " - " "\033[1;34m" $2 "\033[0m"}'
 }
 
+function sshpc {
+  ssh -A -tt wit \ "ssh -tt $pc"
+}
 
 function svndiff {
   if [ -z $1 ]; then
@@ -51,6 +54,11 @@ function svndiff {
     rev="$1"
     svn diff -r"$((rev-1)):$rev" | bat -l patch
   fi
+}
+
+function dcdg {
+  net="$(docker compose ps -q | head -n1 | xargs docker inspect --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}{{end}}')"
+  docker run -it --rm --network "$net" nicolaka/netshoot bash
 }
 
 search_db() {
@@ -95,7 +103,7 @@ search_db() {
       found=1
       break
     fi
-  done <<< "$(grep -oE 'mysql://[^ ]+' docker-compose.yml | sort -u | grep -v 'root')"
+  done <<< "$(grep -oE 'mysql://[^ ]+' docker-compose.yml | sort -u )"
 
   if [ $found -eq 1 ]; then
     printf "Do you want to connect to the database? [Y/n]: "
