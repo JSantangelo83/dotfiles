@@ -16,3 +16,9 @@ case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
+
+# Scape sequences differ in mac
+bindkey "^[[1;3D" dir_back
+bindkey "^[[1;3C" dir_fwd
+bindkey  "^[[1;9D"   beginning-of-line
+bindkey  "^[[1;9C"   end-of-line
