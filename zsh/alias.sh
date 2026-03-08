@@ -57,14 +57,6 @@ alias sget='sudo snap install'
 alias aget='sudo apt install'
 alias arem='sudo apt remove'
 
-# svn
-alias svnni="svn st | sed -e \"/^--- Changelist 'ignore'/,/^--- Changelist/d\" | grep '^[ADMR!]' | sed 's/^[ADMR!]//g' | xargs -I{} echo '\"{}\"' "
-alias svnst="svn st | sed -e \"/^--- Changelist 'ignore'/,/^--- Changelist/d\""
-alias svnnew="svn st | grep '^?' | column 2 | grep -vE 'logo|DOCKER|image|dumps'| xargs -I{} echo '\"{}\"' "
-# php
-# alias php='php72'
-alias migrate='dc exec backend-service php bin/console doctrine:migrations:migrate'
-
 # python
 alias py='python3'
 
@@ -73,7 +65,6 @@ alias gprivip="ip a | grep -A2 -E '(enp5s0|wlan0): <' |tail -n1 | awk '{print \$
 alias gtunip="ip a | grep -A2 'tun0: <' |tail -n1 | awk '{print \$2}' | sed 's/\/.*//g'"
 alias ghamip="ip a | grep -A2 'ham0: <' |tail -n1 | awk '{print \$2}' | sed 's/\/.*//g'"
 alias gpubip="dig @resolver4.opendns.com myip.opendns.com +short"
-alias gtrabuip="hamachi list | head -n2 | tail -n1 | column 4"
 # docker
 alias dc="docker compose"
 alias dcd="docker compose --profile dev"
@@ -83,7 +74,6 @@ alias dcd="docker compose --profile dev"
 alias htbi="sudo openvpn ~/hacking/hackthebox/htb-vpn.ovpn"
 alias lc='light-control'
 alias ocr="$HOME/.customscripts/ocr-selection"
-alias sshn='ssh js@192.168.1.37'
 alias rs="source $HOME/.zshrc"
 alias kipin='~/.customscripts/kipin/init'
 alias tgp='toggleprompt'
@@ -96,9 +86,7 @@ alias mc="sudo mycli dattacargo33"
 
 ## Error logs
 alias qtilee='cat ~/.local/share/qtile/qtile.log | tail -n 40 | bat -l log'
-alias betalog='initial_path=$(pwd) && cd /tmp && wget ftp://logsbeta%2540dattacargo.com:LogsBeta.2021@dattacargo.com/prod.log && cat ./prod.log | tac | head | bat -l log && rm ./prod.log && cd $initial_path'
 
 ## Kill processes
 alias kds='pkill -f discord; pkill -f Discord'
-alias klol='pkill -f lutris'
 

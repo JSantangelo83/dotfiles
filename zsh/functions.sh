@@ -1,7 +1,6 @@
 #!/bin/bash
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-${(%):-%N}}")" && pwd)"
 
-
 info()  { echo -e "\e[32m[+] $1\e[0m"; }
 warn()  { echo -e "\e[33m[!] $1\e[0m"; }
 error() {
@@ -22,19 +21,6 @@ function mdfy(){
   popd; 
 }
 
-# Modify file with editor and sudo -sE (if specified)
-function mdfy(){
-  if [ -z $1 ]; then
-    echo '[x] You must specify a file to edit' >&2
-    return
-  fi
-  dir=$(dirname $1)
-  file=$(basename $1)
-  pushd $dir; 
-  [[ -n $2 ]] && sudo -sE $EDITOR $file || $EDITOR $file; 
-  popd; 
-}
-
 # Resources usages
 function memusage() top -o %MEM -b -n1 | tail +8 | head -n ${1:-6} | awk '{print toupper( substr( $12, 1, 1 ) ) substr( $12, 2 )" "$10"%"}'
 function cpusage() top -o %CPU -b -n1 | tail +8 | head -n ${1:-6} | awk '{print toupper( substr( $12, 1, 1 ) ) substr( $12, 2 )" "$9"%"}'
@@ -52,66 +38,6 @@ function svndiff {
     svn diff -r"$((rev-1)):$rev" | bat -l patch
   fi
 }
-
-search_db() {
-  needle=$1
-  
-  if [ -z "$needle" ]; then
-    echo -e "\nUsage: $0 <db to find> [verbosity]\nEx: $0 transmodal 1"
-    return 1
-  fi
-
-  found=0
-  while IFS= read -r uri; do
-    # strip protocol (everything up to and including '://')
-    protocol=${uri%%://*}://
-    url=${uri#*://}
-
-    # split user[:password]@host[:port]/db
-    userpass=${url%%@*}
-    hostpath=${url#*@}
-
-    user=${userpass%%:*}
-    password=${userpass#*:}
-    [ "$userpass" = "$password" ] && password=   # no ':' means no password
-
-    hostport=${hostpath%%/*}
-    host=${hostport%%:*}
-    port=${hostport#*:}
-    [ "$hostport" = "$port" ] && port=3306       # default if missing
-
-    pass=${password:-root}
-    echo "[!] Looking in $host..."
-
-    if [ $# -gt 1 ]; then
-      mariadb -u "$user" -p"$pass" -h "$host" -P "$port" -e 'show databases;' --skip-ssl | tail -n +3
-    fi
-
-    db_found=$(mariadb -u "$user" -p"$pass" -h "$host" -P "$port" -e 'show databases;' --skip-ssl 2>/dev/null \
-      | tail -n +3 | grep -i "$needle" | head -n1)
-
-    if [ -n "$db_found" ]; then
-      print -P "Found!: '%F{red}$db_found%F{white}' on: $host ($user:$pass)"
-      found=1
-      break
-    fi
-  done <<< "$(grep -oE 'mysql://[^ ]+' docker-compose.yml | sort -u | grep -v 'root')"
-
-  if [ $found -eq 1 ]; then
-    printf "Do you want to connect to the database? [Y/n]: "
-    read -r response
-    response=${response:-Y}
-
-    if [ "$response" = Y ] || [ "$response" = y ]; then
-      echo "Connecting to the database..."
-      mycli -u "$user" -p"$pass" -h "$host" -P "$port" "$db_found"
-    fi
-  else
-    echo -e "\n[x] No database found for: '$needle'"
-  fi
-}
-
-
 
 function getchar() {
   if [ -z "$1" ]; then
@@ -153,19 +79,35 @@ function nocolor(){
  sed -r 's/\x1B\[[0-9;]*[JKmsu]//g'
 }
 
-function dumprow () {
-	if [[ $# -eq 0 ]] then
-		echo 'No params supplied'
-	elif [[ $# -eq 1 ]] then
-		mariadb-dump -u root -h 127.0.1 -P 3306 --skip-ssl --compact dattacargo33 -t "$1"
-	elif [[ $# -eq 2 ]] then
-		mariadb-dump -u root -h 127.0.1 -P 3306 --skip-ssl --compact dattacargo33 -t "$1" --where "$2"
-	elif [[ $# -eq 3 ]] then
-		mariadb-dump -u root -h 127.0.1 -P 3306 --skip-ssl --compact "$3" -t "$1" --where "$2"
-	else
-		echo 'Only 1 (table), 2 (where) or 3 (database) params accepted'
-	fi
+_get_ipv4_by_iface() {
+  ip -4 -o addr show dev "$1" scope global up 2>/dev/null | awk '{split($4, cidr, "/"); print cidr[1]; exit}'
 }
+
+_get_first_available_ipv4() {
+  for iface in "$@"; do
+    ip_addr="$(_get_ipv4_by_iface "$iface")"
+    if [ -n "$ip_addr" ]; then
+      echo "$ip_addr"
+      return 0
+    fi
+  done
+  return 1
+}
+
+gprivip() {
+  default_iface="$(ip -4 route show default 2>/dev/null | awk '{print $5; exit}')"
+  if [ -n "$default_iface" ]; then
+    default_ip="$(_get_ipv4_by_iface "$default_iface")"
+    if [ -n "$default_ip" ]; then
+      echo "$default_ip"
+      return 0
+    fi
+  fi
+  _get_first_available_ipv4 enp5s0 wlan0 eth0 wlp2s0
+}
+
+gtunip() { _get_ipv4_by_iface tun0; }
+ghamip() { _get_ipv4_by_iface ham0; }
 
 function update-starting-path() {
   upvar starting_path "$(pwd)"
@@ -246,74 +188,6 @@ function viewcolors () {
     done
 }
 
-
-
-mkmigration() {
-  file="$kipin/SERVER/$(dc exec backend-service php bin/console make:migration | grep 'new migration' | awk -F'"' '{print $2}')"
-  blacklist="$SCRIPT_DIR/../resources/migrations_blacklist.txt"
-  if [[ -z $1 ]]; then
-    # TODO: improve to 'sponge'
-    grep -vxFf "$blacklist" "$file" > "$file.tmp" && /usr/bin/mv "$file.tmp" "$file"
-    echo "$file";
-  else
-    tail -n -17 "$file" | grep -vE '^[[:blank:]]*($|[{}/]|public)|abortIf' > $blacklist
-    rm $file
-    info 'Blacklist file updated successfully'
-  fi
-}
-
-function svnci(){
-	
-	# Checks if the user is in production
-	if [[ $(pwd) =~ "kipin-prod" ]]; then
-		echo "You are in production, you can't commit here"
-		return 1
-	fi
-
-	# Checks if something was piped to the function
-	if [[ ! -p /dev/stdin || $# -lt 2 ]]; then
-		echo 'Usage: <files> | svnci <task_number> <msg>\n\nExample:\nsvnni | svnci 1234 "Fixing bug"'
-		return 1
-	fi
-
-	# Get the arguments
-	tarea="$1"
-	msj="$2"
-	local files	
-
-	# Read the piped files
-	while IFS= read -r line; do
-		line="${line#"${line%%[![:space:]]*}"}"   # Strip leading spaces
-		line="${line%"${line##*[![:space:]]}"}"   # Strip trailing spaces
-		files+=" '${line}'" # Add to the string
-	done
-
-	# Check if there are blacklisted words
-	svnni | xargs -I'file' svn diff "file" | grep -nE 'dump|var_dump|console.log|pito|pene'
-
-	commit='true';
-	
-	# If there are words that are not allowed, i ask if the user wants to continue
-	if [[ $? -eq 0 ]] then
-		commit=''
-		echo '------------------------------'
-		echo -ne "Blacklisted words found, do you want to commit anyway? (y/n): "; read res < /dev/tty
-
-		if [[ $res =~ ^[Yy]$ ]] then
-			commit='true'
-		fi
-	fi
-	echo $files;
-	
-	# If the user wants to commit, i do it
-	if [[ ! -z $commit ]] then
-		svn ci -m "$msj
-Tarea: $tarea" $files
-	fi
-
-	return 0;
-}	
-
 function kill-path-word(){
   local words word spaces
    zle set-mark-command                 # save current cursor position ("mark")
@@ -326,4 +200,3 @@ function kill-path-word(){
   zle exchange-point-and-mark           # swap "mark" and "cursor"
   zle kill-region                       # delete marked region
 }
-
