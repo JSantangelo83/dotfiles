@@ -10,6 +10,7 @@ function usage {
                                           EOF
                                    [default: dotfiles_path/.dfirc]
          -h                          Display this help message.
+         -m                          Create missing destination directories.
          -v                          Increase verbosity level
 
 dfi installs all the dotfiles mapped at .dfirc in the source folder"
@@ -20,11 +21,13 @@ dfi installs all the dotfiles mapped at .dfirc in the source folder"
 dotfiles_path='/home/js/.config/dotfiles/'; #default value
 config_file='';
 export _V=0;
+export _M=0;
 
-while getopts :s:c:vh opt; do
+while getopts :s:c:mvh opt; do
     case ${opt} in
       s) dotfiles_path=${OPTARG};;
       c) config_file=${OPTARG};;
+      m) _M=1;;
       h) usage ;;
       v) _V=1;;
       *) echo >&2 "[x] Invalid Option";usage;;
@@ -44,6 +47,32 @@ function log () {
 }
 export -f log;
 
+function can_write_path() {
+       check_path="$1"
+
+       if [[ -z "$check_path" ]]; then
+              return 1
+       fi
+
+       if [[ -d "$check_path" ]]; then
+              [[ -w "$check_path" && -x "$check_path" ]]
+              return $?
+       fi
+
+       parent="$check_path"
+       while [[ ! -e "$parent" && "$parent" != "/" ]]; do
+              parent=$(dirname "$parent")
+       done
+
+       if [[ -d "$parent" ]]; then
+              [[ -w "$parent" && -x "$parent" ]]
+              return $?
+       fi
+
+       return 1
+}
+export -f can_write_path;
+
 #Validating config file
 if [[ -z $config_file ]]; then
        log "[!] No config file specified, using $dotfiles_path.dfirc..."
@@ -58,15 +87,20 @@ function linkfile(){
        else
               sourcefile=$1;targetfile=$2
        fi
-       # if [[ -f $sourcefile ]]; then
-              log "[+] Linking File: $sourcefile -> $targetfile";
-              [[ -f $sourcefile ]] && rm "$sourcefile";
-              mkdir -p $(realpath $(dirname $sourcefile));
-              ln -sf $(realpath $targetfile) "$sourcefile";
-       # else
-              #backup de lo anterior por las dudas
-              # echo "[!] File not found (Use -f to force creation of file): $sourcefile";
-       # fi
+       log "[+] Linking File: $sourcefile -> $targetfile";
+       source_dir=$(dirname "$sourcefile")
+
+       if [[ ! -d "$source_dir" ]]; then
+              if [[ $_M -eq 1 ]]; then
+                     mkdir -p "$source_dir"
+              else
+                     echo "[!] Skipping $sourcefile: destination directory does not exist ($source_dir). Use -m to create it."
+                     return 0
+              fi
+       fi
+
+       [[ -f $sourcefile ]] && rm "$sourcefile";
+       ln -sf "$(realpath "$targetfile")" "$sourcefile";
 }
 export -f linkfile;
 
@@ -97,9 +131,32 @@ do
        tmp_source=$(echo "$line" | cut -d ":" -f 1);
        source=${tmp_source/"\$HOME"/$HOME}
        target=$dotfiles_path$(echo $line | cut -d ":" -f 2);
+       write_dir=""
+
+       if [[ -d $target ]]; then
+              write_dir="$source"
+       elif [[ -f $target ]]; then
+              write_dir="$(dirname "$source")"
+       elif [ -f "$source" ] && [ ! -f "$target" ]; then
+              write_dir="$(dirname "$source")"
+       fi
+
+       if [[ -n "$write_dir" ]] && ! can_write_path "$write_dir"; then
+              echo "[!] Skipping $source: no write permission in $write_dir (run with sudo if needed)."
+              continue
+       fi
+
        #If its a directory, links the subfiles
        if [[ -d $target ]]; then
               log "[+] Linking directory: $source -> $target";
+              if [[ ! -d "$source" ]]; then
+                     if [[ $_M -eq 1 ]]; then
+                            mkdir -p "$source";
+                     else
+                            echo "[!] Skipping $source: destination directory does not exist. Use -m to create it."
+                            continue
+                     fi
+              fi
               find $target -type f -exec bash -c "linkfile \"{}\" $source $target" \;
               #Clears broken symlinks (Symlinks pointing to nonexistent files)
         	  # find -L $source -type l -exec rm {} \;
@@ -109,6 +166,7 @@ do
        #When linking files, copy it if not exists in dotfiles folder 
        #(This allows install the dotfile only by putting it in the .dfirc file)
        elif [ -f $source ] && [ ! -f $target ]; then
+       		mkdir -p "$(dirname "$target")";
        		cp $source $target;
        		linkfile $source $target;
        fi
