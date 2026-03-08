@@ -34,7 +34,7 @@ function validate_name_value(){
 }
 
 function validate_exists(){
-  if cat ~/.config/zsh/variables.sh | grep -q "export $1="; then
+  if grep -q "export $1=" ~/.config/zsh/variables.sh; then
     return 0
   fi
   return 1
@@ -42,14 +42,19 @@ function validate_exists(){
 
 # Creates perm variable
 function createvar(){
-  name=$(validate_name $*)
+  name=$(validate_name "$1")
   
-  if validate_exists; then
+  if validate_exists "$name"; then
     echo "The variable name already exists"
+    return 1
   fi
 
   echo "export $name=''" >> ~/.config/zsh/variables.sh
-  source ~/.config/zsh/variables.sh;  
+  source ~/.config/zsh/variables.sh
+
+  if [ "$#" -ge 2 ]; then
+    upvar "$name" "$2"
+  fi
 }
 
 # Deletes perm variable
