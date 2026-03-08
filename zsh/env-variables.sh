@@ -7,9 +7,8 @@ export GDK_NATIVE_WINDOWS=1
 export MAILCHECK=0
 export EDITOR='nvim'
 export dotfiles="$HOME/.config/dotfiles"
-export PATH="/usr/NX/bin/:${dotfiles}/customscripts/kipin/utilities:${dotfiles}/customscripts/kipin:${dotfiles}/customscripts:/opt/lampp:$HOME/perl5/bin${PATH:+:${PATH}}"; 
+export PATH="/opt/homebrew/opt/postgresql@18/bin:/usr/NX/bin/:${dotfiles}/customscripts/kipin/utilities:${dotfiles}/customscripts/kipin:${dotfiles}/customscripts:/opt/lampp:$HOME/perl5/bin${PATH:+:${PATH}}"; 
 export BROWSER=firefox
-
 # Opera
 export OPERAPLUGINWRAPPER_PRIORITY=0
 export OPERA_KEEP_BLOCKED_PLUGIN=1
@@ -36,8 +35,12 @@ export PERL_MB_OPT="--install_base \"$HOME/perl5\""
 export PERL_MM_OPT="INSTALL_BASE=$HOME/perl5"
 
 ## Prompts
-FULL_PROMPT=$' %{\e[1;3;35m%}%~ %{\e[31m%} %{\e[0%}m'
-MIN_PROMPT=$' %{\e[1;3;35m%}%1d %{\e[31m%} %{\e[0%}m'
+FULL_PROMPT=$' %{\e[1;3;35m%}%~ %{\e[31m%} %{\e[0%}m'
+MIN_PROMPT=$' %{\e[1;3;35m%}%1d %{\e[31m%} %{\e[0%}m'
 PS1=$FULL_PROMPT
 PS2=$' %{\e[31m%} %{\e[0%}m'
 PROMPT_FULLED=true;
+
+# Mac compatibility
+export DOCKER_HOST="unix:///Users/js/.colima/default/docker.sock"
+export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock

@@ -17,10 +17,10 @@ alias pkill='pkill -ife'
 
 ## Beautify commands
 # ls
-alias ls='exa --git --icons'
-alias ll='exa --git --icons --long --octal-permissions'
-alias lla='exa --git --icons --long --all --all --octal-permissions'
-alias tree='exa --git --icons --tree'
+alias ls='eza --git --icons'
+alias ll='eza --git --icons --long --octal-permissions'
+alias lla='eza --git --icons --long --all --all --octal-permissions'
+alias tree='eza --git --icons --tree'
 
 # ffuf
 alias ffuf='ffuf -c -ic -t 300'
@@ -75,7 +75,6 @@ alias htbi="sudo openvpn ~/hacking/hackthebox/htb-vpn.ovpn"
 alias lc='light-control'
 alias ocr="$HOME/.customscripts/ocr-selection"
 alias rs="source $HOME/.zshrc"
-alias kipin='~/.customscripts/kipin/init'
 alias tgp='toggleprompt'
 alias clp='wl-copy'
 alias ddp='dotdotpwn'
@@ -90,3 +89,8 @@ alias qtilee='cat ~/.local/share/qtile/qtile.log | tail -n 40 | bat -l log'
 ## Kill processes
 alias kds='pkill -f discord; pkill -f Discord'
 
+## Compatibility
+alias sed='gsed'
+
+## Eluter
+alias eli="eluter-tooling"

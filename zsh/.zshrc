@@ -2,15 +2,31 @@
 [[ $- != *i* ]] && return
 # Source my custom scripts
 source ~/.config/zsh/env-variables.sh;
-source /usr/share/zsh/plugins/fzf-zsh-plugin/fzf-zsh-plugin.plugin.zsh;
-source ~/.fzf.zsh
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh;
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh;
 source ~/.config/zsh/perm_variables.sh;
 source ~/.config/zsh/variables.sh;
 source ~/.config/zsh/alias.sh;
 source ~/.config/zsh/functions.sh;
 source ~/.config/zsh/hacking.sh;
+
+# fzf (fuzzy finder)
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# fnm (node version manager)
+[ -f $(which fnm) ] && eval "$(fnm env --use-on-cd)"
+
+# autosuggestions
+if command -v brew >/dev/null 2>&1; then
+  source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+elif [ -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+  source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+fi
+
+# syntax highlighting (must be last)
+if command -v brew >/dev/null 2>&1; then
+  source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+elif [ -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
+  source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi
 
 if [ $SHELL != '/bin/zsh' ]; then
   shopt -s checkwinsize
@@ -44,7 +60,7 @@ zle -N kill-path-word
 # Pushd's to the starting_path if there is any
 cd $starting_path
 
-# TODO: matar esto de aca, banana solutionno va
+# TODO: matar esto de aca, banana solution no va
 export LC_ALL='C.UTF-8'
 
 eval $(ssh-agent -s) &>/dev/null                                                                        
@@ -53,3 +69,10 @@ ssh-add ~/.ssh/ip_provider   &>/dev/null
 
 # Programs to execute at the start of zsh
 banner
+
+# pnpm
+export PNPM_HOME="/Users/js/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
