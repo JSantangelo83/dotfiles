@@ -75,15 +75,15 @@ function pysv(){
   
 }
 
-function nocolor(){
- sed -r 's/\x1B\[[0-9;]*[JKmsu]//g'
+function nocolor {
+  sed -r 's/\x1B\[[0-9;]*[JKmsu]//g'
 }
 
-_get_ipv4_by_iface() {
+function _get_ipv4_by_iface {
   ip -4 -o addr show dev "$1" scope global up 2>/dev/null | awk '{split($4, cidr, "/"); print cidr[1]; exit}'
 }
 
-_get_first_available_ipv4() {
+function _get_first_available_ipv4 {
   for iface in "$@"; do
     ip_addr="$(_get_ipv4_by_iface "$iface")"
     if [ -n "$ip_addr" ]; then
@@ -94,7 +94,7 @@ _get_first_available_ipv4() {
   return 1
 }
 
-gprivip() {
+function gprivip {
   default_iface="$(ip -4 route show default 2>/dev/null | awk '{print $5; exit}')"
   if [ -n "$default_iface" ]; then
     default_ip="$(_get_ipv4_by_iface "$default_iface")"
@@ -106,8 +106,8 @@ gprivip() {
   _get_first_available_ipv4 enp5s0 wlan0 eth0 wlp2s0
 }
 
-gtunip() { _get_ipv4_by_iface tun0; }
-ghamip() { _get_ipv4_by_iface ham0; }
+function gtunip { _get_ipv4_by_iface tun0; }
+function ghamip { _get_ipv4_by_iface ham0; }
 
 function update-starting-path() {
   upvar starting_path "$(pwd)"

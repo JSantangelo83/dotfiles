@@ -40,7 +40,3 @@ MIN_PROMPT=$' %{\e[1;3;35m%}%1d %{\e[31m%} %{\e[0%}m'
 PS1=$FULL_PROMPT
 PS2=$' %{\e[31m%} %{\e[0%}m'
 PROMPT_FULLED=true;
-
-# Mac compatibility
-export DOCKER_HOST="unix:///Users/js/.colima/default/docker.sock"
-export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock

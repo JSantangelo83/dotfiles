@@ -89,8 +89,5 @@ alias qtilee='cat ~/.local/share/qtile/qtile.log | tail -n 40 | bat -l log'
 ## Kill processes
 alias kds='pkill -f discord; pkill -f Discord'
 
-## Compatibility
-alias sed='gsed'
-
 ## Eluter
 alias eli="eluter-tooling"

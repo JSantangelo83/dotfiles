@@ -7,6 +7,9 @@ source ~/.config/zsh/variables.sh;
 source ~/.config/zsh/alias.sh;
 source ~/.config/zsh/functions.sh;
 source ~/.config/zsh/hacking.sh;
+if [ "$(uname -s)" = "Darwin" ]; then
+  source ~/.config/zsh/compatibility/macos.sh;
+fi
 
 # fzf (fuzzy finder)
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -69,10 +72,3 @@ ssh-add ~/.ssh/ip_provider   &>/dev/null
 
 # Programs to execute at the start of zsh
 banner
-
-# pnpm
-export PNPM_HOME="/Users/js/Library/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
