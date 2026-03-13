@@ -2,6 +2,27 @@
   "title": "Linux-style Ctrl Behavior (Text + Clipboard)",
   "rules": [
     {
+      "description": "Stop siren (pkill afplay)",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": {
+            "key_code": "f",
+            "modifiers": {
+              "mandatory": [
+                "option"
+              ]
+            }
+          },
+          "to": [
+            {
+              "shell_command": "pkill afplay"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "description": "Globe key → Left Control",
       "manipulators": [
         {

@@ -5,8 +5,12 @@
 # defaults write com.apple.Terminal NSQuitAlwaysKeepsWindows -bool false
 # defaults write com.apple.Terminal TTYKeepWindowsAcrossLaunches -bool false
 # defaults write com.apple.loginwindow TALLogoutSavesState -bool false
+# defaults write com.apple.loginwindow LoginwindowLaunchesRelaunchApps -bool false
+# defaults write -g ApplePersistenceIgnoreState -bool true
+
 
 alias sed='gsed'
+alias get='brew install'
 
 export DOCKER_HOST="unix:///Users/js/.colima/default/docker.sock"
 export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock

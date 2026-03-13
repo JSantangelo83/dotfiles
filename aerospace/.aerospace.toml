@@ -131,14 +131,14 @@ on-mode-changed = []
     alt-ctrl-i = 'resize width +50'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
-    alt-backtick = 'workspace 1'
-    alt-1 = 'workspace 2'
-    alt-2 = 'workspace 3'
-    alt-8 = 'workspace 4'
-    alt-9 = 'workspace 5'
-    alt-0 = 'workspace 6'
-    alt-minus = 'workspace 7'
-    alt-equal = 'workspace 8'
+    alt-backtick = 'exec-and-forget ~/.config/aerospace/scripts/switch-workspace.sh 1'
+    alt-1 = 'exec-and-forget ~/.config/aerospace/scripts/switch-workspace.sh 2'
+    alt-2 = 'exec-and-forget ~/.config/aerospace/scripts/switch-workspace.sh 3'
+    alt-8 = 'exec-and-forget ~/.config/aerospace/scripts/switch-workspace.sh 4'
+    alt-9 = 'exec-and-forget ~/.config/aerospace/scripts/switch-workspace.sh 5'
+    alt-0 = 'exec-and-forget ~/.config/aerospace/scripts/switch-workspace.sh 6'
+    alt-minus = 'exec-and-forget ~/.config/aerospace/scripts/switch-workspace.sh 7'
+    alt-equal = 'exec-and-forget ~/.config/aerospace/scripts/switch-workspace.sh 8'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
     alt-shift-backtick = 'move-node-to-workspace 1'
