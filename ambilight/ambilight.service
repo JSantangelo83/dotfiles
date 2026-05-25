@@ -1,16 +1,10 @@
 [Unit]
-Description=Ambilight Service
-After=network.target
+Description=Ambilight via WLED DDP
+After=graphical-session.target
 
 [Service]
-Type=simple
-User=js
-WorkingDirectory=/home/js/.config/dotfiles/ambilight
-ExecStart=/home/js/.config/dotfiles/ambilight/start_ambilight.sh
-Restart=always
-RestartSec=5
-Environment=PYTHONUNBUFFERED=1
-
-[Install]
-WantedBy=default.target
-
+ExecStart=/home/js/.customscripts/ambilight.py
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/js/.Xauthority
+Restart=on-failure
+RestartSec=3
