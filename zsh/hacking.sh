@@ -2,6 +2,37 @@
 
 alias gports="xmlstarlet sel -t -v '//port[state/@state=\"open\"]/@portid' -nl open | paste -s -d, -"
 
+function revlisten {
+PORT=1233
+
+echo "Listening on port $PORT..."
+tty_treatment | nc -lvnp $PORT
+
+# Function to handle TTY treatment
+function tty_treatment() {
+  echo "Applying TTY treatment..."
+  script /dev/null -c bash
+  # Send CTRL+Z
+  kill -s SIGTSTP $$
+  # Set terminal settings
+  stty raw -echo
+  fg
+  reset xterm
+  export TERM=xterm-256color
+  source /etc/skel/.bashrc
+  export SHELL=bash
+  stty rows 94 columns 350
+}
+
+# Wait for the reverse shell to connect
+while ! nc -z localhost $PORT; do
+  sleep 1
+done
+
+# Apply TTY treatment
+tty_treatment}
+
+
 # Returns different types of reverse shells
 function grev() {
 	# Switch case for reverse shell type
@@ -63,8 +94,11 @@ function htbc() {
 	machine_name="$1"
 	machine_lowername="$(echo $1 | awk '{print tolower($0)}')"
 	machine_hostname="$3"
-
-	machine_ip="$(htb-cli start --batch -m "$machine_name" | grep 'Target: ' | awk '{print $2}')"
+	machine_ip="$2"
+  
+  if [ -z "$machine_ip" ]; then
+	  machine_ip="$(htb-cli start --batch -m "$machine_name" | grep 'Target: ' | awk '{print $2}')"
+  fi
 	
 	#Creating machine directories
 	mkdir "$HOME/hacking/hackthebox/machines/$machine_lowername"
@@ -325,6 +359,7 @@ alias sd="show_dicts"
 # export vhlist='/usr/share/SecLists/Discovery/DNS/subdomains-top1million-110000.txt'
 # export dirlist='/usr/share/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt'
 export vhlist='/home/js/hacking/wordlists/SecLists/Discovery/DNS/subdomains-top1million-110000.txt'
+export vhlistquark="$HOME/hacking/wordlists/SecLists/Discovery/DNS/bitquark-subdomains-top100000.txt"
 export dirlist='/home/js/hacking/wordlists/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt'
 export rockyou="$HOME/hacking/wordlists/rockyou-utf-8.txt"
 export userlist="$HOME/hacking/wordlists/SecLists/Usernames/xato-net-10-million-usernames-dup.txt"
@@ -336,7 +371,8 @@ export nginx="$HOME/hacking/wordlists/nginx.txt"
 export springboot="$HOME/hacking/wordlists/SecLists/Discovery/Web-Content/spring-boot.txt"
 export names="$HOME/hacking/wordlists/SecLists/Usernames/Names/names.txt"
 export iis="$HOME/hacking/wordlists/iisfinal.txt"
-export common="/usr/share/SecLists/Discovery/Web-Content/common.txt"
+export common="/home/js/hacking/wordlists/SecLists/Discovery/Web-Content/common.txt"
 export big="$HOME/hacking/wordlists/wfuzz/general/big.txt"
 export laravel="$HOME/hacking/wordlists/SecLists/Discovery/Web-Content/WebTechnologyPaths-Trickest-Wordlists/laravel.txt"
+export namelist="$HOME/hacking/wordlists/SecLists/Discovery/DNS/namelist.txt"
 # /Dicts

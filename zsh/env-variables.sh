@@ -3,11 +3,10 @@ export LC_ALL="C"
 export TESSDATA_PREFIX='/usr/share/tessdata/'
 
 # System
-export GDK_NATIVE_WINDOWS=1
 export MAILCHECK=0
 export EDITOR='nvim'
 export dotfiles="$HOME/.config/dotfiles"
-export PATH="/usr/NX/bin/:${dotfiles}/customscripts/kipin/utilities:${dotfiles}/customscripts/kipin:${dotfiles}/customscripts:/opt/lampp:$HOME/perl5/bin${PATH:+:${PATH}}"; 
+export PATH="$HOME/.local/bin:/usr/NX/bin/:${dotfiles}/customscripts/kipin/utilities:${dotfiles}/customscripts/kipin:${dotfiles}/customscripts:/opt/lampp:$HOME/perl5/bin${PATH:+:${PATH}}"; 
 export BROWSER=firefox
 
 # Opera
@@ -20,6 +19,10 @@ export HISTCONTROL=ignoredups:erasedups  # no duplicate entries
 export HISTSIZE=100000                   # big big history
 export HISTFILESIZE=100000               # big big history
 export SAVEHIST=100000 					 # big big history
+
+# Rocm
+export ROCM_PATH=/opt/rocm
+export HSA_OVERRIDE_GFX_VERSION=10.3.0
 
 # FZF 
 export FZF_DEFAULT_OPS='-x -i'
@@ -41,3 +44,5 @@ MIN_PROMPT=$' %{\e[1;3;35m%}%1d %{\e[31m%} %{\e[0%}m'
 PS1=$FULL_PROMPT
 PS2=$' %{\e[31m%} %{\e[0%}m'
 PROMPT_FULLED=true;
+
+

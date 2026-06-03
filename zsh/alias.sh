@@ -7,7 +7,6 @@ alias phpc="mdfy /etc/php72/php.ini"
 alias httpdc="mdfy /etc/httpd/conf/httpd.conf"
 alias bashrc="mdfy ~/.bashrc"
 alias zshrc="mdfy ~/.zshrc"
-alias qtilec="mdfy ~/.config/qtile/config.py"
 alias sshdc="mdfy /etc/ssh/sshd_config"
 
 # Enter to the config folder
@@ -61,9 +60,6 @@ alias arem='sudo apt remove'
 alias py='python3'
 
 # get ips
-alias gprivip="ip a | grep -A2 -E '(enp5s0|wlan0): <' |tail -n1 | awk '{print \$2}' | sed 's/\/.*//g'"
-alias gtunip="ip a | grep -A2 'tun0: <' |tail -n1 | awk '{print \$2}' | sed 's/\/.*//g'"
-alias ghamip="ip a | grep -A2 'ham0: <' |tail -n1 | awk '{print \$2}' | sed 's/\/.*//g'"
 alias gpubip="dig @resolver4.opendns.com myip.opendns.com +short"
 # docker
 alias dc="docker compose"
@@ -83,9 +79,6 @@ alias cd='dirs -c; cd'
 alias nvmi='source /usr/share/nvm/init-nvm.sh'
 alias buildprod="npx --node-options='--max-old-space-size=5048' ng build --prod"
 alias mc="sudo mycli dattacargo33"
-
-## Error logs
-alias qtilee='cat ~/.local/share/qtile/qtile.log | tail -n 40 | bat -l log'
 
 ## Kill processes
 alias kds='pkill -f discord; pkill -f Discord'
