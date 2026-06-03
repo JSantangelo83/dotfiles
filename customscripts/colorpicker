@@ -1,2 +1,2 @@
 #!/bin/bash
-gpick -s -o | tr -d '\n' | xclip -sel c -r
+gpick -s -o | tr -d '\n' | wl-copy

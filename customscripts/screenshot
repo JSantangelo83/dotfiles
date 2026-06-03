@@ -1,0 +1,4 @@
+#!/bin/bash
+GEOMETRY=$(hyprctl monitors -j | jq -r '.[] | select(.focused==true) | "\(.x),\(.y) \(.width)x\(.height)"')
+REGION=$(echo "$GEOMETRY" | slurp)
+[ -n "$REGION" ] && grim -g "$REGION" - | wl-copy
