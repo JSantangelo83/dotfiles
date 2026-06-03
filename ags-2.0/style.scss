@@ -1,20 +1,382 @@
-// https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-3-24/gtk/theme/Adwaita/_colors-public.scss
-$fg-color: #{"@theme_fg_color"};
-$bg-color: #{"@theme_bg_color"};
+$bg: #353535;
+$bg-dark: #202020;
+$foreground: #A8B0CD;
+$foreground-dark: #4C536A;
+$foreground-2: #FFFFFF;
+$selected: rgba(168, 166, 166, 0.1);
+$disabled: #6A6A6A;
+$accents: (
+  0: #673434,
+  1: #6E6E2C,
+  2: #304079,
+  3: #50885B,
+);
+$danger: #DC3545;
+$warning: #FFFFFF;
+$success: #61D97C;
+$border-radius: 20px;
+$border-radius-2: 23px;
 
-window.Bar {
-  background: transparent;
-  color: $fg-color;
-  font-weight: bold;
+$padding: 15px;
 
-  > centerbox {
-    background: $bg-color;
-    border-radius: 10px;
-    margin: 8px;
+.bar {
+  background-color: $bg;
+  padding-bottom: $padding;
+  min-width: 48px;
+  border-radius: $border-radius;
+}
+
+.head-element {
+  &.container {
+    background-color: $bg-dark;
+    border-radius: $border-radius-2;
+    border: none;
+    padding: 20px;
   }
 
-  button {
+  &.container:hover {
+    background-color: lighten($bg-dark, 5%);
+  }
+}
+
+.clock-element {
+  &.container {
+    background-color: $bg-dark;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 0.7rem 0.1rem;
+  }
+
+  .hourmin {
+    color: $foreground;
+    font-size: 1.5rem;
+  }
+
+  .label {
+    color: $foreground-dark;
+    font-size: 0.6rem;
+    margin-left: 0.5em;
+  }
+}
+
+.tray-element {
+  padding: 4px 0;
+
+  .tray-item {
+    min-width: 0;
+    min-height: 0;
+  }
+}
+
+.workspace-element {
+  $ws-spacing: 7px;
+  $ws-underscore-spacing: 9px;
+
+  &.container {
+    background-color: $bg-dark;
+    padding-top: $padding;
+    padding-left: 4px;
+    padding-right: 4px;
+    border-radius: $border-radius $border-radius 0 0;
+    border-bottom: 2px dashed $foreground-dark;
+  }
+
+  button.item {
+    background: transparent;
+    border: none;
+    padding: 0;
+    min-width: 0;
+    min-height: 0;
+    margin-bottom: $ws-spacing;
+
+    .icon {
+      color: $foreground;
+      font-size: 1.5rem;
+      padding-bottom: $ws-underscore-spacing;
+    }
+
+    .label {
+      color: white;
+      font-size: 9px;
+    }
+
+    @for $i from 0 through 3 {
+      &.monitor-#{$i} {
+        $accent: map-get($accents, $i);
+
+        .icon {
+          border-bottom: 2px solid $accent;
+          padding-bottom: $ws-underscore-spacing - 2px;
+        }
+      }
+    }
+
+    &:hover {
+      background-color: rgba(168, 166, 166, 0.04);
+    }
+  }
+}
+
+// WLED bulb rainbow animation for ambilight mode
+@keyframes wled-rainbow {
+  0%   { color: #ff4040; }
+  16%  { color: #ff9900; }
+  33%  { color: #ffee00; }
+  50%  { color: #40bb55; }
+  67%  { color: #4488ff; }
+  83%  { color: #bb44ff; }
+  100% { color: #ff4040; }
+}
+
+.wled-ambilight {
+  font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono NL', monospace;
+  font-size: 1.8rem;
+  animation: wled-rainbow 2.5s linear infinite;
+}
+
+// Shared popover section title — used by both wled and metrics popovers
+.wled-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: bold;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: $foreground;
+  padding: 8px 14px 6px;
+}
+
+// Inline icon-only buttons inside the popover (apply arrow, add favourite)
+.wled-icon-btn,
+.wled-icon-btn:hover,
+.wled-icon-btn:active,
+.wled-icon-btn:focus,
+.wled-icon-btn:focus-visible {
+  background: none;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.wled-icon-btn {
+  min-width: 0;
+  min-height: 0;
+  padding: 2px 6px;
+  border-radius: 6px;
+  color: $foreground-dark;
+
+  &:hover { background-color: $selected; }
+}
+
+// WLED section — sits directly below the dashed workspace line
+.wled-section {
+  background: none;
+  padding: 6px 0;
+}
+
+.wled-button,
+.wled-button:hover,
+.wled-button:active,
+.wled-button:focus,
+.wled-button:focus-visible {
+  background: none;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.wled-button {
+  min-width: 0;
+  min-height: 0;
+  color: $foreground-2;
+  border-radius: 8px;
+  padding: 4px 6px;
+
+  &:hover { background-color: $selected; }
+  &.ambilight-on { color: #E8A838; }
+
+  .wled-icon {
+    font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono NL', monospace;
+    font-size: 1.8rem;
+    color: inherit;
+  }
+
+  .wled-icon.metrics-green  { color: #61D97C; }
+  .wled-icon.metrics-yellow { color: #E8A838; }
+  .wled-icon.metrics-red    { color: #DC3545; }
+}
+
+// Popover shell
+popover.wled-popup > contents {
+  background-color: $bg;
+  border-radius: $border-radius;
+  padding: 0;
+  border: 1px solid $foreground-dark;
+}
+
+.wled-popover {
+  min-width: 210px;
+  padding: 4px 0;
+
+  .wled-row {
+    padding: 7px 14px;
+  }
+
+  .wled-row-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: $foreground-dark;
+  }
+
+  .wled-ambilight-label {
+    color: #E8A838;
+  }
+
+  // color dot buttons — background-color is set dynamically via per-dot CSS providers
+  .color-dot {
+    min-width: 22px;
+    min-height: 22px;
+    padding: 0;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+
+    &:hover { border-color: $foreground; }
+    &:focus { box-shadow: none; outline: none; }
+    &.dot-selected { border-color: $foreground-2; }
+  }
+
+  .wled-hex-entry {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    min-height: 0;
+    padding: 4px 8px;
+    color: $foreground;
+
+    &placeholder { color: $foreground-dark; }
+    &.wled-hex-error { border-color: $danger; }
+  }
+}
+
+// ── System metrics popover ────────────────────────────────────────────────
+
+.metrics-popover {
+  min-width: 210px;
+  padding: 4px 0;
+
+  .metrics-body {
+    padding: 4px 0;
+  }
+
+  .metric-row {
+    padding: 0;
+  }
+
+  .metric-btn,
+  .metric-btn:hover,
+  .metric-btn:active,
+  .metric-btn:focus,
+  .metric-btn:focus-visible {
+    background: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    outline: none;
+  }
+
+  .metric-btn {
+    padding: 6px 14px;
+    border-radius: 0;
+
+    &:hover { background-color: rgba(168, 166, 166, 0.08); }
+  }
+
+  .metric-icon {
+    font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono NL', monospace;
+    font-size: 0.9rem;
+  }
+
+  .metric-icon-cpu  { color: #e06060; }
+  .metric-icon-mem  { color: #6090e0; }
+  .metric-icon-disk { color: #60c080; }
+
+  .metric-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: $foreground;
+  }
+
+  .metric-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: bold;
+  }
+
+  .metric-value-cpu  { color: #e06060; }
+  .metric-value-mem  { color: #6090e0; }
+  .metric-value-disk { color: #60c080; }
+
+  .metric-bar {
+    min-height: 3px;
+
+    trough {
+      min-height: 3px;
+      background-color: rgba(255,255,255,0.08);
+      border-radius: 2px;
+    }
+
+    progress { min-height: 3px; border-radius: 2px; }
+  }
+
+  .metric-bar-cpu  progress { background-color: #e06060; }
+  .metric-bar-mem  progress { background-color: #6090e0; }
+  .metric-bar-disk progress { background-color: #60c080; }
+
+  .proc-panel {
+    padding: 6px 14px 8px;
+  }
+
+  .proc-row {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: $foreground-dark;
+  }
+}
+
+// ── Workspace icon picker ─────────────────────────────────────────────────
+
+.icon-picker {
+  padding: 8px;
+
+  .icon-search {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: $foreground;
+
+    &placeholder { color: $foreground-dark; }
+  }
+
+  .icon-flow {
+    padding: 4px 0;
+  }
+
+  .icon-pick-btn,
+  .icon-pick-btn:hover,
+  .icon-pick-btn:active,
+  .icon-pick-btn:focus,
+  .icon-pick-btn:focus-visible {
+    background: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    outline: none;
+  }
+
+  .icon-pick-btn {
+    padding: 6px;
     border-radius: 8px;
-    margin: 2px;
+    min-width: 0;
+    min-height: 0;
+
+    &:hover { background-color: $selected; }
   }
 }
