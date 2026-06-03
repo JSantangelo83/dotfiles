@@ -1,5 +1,4 @@
 #Qtile
-qtile/__pycache__/*
 qtile/persisted.json
 
 #Eww temp data
@@ -12,4 +11,12 @@ alacritty/alacritty.yml
 # Zsh variables
 zsh/variables.sh
 
-ags-2.0
+# Python cache
+**/__pycache__/
+
+# Logs
+**/*.log
+
+# Node / AGS generated
+node_modules/
+@girs/

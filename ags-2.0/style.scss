@@ -80,13 +80,16 @@ $padding: 15px;
     border-bottom: 2px dashed $foreground-dark;
   }
 
+  .ws-item-wrap {
+    margin-bottom: $ws-spacing;
+  }
+
   button.item {
     background: transparent;
     border: none;
     padding: 0;
     min-width: 0;
     min-height: 0;
-    margin-bottom: $ws-spacing;
 
     .icon {
       color: $foreground;
@@ -112,6 +115,23 @@ $padding: 15px;
 
     &:hover {
       background-color: rgba(168, 166, 166, 0.04);
+    }
+  }
+
+  .tmp-dots {
+    margin-top: 3px;
+  }
+
+  .tmp-dot {
+    min-width: 10px;
+    min-height: 10px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+
+    @for $i from 0 through 3 {
+      &.tmp-dot-mon-#{$i} {
+        background-color: map-get($accents, $i);
+      }
     }
   }
 }

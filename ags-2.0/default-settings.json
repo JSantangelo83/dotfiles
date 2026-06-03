@@ -1,0 +1,14 @@
+{
+  "cache_dir": "/tmp/ags-bar",
+  "icons_dir": "/home/js/.config/dotfiles/eww/assets/workspaces",
+  "workspaces": {
+    "1": { "icon": "default/workspace0" },
+    "2": { "icon": "default/workspace1" },
+    "3": { "icon": "default/workspace2" },
+    "4": { "icon": "default/workspace3" },
+    "5": { "icon": "slack"             },
+    "6": { "icon": "spotify"           },
+    "7": { "icon": "any"               },
+    "8": { "icon": "steam"             }
+  }
+}
