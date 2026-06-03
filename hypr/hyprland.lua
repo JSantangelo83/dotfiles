@@ -178,12 +178,52 @@ hl.bind(mainMod .. " + CTRL + SHIFT + L", hl.dsp.layout("swap_column_right"))
 hl.bind(mainMod .. " + Space",            hl.dsp.layout("toggle_split"))
 hl.bind(mainMod .. " + R",               hl.dsp.layout("normalize"))
 
--- ─── Workspaces ──────────────────────────────────────────────────────────────
-local wsKeys = { "grave", "1", "2", "8", "9", "0", "minus", "equal" }
-for i, key in ipairs(wsKeys) do
-    hl.bind(mainMod .. " + " .. key, function()
-        -- If workspace is already visible on some monitor, follow focus there.
-        -- Otherwise bring it to the current monitor (no monitor-memory stickiness).
+-- ─── Tmp Workspace Helpers ───────────────────────────────────────────────────
+-- Encoding: workspace N is main; sub-workspaces are N*10+1, N*10+2, ... N*10+9
+-- e.g. workspace 2 → subs 21, 22, ..., 29 (auto-deleted by Hyprland when empty)
+
+local function get_base_ws(ws_id)
+    if ws_id < 10 then return ws_id end
+    return math.floor(ws_id / 10)
+end
+
+local function get_sub_level(ws_id)
+    if ws_id < 10 then return 0 end
+    return ws_id % 10
+end
+
+local function next_subws(ws_id)
+    local base = get_base_ws(ws_id)
+    local sub  = get_sub_level(ws_id)
+    if sub >= 9 then return base end
+    return base * 10 + sub + 1
+end
+
+local function prev_subws(ws_id)
+    local base = get_base_ws(ws_id)
+    local sub  = get_sub_level(ws_id)
+    if sub <= 1 then return base end
+    return base * 10 + sub - 1
+end
+
+local function ws_exists(ws_id)
+    return hl.get_workspace(ws_id) ~= nil
+end
+
+-- Switch to workspace i or cycle through its sub-workspaces when already there.
+local function switch_to_ws(i)
+    local active    = hl.get_active_workspace()
+    local active_id = active and active.id or 0
+
+    if get_base_ws(active_id) == i then
+        -- Cycle to the next existing sub-workspace, skipping gaps.
+        local next_id = next_subws(active_id)
+        while next_id ~= i and not ws_exists(next_id) do
+            next_id = next_subws(next_id)
+        end
+        hl.dispatch(hl.dsp.focus({ workspace = next_id, on_current_monitor = true }))
+    else
+        -- Different base: follow if visible on another monitor, else bring here.
         local on_current = true
         for _, mon in ipairs(hl.get_monitors()) do
             if mon.active_workspace and mon.active_workspace.id == i then
@@ -192,8 +232,28 @@ for i, key in ipairs(wsKeys) do
             end
         end
         hl.dispatch(hl.dsp.focus({ workspace = i, on_current_monitor = on_current }))
-    end)
-    hl.bind(mainMod .. " + SHIFT + " .. key,  hl.dsp.window.move({ workspace = i, follow = false }))
+    end
+end
+
+-- Move the active window to workspace i, using sub-workspace logic when i == own base.
+local function move_to_ws(i)
+    local active    = hl.get_active_workspace()
+    local active_id = active and active.id or 0
+    local windows   = active and active.windows or 0
+
+    if get_base_ws(active_id) == i then
+        local goto_id = windows > 1 and next_subws(active_id) or prev_subws(active_id)
+        hl.dispatch(hl.dsp.window.move({ workspace = goto_id, follow = false }))
+    else
+        hl.dispatch(hl.dsp.window.move({ workspace = i, follow = false }))
+    end
+end
+
+-- ─── Workspaces ──────────────────────────────────────────────────────────────
+local wsKeys = { "grave", "1", "2", "8", "9", "0", "minus", "equal" }
+for i, key in ipairs(wsKeys) do
+    hl.bind(mainMod .. " + " .. key,         function() switch_to_ws(i) end)
+    hl.bind(mainMod .. " + SHIFT + " .. key, function() move_to_ws(i)   end)
 end
 
 -- Mouse workspace scroll
