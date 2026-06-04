@@ -138,15 +138,43 @@ function buildIconPicker(wsId: number, parent: Gtk.Widget): Gtk.Popover {
     for (const entry of filtered) {
       const btn = new Gtk.Button()
       btn.set_css_classes(["icon-pick-btn"])
-      const img = new Gtk.Image()
-      img.set_pixel_size(28)
-      img.set_from_file(entry.path0)
-      btn.set_child(img)
+
+      const path1 = entry.path0.replace(/-0\.png$/, "-1.png")
+
+      const stack = new Gtk.Stack()
+      stack.transition_duration = 180
+
+      const imgOff = new Gtk.Image()
+      imgOff.set_pixel_size(28)
+      imgOff.set_from_file(entry.path0)
+
+      const imgOn = new Gtk.Image()
+      imgOn.set_pixel_size(28)
+      imgOn.set_from_file(path1)
+
+      stack.add_named(imgOff, "off")
+      stack.add_named(imgOn, "on")
+      btn.set_child(stack)
+
+      let showingActive = false
 
       btn.connect("clicked", () => {
         setWorkspaceIcon(wsId, entry.key)
         pop.popdown()
       })
+
+      const gcRight = new Gtk.GestureClick()
+      gcRight.set_button(3)
+      gcRight.propagation_phase = Gtk.PropagationPhase.CAPTURE
+      gcRight.connect("pressed", () => {
+        showingActive = !showingActive
+        stack.transition_type = showingActive
+          ? Gtk.StackTransitionType.SLIDE_LEFT
+          : Gtk.StackTransitionType.SLIDE_RIGHT
+        stack.set_visible_child_name(showingActive ? "on" : "off")
+      })
+      btn.add_controller(gcRight)
+
       flow.append(btn)
     }
   }
