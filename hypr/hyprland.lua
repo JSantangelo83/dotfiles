@@ -8,13 +8,13 @@ local HOME = os.getenv("HOME")
 -- ─── Monitors ────────────────────────────────────────────────────────────────
 -- Layout (all connected):
 --   HDMI-A-1   3840x2160  auto (above row when present)
---   DP-3       1440x900   pos 0x0    rotate left
+--   DP-2       1440x900   pos 0x0    rotate 90° (vertical), effective width 900px
 --   DP-1       2560x1440  pos 900x0  primary
---   DP-2       1024x768   pos 3460x0
+--   DP-3       1440x900   pos 3460x0
 hl.monitor({ output = "HDMI-A-1", mode = "3840x2160@60",  position = "auto",   scale = 1 })
-hl.monitor({ output = "DP-1",     mode = "2560x1440@164", position = "768x0",  scale = 1 })
-hl.monitor({ output = "DP-2",     mode = "1024x768@60",   position = "0x0",    scale = 1, transform = 1 })
-hl.monitor({ output = "DP-3",     mode = "1440x900@60",   position = "3328x0", scale = 1 })
+hl.monitor({ output = "DP-1",     mode = "2560x1440@164", position = "900x0",  scale = 1 })
+hl.monitor({ output = "DP-2",     mode = "1440x900@74",   position = "0x0",    scale = 1, transform = 1 })
+hl.monitor({ output = "DP-3",     mode = "1440x900@60",   position = "3460x0", scale = 1 })
 hl.monitor({ output = "",         mode = "preferred",      position = "auto",   scale = 1 })
 
 -- ─── Autostart ───────────────────────────────────────────────────────────────
