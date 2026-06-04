@@ -70,7 +70,7 @@ const monitorWsBindings = hyprland.get_monitors().map(m => ({
 }))
 
 function changeWorkspace(id: number) {
-  hyprland.message_async(`dispatch workspace ${id}`, () => {})
+  hyprland.message_async(`dispatch hl.dsp.focus({ workspace = ${id} })`, () => {})
 }
 
 // ── Icon picker popover ────────────────────────────────────────────────────
@@ -303,6 +303,9 @@ function Workspace(id: number) {
             dot.set_css_classes(
               isActive ? ["tmp-dot", `tmp-dot-mon-${info!.monId}`] : ["tmp-dot"]
             )
+            const gc = new Gtk.GestureClick()
+            gc.connect("pressed", () => changeWorkspace(subId))
+            dot.add_controller(gc)
             dotsBox.append(dot)
           }
         })

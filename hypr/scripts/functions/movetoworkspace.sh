@@ -15,8 +15,8 @@ if [ "${active_workspace:0:1}" == "$goto_workspace" ]; then
     # Filtering only the current workspace data
     windows="$(hyprctl -j workspaces | jq "map(select(.id == "$active_workspace"))[0].windows")"
     
-    # If it has more than 1 client, push it to the next sub-workspace, otherwise, push it to the previous one
-    if [ $windows -gt 1 ]; then
+    # From the main workspace (single-digit id), always allow moving to first tmp regardless of window count
+    if [ ${#active_workspace} -eq 1 ] || [ $windows -gt 1 ]; then
         goto_workspace=$(next_subws $active_workspace)
     else
         goto_workspace=$(prev_subws $active_workspace)

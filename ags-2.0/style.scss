@@ -204,6 +204,11 @@ $padding: 15px;
   outline: none;
 }
 
+.wled-light-btn {
+  margin-top: -7px;
+  margin-bottom: -15px;
+}
+
 .wled-button {
   min-width: 0;
   min-height: 0;
@@ -218,6 +223,10 @@ $padding: 15px;
     font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono NL', monospace;
     font-size: 1.8rem;
     color: inherit;
+  }
+
+  .wled-light-icon {
+    font-size: calc(1.8rem + 10px);
   }
 
   .wled-icon.metrics-green  { color: #61D97C; }
@@ -359,6 +368,72 @@ popover.wled-popup > contents {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.65rem;
     color: $foreground-dark;
+  }
+}
+
+// ── Audio widget ──────────────────────────────────────────────────────────
+
+.audio-icon {
+  font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono NL', monospace;
+  font-size: 1.2rem;
+  color: $foreground;
+
+  &.audio-muted { color: $danger; }
+}
+
+.audio-popover {
+  min-width: 300px;
+  padding: 4px 0 8px;
+
+  .audio-col-header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    color: $foreground-dark;
+    padding: 8px 10px 4px;
+  }
+
+  .audio-device-row {
+    padding: 5px 10px;
+
+    &:hover { background-color: $selected; }
+  }
+
+  .audio-device-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: $foreground;
+  }
+
+  checkbutton.audio-check,
+  checkbutton.audio-check:hover,
+  checkbutton.audio-check:focus,
+  checkbutton.audio-check:focus-visible {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    outline: none;
+    padding: 0;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  checkbutton.audio-check check {
+    min-width: 12px;
+    min-height: 12px;
+    border-radius: 50%;
+    border: 2px solid $foreground-dark;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  checkbutton.audio-check check:checked {
+    background-color: $foreground;
+    border-color: $foreground;
+  }
+
+  checkbutton.audio-check:hover check {
+    border-color: $foreground;
   }
 }
 

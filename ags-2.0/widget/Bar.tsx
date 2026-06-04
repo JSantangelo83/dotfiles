@@ -8,6 +8,7 @@ import Tray from "./Tray"
 import { WorkspacesContainer } from "./Workspace"
 import WledButton from "./WledController"
 import SysMetrics from "./SysMetrics"
+import AudioButton from "./Audio"
 
 const { TOP, BOTTOM, LEFT } = Astal.WindowAnchor
 const SEPARATION = 10
@@ -37,14 +38,14 @@ export default function Bar(monitor: number) {
         {/* bar column narrower than head — halign CENTER keeps it at natural width */}
         <box orientation={1} class="bar" vexpand halign={Gtk.Align.CENTER}>
           <WorkspacesContainer />
-          <box class="wled-section" orientation={1} halign={Gtk.Align.CENTER}>
-            <WledButton />
-            <SysMetrics />
+          <box class="wled-section" orientation={1}>
+            <box halign={Gtk.Align.CENTER}><SysMetrics /></box>
           </box>
           <box vexpand />
           <box orientation={1} spacing={SEPARATION}>
             <Tray />
             <Clock />
+            <WledButton />
             <Battery />
           </box>
         </box>

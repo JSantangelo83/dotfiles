@@ -307,11 +307,11 @@ function buildPopover(parent: Gtk.Widget): Gtk.Popover {
 export default function WledButton() {
   return (
     <button
-      class="wled-button flat"
+      class="wled-button wled-light-btn flat"
       tooltipText="Led Control"
       $={(btn: Gtk.Button) => {
         const lbl = new Gtk.Label({ label: "󰌵" })
-        lbl.set_css_classes(["wled-icon"])
+        lbl.set_css_classes(["wled-icon", "wled-light-icon"])
         btn.set_child(lbl)
 
         const colorProvider = new Gtk.CssProvider()
@@ -325,15 +325,15 @@ export default function WledButton() {
 
           if (amb) {
             lbl.label = "󰌵"
-            lbl.set_css_classes(["wled-icon", "wled-ambilight"])
+            lbl.set_css_classes(["wled-icon", "wled-light-icon", "wled-ambilight"])
             colorProvider.load_from_string("")
           } else if (!on || bri === 0) {
             lbl.label = "󰌶"
-            lbl.set_css_classes(["wled-icon"])
+            lbl.set_css_classes(["wled-icon", "wled-light-icon"])
             colorProvider.load_from_string("")
           } else {
             lbl.label = "󰌵"
-            lbl.set_css_classes(["wled-icon"])
+            lbl.set_css_classes(["wled-icon", "wled-light-icon"])
             colorProvider.load_from_string(
               color ? `label { color: rgb(${color.r},${color.g},${color.b}); }` : ""
             )

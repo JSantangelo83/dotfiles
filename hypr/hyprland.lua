@@ -242,7 +242,8 @@ local function move_to_ws(i)
     local windows   = active and active.windows or 0
 
     if get_base_ws(active_id) == i then
-        local goto_id = windows > 1 and next_subws(active_id) or prev_subws(active_id)
+        local is_main = get_sub_level(active_id) == 0
+        local goto_id = (is_main or windows > 1) and next_subws(active_id) or prev_subws(active_id)
         hl.dispatch(hl.dsp.window.move({ workspace = goto_id, follow = false }))
     else
         hl.dispatch(hl.dsp.window.move({ workspace = i, follow = false }))

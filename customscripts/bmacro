@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Parse with GNU getopt
+PARSED=$(getopt -o i:o:v --long input:,output:,verbose -- "$@")
+
+if [[ $? -ne 0 ]]; then exit 1; fi
+eval set -- "$PARSED"
+
+# Extract options
+while true; do
+  case "$1" in
+    -i|--input) input="$2"; shift 2 ;;
+    -o|--output) output="$2"; shift 2 ;;
+    -v|--verbose) verbose=true; shift ;;
+    --) shift; break ;;
+    *) break ;;
+  esac
+done
