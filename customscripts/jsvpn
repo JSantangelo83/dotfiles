@@ -1,0 +1,208 @@
+#!/bin/bash
+# jsvpn — list / add / remove / update NetworkManager VPN connections.
+#
+# On import NetworkManager extracts inline <ca>/<cert>/<key>/... blocks into
+# CERT_DIR and stores everything else in its own connection profile, so the
+# .ovpn file is not needed afterwards. Certs referenced as *files* would stay
+# pointing at their original path though, so -a inlines them before importing.
+CERT_DIR="$HOME/.local/share/networkmanagement/certificates/nm-openvpn"
+
+function usage {
+       echo "Usage: jsvpn -l | -r <idx> | -a <file.ovpn> [-n <name>] | -u <idx> <file.ovpn> [-n <name>]
+         -l                          List VPN connections with their index.
+         -r <idx>                    Remove the VPN at <idx> (and its stored certs).
+         -a <file.ovpn>              Import an OpenVPN config into NetworkManager.
+                                     The file can be deleted afterwards.
+         -u <idx> <file.ovpn>        Replace the VPN at <idx> with a new config (-r + -a).
+                                     The old one is only removed once the import succeeds.
+         -n <name>                   Connection name [default: file name for -a,
+                                     current name for -u].
+         -y                          Don't ask for confirmation on -r / -u.
+         -h                          Display this help message."
+       exit "${1:-0}"
+}
+
+function die { echo >&2 "[x] $*"; exit 1; }
+
+# Fills VPNS with "name<TAB>uuid<TAB>type<TAB>active", sorted by name so indices are stable
+function load_vpns {
+    VPNS=()
+    local uuid type active name
+    while IFS=: read -r uuid type active; do
+        [[ $type == vpn || $type == wireguard ]] || continue
+        name=$(nmcli -g connection.id connection show "$uuid")
+        VPNS+=("$name"$'\t'"$uuid"$'\t'"$type"$'\t'"$active")
+    done < <(nmcli -t -f UUID,TYPE,ACTIVE connection show)
+    mapfile -t VPNS < <(printf '%s\n' "${VPNS[@]}" | sort -f | sed '/^$/d')
+}
+
+function cmd_list {
+    load_vpns
+    [[ ${#VPNS[@]} -eq 0 ]] && { echo "No VPN connections."; return; }
+    local i name uuid type active
+    for i in "${!VPNS[@]}"; do
+        IFS=$'\t' read -r name uuid type active <<< "${VPNS[$i]}"
+        [[ $type == vpn ]] && type=$(nmcli -g vpn.service-type connection show "$uuid" | sed 's/.*\.//')
+        printf '[%d] %s (%s%s)\n' "$i" "$name" "$type" "$([[ $active == yes ]] && echo ', active')"
+    done
+}
+
+# Sets name / uuid / type / active for the VPN at index $1
+function vpn_at {
+    [[ $1 =~ ^[0-9]+$ ]] || die "Index must be a number: $1"
+    load_vpns
+    [[ $1 -lt ${#VPNS[@]} ]] || die "No VPN at index $1 (see jsvpn -l)"
+    IFS=$'\t' read -r name uuid type active <<< "${VPNS[$1]}"
+}
+
+# Cert files NetworkManager extracted for a connection — never touch files elsewhere
+function vpn_certs {
+    nmcli -g vpn.data connection show "$1" | grep -oE "$CERT_DIR/[^,]+" | sort -u
+}
+
+function confirm {
+    [[ $_Y -eq 1 ]] && return
+    read -r -p "$1 [y/N] " ans
+    [[ $ans == [yY]* ]] || { echo "Aborted."; exit 1; }
+}
+
+function cmd_remove {
+    local name uuid type active certs
+    vpn_at "$1"
+    mapfile -t certs < <(vpn_certs "$uuid")
+    confirm "Remove '$name'?"
+
+    nmcli connection delete "$uuid" >/dev/null || die "nmcli failed to delete '$name'"
+    [[ ${#certs[@]} -gt 0 ]] && rm -f -- "${certs[@]}"
+    echo "Removed '$name'."
+}
+
+# Copies the .ovpn to stdout with every file-referenced cert/key replaced by an inline block
+function inline_ovpn {
+    local src=$1 dir line block="" directive path dirn
+    dir=$(cd "$(dirname "$src")" && pwd)
+    local re='^[[:space:]]*(ca|cert|key|tls-auth|tls-crypt|tls-crypt-v2|secret|extra-certs)[[:space:]]+("([^"]+)"|([^[:space:]]+))([[:space:]]+([01]))?[[:space:]]*$'
+
+    while IFS= read -r line || [[ -n $line ]]; do
+        line=${line%$'\r'}
+        # Pass existing inline blocks through untouched
+        if [[ -n $block ]]; then
+            echo "$line"
+            [[ $line =~ ^[[:space:]]*\</$block\> ]] && block=""
+            continue
+        fi
+        if [[ $line =~ ^[[:space:]]*\<([a-z0-9-]+)\> ]]; then
+            block=${BASH_REMATCH[1]}
+            echo "$line"
+            continue
+        fi
+
+        if [[ $line =~ $re ]]; then
+            directive=${BASH_REMATCH[1]}
+            path=${BASH_REMATCH[3]:-${BASH_REMATCH[4]}}
+            dirn=${BASH_REMATCH[6]}
+            if [[ $path != "[inline]" ]]; then
+                [[ $path == /* ]] || path="$dir/$path"
+                [[ -r $path ]] || die "'$directive' references '$path', which can't be read"
+                echo "<$directive>"
+                cat -- "$path"
+                [[ -n $(tail -c1 -- "$path") ]] && echo
+                echo "</$directive>"
+                [[ -n $dirn ]] && echo "key-direction $dirn"
+                continue
+            fi
+        elif [[ $line =~ ^[[:space:]]*(pkcs12|crl-verify|auth-user-pass)[[:space:]]+[^[:space:]] ]]; then
+            echo >&2 "[!] '${line# }' references an external file; it is not copied, keep it around"
+        fi
+        echo "$line"
+    done < "$src"
+}
+
+# Dies if a connection other than uuid $2 is already called $1
+function check_name_free {
+    [[ $1 == */* ]] && die "Name can't contain '/': $1"
+    local other
+    for other in $(nmcli -g connection.uuid connection show id "$1" 2>/dev/null); do
+        [[ $other != "$2" ]] && die "A connection named '$1' already exists"
+    done
+}
+
+# Imports $1 as a connection named $2 and prints the new uuid
+function import_ovpn {
+    [[ -f $1 ]] || die "File not found: $1"
+    # nmcli names the connection (and the extracted cert files) after the file
+    local tmp out
+    tmp=$(mktemp -d) || die "mktemp failed"
+    trap 'rm -rf -- "$tmp"' EXIT
+    inline_ovpn "$1" > "$tmp/$2.ovpn" || exit 1
+
+    out=$(nmcli connection import type openvpn file "$tmp/$2.ovpn" 2> >(grep -v "another connection with the name" >&2)) || die "nmcli failed to import '$1'"
+    grep -oE '\([0-9a-f-]{36}\)' <<< "$out" | tail -1 | tr -d '()'
+}
+
+function cmd_add {
+    local file=$1 name=$2
+    [[ -z $name ]] && name=$(basename -- "${file%.*}")
+    check_name_free "$name"
+
+    import_ovpn "$file" "$name" >/dev/null || exit 1
+    echo "Added '$name'. You can delete $file now."
+}
+
+function cmd_update {
+    local file=$2 new_name=$3 name uuid type active old_certs new_certs new_uuid
+    vpn_at "$1"
+    [[ -f $file ]] || die "File not found: $file"
+    [[ -z $new_name ]] && new_name=$name
+    check_name_free "$new_name" "$uuid"
+    confirm "Replace '$name' with $file$([[ $new_name != "$name" ]] && echo " as '$new_name'")?"
+
+    mapfile -t old_certs < <(vpn_certs "$uuid")
+    new_uuid=$(import_ovpn "$file" "$new_name") || exit 1
+    [[ -n $new_uuid ]] || die "Imported '$new_name' but couldn't find it; '$name' was left untouched"
+    nmcli connection delete "$uuid" >/dev/null || die "Imported '$new_name' but failed to delete the old '$name'"
+
+    # Same name means the new import overwrote the same cert files — keep those
+    mapfile -t new_certs < <(vpn_certs "$new_uuid")
+    local c
+    for c in "${old_certs[@]}"; do
+        printf '%s\n' "${new_certs[@]}" | grep -qxF -- "$c" || rm -f -- "$c"
+    done
+
+    echo "Updated '$new_name'. You can delete $file now."
+    [[ $active == yes ]] && echo "[!] It was connected; bring it back up with: nmcli connection up '$new_name'"
+}
+
+#Getting params (flags and the -u file may come in any order)
+mode=''; arg=''; name=''; positional=()
+export _Y=0
+
+while (( OPTIND <= $# )); do
+    if getopts :lr:a:u:n:yh opt; then
+        case ${opt} in
+          l) mode=list ;;
+          r) mode=remove; arg=${OPTARG} ;;
+          a) mode=add; arg=${OPTARG} ;;
+          u) mode=update; arg=${OPTARG} ;;
+          n) name=${OPTARG} ;;
+          y) _Y=1 ;;
+          h) usage ;;
+          :) echo >&2 "[x] -${OPTARG} needs an argument"; usage 1 ;;
+          *) echo >&2 "[x] Invalid Option"; usage 1 ;;
+         esac
+    else
+        positional+=("${!OPTIND}"); ((OPTIND++))
+    fi
+done
+
+[[ -n $name && $mode != add && $mode != update ]] && die "-n only works with -a / -u"
+[[ $mode == update && ${#positional[@]} -ne 1 ]] && die "-u needs an index and a .ovpn file: jsvpn -u <idx> <file.ovpn>"
+[[ $mode != update && ${#positional[@]} -gt 0 ]] && die "Unexpected argument: ${positional[0]}"
+
+case $mode in
+  list)   cmd_list ;;
+  remove) cmd_remove "$arg" ;;
+  add)    cmd_add "$arg" "$name" ;;
+  update) cmd_update "$arg" "${positional[0]}" "$name" ;;
+  *)      usage 1 ;;
+esac
