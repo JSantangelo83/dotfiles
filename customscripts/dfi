@@ -2,7 +2,7 @@
 function usage {
        echo "Usage: dfi -s dotfiles_path [-c config_file][-v]
          -s                          path of the dotfiles DIRECTORY.
-         -c                          config file (mapping) 
+         -c                          config file (mapping)
                                      format:
                                           src:destination
                                           src:destination
@@ -18,7 +18,7 @@ dfi installs all the dotfiles mapped at .dfirc in the source folder"
 }
 
 #Getting params
-dotfiles_path='/home/js/.config/dotfiles/'; #default value
+dotfiles_path='/home/js/.config/dotfiles'; #default value (no trailing slash)
 config_file='';
 export _V=0;
 export _M=0;
@@ -38,6 +38,10 @@ done
 if [[ -z "$dotfiles_path" ]] || ! [[ -d "$dotfiles_path" ]]; then
 	usage;
 fi
+
+#Normalize (canonicalize + strip trailing slash) so path joins are predictable.
+dotfiles_path="$(realpath "$dotfiles_path")"
+export dotfiles_path
 
 #Verbosity
 function log () {
@@ -75,18 +79,29 @@ export -f can_write_path;
 
 #Validating config file
 if [[ -z $config_file ]]; then
-       log "[!] No config file specified, using $dotfiles_path.dfirc..."
-       config_file=$dotfiles_path.dfirc
+       config_file="$dotfiles_path/.dfirc"
+       log "[!] No config file specified, using $config_file..."
 fi
 if ! [[ -f $config_file ]]; then >&2 echo "[x] No valid config file found ($config_file), exiting...";exit 1; fi
 
 #link subfile function
 function linkfile(){
-       if [[ $# -gt 2 ]]; then 
+       if [[ $# -gt 2 ]]; then
               sourcefile=${1/$3/$2};targetfile=$1;
        else
               sourcefile=$1;targetfile=$2
        fi
+
+       # Safety guard: never write a destination whose real parent directory lands
+       # inside the dotfiles repo. This happens when a parent dir of the destination
+       # is itself a symlink back into dotfiles -- writing through it would delete the
+       # real source file and replace it with a circular symlink.
+       dest_parent="$(realpath -m "$(dirname "$sourcefile")")"
+       if [[ "$dest_parent" == "$dotfiles_path" || "$dest_parent" == "$dotfiles_path"/* ]]; then
+              echo "[!] Skipping $sourcefile: destination resolves into dotfiles ($dest_parent). Remove the offending directory symlink first."
+              return 1
+       fi
+
        log "[+] Linking File: $sourcefile -> $targetfile";
        source_dir=$(dirname "$sourcefile")
 
@@ -99,45 +114,47 @@ function linkfile(){
               fi
        fi
 
-       [[ -f $sourcefile ]] && rm "$sourcefile";
+       # Remove any existing regular file, symlink (incl. to a dir), or broken symlink.
+       [[ -e "$sourcefile" || -L "$sourcefile" ]] && rm -f "$sourcefile";
        ln -sf "$(realpath "$targetfile")" "$sourcefile";
 }
 export -f linkfile;
 
-list=$(cat $config_file);
+list=$(<"$config_file");
 
 #Check if sudo
 if [ "$EUID" -eq 0 ]; then
-       read -p "[!] Running as sudo, the \$HOME variable will be pointing to /root, do you want to exclude the paths including it? [Y/n]: " -r
-       rs=${REPLY:l};
-       if [[ $rs =~ ^(yes|y| ) ]] || [[ -z $rs ]]; then list=$(cat $config_file | grep -v "\$HOME"); fi
-       echo $list;
+       read -rp "[!] Running as sudo, the \$HOME variable will be pointing to /root, do you want to exclude the paths including it? [Y/n]: "
+       rs=${REPLY,,};
+       if [[ $rs =~ ^(yes|y)$ ]] || [[ -z $rs ]]; then list=$(grep -vF '$HOME' "$config_file"); fi
 fi
 
-echo -e "[!] WARNING! Every file at:";
+echo "[!] WARNING! Every file at:";
 echo '-------------------';
-echo $list | tr ' ' '\n' | awk -F ':' "{print \$1}" | sed 's,$HOME,'"$HOME,";
+printf '%s\n' "$list" | awk -F ':' '{print $1}' | sed "s|\$HOME|$HOME|";
 echo '-------------------';
-read -p "will be overwrited with a symlink pointing to the specified dotfiles directory ($dotfiles_path), do you want to continue? [y/N]: " -r
-rs=${REPLY:l};
-if ! [[ $rs =~ ^(yes|y| ) ]] || [[ -z $rs ]]; then
+read -rp "will be overwrited with a symlink pointing to the specified dotfiles directory ($dotfiles_path), do you want to continue? [y/N]: "
+rs=${REPLY,,};
+if ! [[ $rs =~ ^(yes|y)$ ]]; then
     exit 0;
 fi
 
 #Logic
 log "[+] Linking..."
-for line in $list;
+while IFS= read -r line;
 do
-       tmp_source=$(echo "$line" | cut -d ":" -f 1);
-       source=${tmp_source/"\$HOME"/$HOME}
-       target=$dotfiles_path$(echo $line | cut -d ":" -f 2);
+       [[ -z "$line" ]] && continue
+       tmp_source=${line%%:*};
+       src_field=${line#*:};
+       source=${tmp_source/'$HOME'/$HOME}
+       target="$dotfiles_path/$src_field";
        write_dir=""
 
-       if [[ -d $target ]]; then
+       if [[ -d "$target" ]]; then
               write_dir="$source"
-       elif [[ -f $target ]]; then
+       elif [[ -f "$target" ]]; then
               write_dir="$(dirname "$source")"
-       elif [ -f "$source" ] && [ ! -f "$target" ]; then
+       elif [[ -f "$source" && ! -f "$target" ]]; then
               write_dir="$(dirname "$source")"
        fi
 
@@ -147,7 +164,7 @@ do
        fi
 
        #If its a directory, links the subfiles
-       if [[ -d $target ]]; then
+       if [[ -d "$target" ]]; then
               log "[+] Linking directory: $source -> $target";
               if [[ ! -d "$source" ]]; then
                      if [[ $_M -eq 1 ]]; then
@@ -157,17 +174,17 @@ do
                             continue
                      fi
               fi
-              find $target -type f -exec bash -c "linkfile \"{}\" $source $target" \;
+              find "$target" -type f -exec bash -c 'linkfile "$1" "$2" "$3"' _ {} "$source" "$target" \;
               #Clears broken symlinks (Symlinks pointing to nonexistent files)
-        	  # find -L $source -type l -exec rm {} \;
+        	  # find -L "$source" -type l -exec rm {} \;
        #If it is a file, link the file
-       elif [[ -f $target ]]; then
-          linkfile $source $target;
-       #When linking files, copy it if not exists in dotfiles folder 
+       elif [[ -f "$target" ]]; then
+          linkfile "$source" "$target";
+       #When linking files, copy it if not exists in dotfiles folder
        #(This allows install the dotfile only by putting it in the .dfirc file)
-       elif [ -f $source ] && [ ! -f $target ]; then
+       elif [[ -f "$source" && ! -f "$target" ]]; then
        		mkdir -p "$(dirname "$target")";
-       		cp $source $target;
-       		linkfile $source $target;
+       		cp "$source" "$target";
+       		linkfile "$source" "$target";
        fi
-done
+done <<< "$list"
