@@ -282,8 +282,8 @@ hl.bind(mainMod .. " + mouse:273",      hl.dsp.window.resize(), { mouse = true }
 
 -- ─── Function / Media Keys ───────────────────────────────────────────────────
 hl.bind("XF86Calculator",       hl.dsp.exec_cmd("kitty -e python3"))
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("pamixer -i 5"),             { repeating = true })
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("pamixer -d 5"),             { repeating = true })
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("pamixer --allow-boost -i 5"), { repeating = true })
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("pamixer --allow-boost -d 5"), { repeating = true })
 hl.bind("XF86AudioMute",        hl.dsp.exec_cmd("pamixer -t"),               { release = true })
 hl.bind("XF86AudioPlay",        hl.dsp.exec_cmd("playerctl play-pause"),     { release = true })
 hl.bind("XF86AudioPause",       hl.dsp.exec_cmd("playerctl play-pause"),     { release = true })
