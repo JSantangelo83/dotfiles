@@ -21,6 +21,7 @@ hl.monitor({ output = "",         mode = "preferred",      position = "auto",   
 hl.on("hyprland.start", function()
     hl.exec_cmd(HOME .. "/.config/hypr/scripts/hooks/window-opened.sh")
     hl.exec_cmd("mpvpaper -o 'no-audio hwdec=auto loop-file=inf keepaspect=no demuxer-max-bytes=128M demuxer-max-back-bytes=20M cache=no input-ipc-server=/tmp/mpv-socket script=" .. HOME .. "/.config/mpv/scripts/wallpaper-timer.lua' '*' " .. HOME .. "/documents/wallpapers/animated/playlist.m3u")
+    hl.exec_cmd(HOME .. "/.config/hypr/scripts/mpvpaper-pause-fullscreen.sh")
     hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
     hl.exec_cmd(HOME .. "/.customscripts/alert-daemon.sh")
     hl.exec_cmd("ags run " .. HOME .. "/.config/dotfiles/ags-2.0/app.ts")
