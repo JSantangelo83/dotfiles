@@ -3,8 +3,12 @@ import { execAsync } from "ags/process"
 import { Gtk } from "ags/gtk4"
 import GLib from "gi://GLib"
 import Gio from "gi://Gio"
+import { getConfig } from "../jsbar"
 
-const WLED_IP = "192.168.1.52"
+const cfg = getConfig()
+
+const WLED_IP      = cfg.wledIp
+const GAMMA        = cfg.wledGamma
 const PRESETS_FILE = `${GLib.get_user_config_dir()}/ags-2.0/wled-presets.json`
 
 type Rgb = { r: number; g: number; b: number }
@@ -18,7 +22,6 @@ const PRESETS: Array<{ name: string } & Rgb> = [
   { name: "Purple", r: 180, g: 60,  b: 255 },
 ]
 
-// Load saved preset colors before any widget is built
 function loadPresets() {
   try {
     const file = Gio.File.new_for_path(PRESETS_FILE)
@@ -68,10 +71,7 @@ const [lastBri, setLastBri] = createState(128)
 function wledColor(c: Rgb) {
   setLastColor(c)
   wledPost({
-    seg: [
-      { id: 0, col: [[c.r, c.g, c.b]] },
-      { id: 1, col: [[c.r, c.g, c.b]] },
-    ],
+    seg: cfg.wledSegments.map(id => ({ id, col: [[c.r, c.g, c.b]] })),
   })
 }
 
@@ -155,11 +155,9 @@ function buildPopover(parent: Gtk.Widget): Gtk.Popover {
   colHeaderRow.append(colLbl)
   controls.append(colHeaderRow)
 
-  // Hex entry created early so dot handlers can reference it
   const hexEntry = new Gtk.Entry({ placeholderText: "rrggbb", maxLength: 6, hexpand: true })
   hexEntry.set_css_classes(["wled-hex-entry"])
 
-  // Preset dots — each gets its own CSS provider so colors can be rewritten dynamically
   const dotRefs: Array<{ btn: Gtk.Button; provider: Gtk.CssProvider }> = []
   let selectedDotIdx: number | null = null
 
@@ -199,7 +197,6 @@ function buildPopover(parent: Gtk.Widget): Gtk.Popover {
   colDotsRow.append(colBox)
   controls.append(colDotsRow)
 
-  // Hex row
   const hexRow = new Gtk.Box({ spacing: 6 })
   hexRow.set_css_classes(["wled-row"])
   const hexHash = new Gtk.Label({ label: "#" })
@@ -213,7 +210,6 @@ function buildPopover(parent: Gtk.Widget): Gtk.Popover {
     const c = hexToRgb(hexEntry.get_text())
     if (!c) { hexEntry.add_css_class("wled-hex-error"); return }
 
-    // If a dot is selected, permanently reassign its color
     if (selectedDotIdx !== null) {
       const p = PRESETS[selectedDotIdx]
       p.r = c.r; p.g = c.g; p.b = c.b
@@ -260,7 +256,7 @@ function buildPopover(parent: Gtk.Widget): Gtk.Popover {
           const bri = st.bri ?? 128
           syncingFromFetch = true
           pwrSw.set_active(on)
-          briScale.set_value(Math.round(Math.pow(bri / 255, 1 / 2.2) * 255))
+          briScale.set_value(Math.round(Math.pow(bri / 255, 1 / GAMMA) * 255))
           syncingFromFetch = false
           setPwrOn(on)
           setLastBri(bri)
@@ -282,11 +278,11 @@ function buildPopover(parent: Gtk.Widget): Gtk.Popover {
 
   briScale.connect("value-changed", () => {
     if (syncingFromFetch) return
-    const linear = Math.round(Math.pow(briScale.get_value() / 255, 2.2) * 255)
+    const linear = Math.round(Math.pow(briScale.get_value() / 255, GAMMA) * 255)
     setLastBri(Math.max(1, linear))
     if (briDebounce) GLib.source_remove(briDebounce)
     briDebounce = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 80, () => {
-      wledPost({ bri: Math.max(1, Math.round(Math.pow(briScale.get_value() / 255, 2.2) * 255)) })
+      wledPost({ bri: Math.max(1, Math.round(Math.pow(briScale.get_value() / 255, GAMMA) * 255)) })
       briDebounce = 0
       return GLib.SOURCE_REMOVE
     })

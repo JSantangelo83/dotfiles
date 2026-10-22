@@ -2,6 +2,9 @@ import { createState, createEffect } from "ags"
 import { Gtk } from "ags/gtk4"
 import GLib from "gi://GLib"
 import { execAsync } from "ags/process"
+import { getConfig } from "../jsbar"
+
+const cfg = getConfig()
 
 // Correct: idle is field index 4 in /proc/stat (cpu user nice system IDLE iowait ...)
 const CPU_CMD = [
@@ -12,7 +15,6 @@ const CPU_CMD = [
   "[ $t -eq 0 ] && echo 0 || echo $(( (t-idle)*100/t ))",
 ]
 const RAM_CMD  = ["bash", "-c", "free | awk '/Mem/{u=$2-$7; printf \"%.0f %.2f\", u/$2*100, u/1048576}'"]
-// Sample /proc/diskstats twice 0.5s apart → MB/s total throughput (read+write)
 const DISK_CMD = [
   "bash", "-c",
   "dev=$(lsblk -no pkname $(df / | awk 'NR==2{print $1}') 2>/dev/null | head -1);" +
@@ -43,7 +45,6 @@ type Metric = "cpu" | "mem" | "disk"
 const METRIC_ICONS: Record<Metric, string> = { cpu: "󰻠", mem: "󰍛", disk: "󰋊" }
 const METRIC_LABELS: Record<Metric, string> = { cpu: "Cpu", mem: "Mem", disk: "Disk I/O" }
 
-// Module-level state for the bar icon color, polled in the background
 const [metricsIconClass, setMetricsIconClass] = createState("")
 
 function pollMetricsIcon() {
@@ -52,14 +53,14 @@ function pollMetricsIcon() {
     execAsync(RAM_CMD).then(v => parseInt(v.split(" ")[0]) || 0).catch(() => 0),
   ]).then(([cpu, mem]) => {
     const avg = (cpu + mem) / 2
-    if (avg < 35) setMetricsIconClass("metrics-green")
-    else if (avg < 65) setMetricsIconClass("metrics-yellow")
+    if (avg < cfg.metricsThresholdWarn) setMetricsIconClass("metrics-green")
+    else if (avg < cfg.metricsThresholdCrit) setMetricsIconClass("metrics-yellow")
     else setMetricsIconClass("metrics-red")
   }).catch(() => {})
 }
 
 pollMetricsIcon()
-GLib.timeout_add(GLib.PRIORITY_DEFAULT, 10000, () => {
+GLib.timeout_add(GLib.PRIORITY_DEFAULT, cfg.metricsBarPollMs, () => {
   pollMetricsIcon()
   return GLib.SOURCE_CONTINUE
 })
@@ -162,7 +163,7 @@ function buildPopover(parent: Gtk.Widget): Gtk.Popover {
 
   const cpuRow  = makeRow("cpu",  () => toggleMetric("cpu"))
   const memRow  = makeRow("mem",  () => toggleMetric("mem"))
-  const diskRow = makeRow("disk", () => toggleMetric("disk"), 500)
+  const diskRow = makeRow("disk", () => toggleMetric("disk"), cfg.metricsDiskMaxMb)
 
   const body = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 0 })
   body.set_css_classes(["metrics-body"])
@@ -193,7 +194,7 @@ function buildPopover(parent: Gtk.Widget): Gtk.Popover {
       procSep.visible = false
       procBox.visible = false
       fetchAll()
-      timer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 3000, () => {
+      timer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, cfg.metricsPopupRefreshMs, () => {
         if (!pop.visible) { timer = 0; return GLib.SOURCE_REMOVE }
         fetchAll()
         return GLib.SOURCE_CONTINUE

@@ -1,0 +1,145 @@
+{
+  // ╔══════════════════════════════════════════════════════════════════════╗
+  // ║  jsbar.jsonc — bar configuration                                    ║
+  // ║  Supports // line comments and /* */ block comments.                ║
+  // ║  Color changes hot-reload instantly.                                ║
+  // ║  Functional changes (everything else) require restarting ags.       ║
+  // ╚══════════════════════════════════════════════════════════════════════╝
+
+  // ── Bar / window ──────────────────────────────────────────────────────
+
+  // Connector name of the monitor to place the bar on
+  "monitor": "DP-1",
+
+  // Outer margin on all three sides (top / bottom / left) as a percentage
+  // of the monitor height — e.g. 1 means 1 % of 1440 px = ~14 px
+  "bar-margins-percent": 1,
+
+  // Pixel gap between the head button and the bar column, and between
+  // widgets in the bottom section of the bar
+  "bar-gap": 10,
+
+  // ── Widgets ───────────────────────────────────────────────────────────
+  // Set any widget to false to hide it completely.
+  "widgets": {
+    "workspaces": true,
+    "sysmetrics": true,
+    "tray":       true,
+    "clock":      true,
+    "wled":       true,
+    "battery":    true
+  },
+
+  // ── Workspaces ────────────────────────────────────────────────────────
+
+  // Number of workspace slots rendered in the bar
+  "workspaces-count": 8,
+
+  // Pixel size of each workspace icon image
+  "workspace-icon-size": 20,
+
+  // Directory that contains the workspace icon sets
+  "workspace-icons-dir": "/home/js/.config/dotfiles/eww/assets/workspaces",
+
+  // ── WLED ──────────────────────────────────────────────────────────────
+
+  // IP address of the WLED device on your network
+  "wled-ip": "192.168.1.52",
+
+  // WLED segment IDs that receive colour commands
+  "wled-segments": [0, 1],
+
+  // Gamma exponent applied to the brightness slider
+  // 2.2 matches a standard sRGB display curve
+  "wled-gamma": 2.2,
+
+  // ── System metrics ────────────────────────────────────────────────────
+
+  // How often (ms) the bar icon colour is refreshed (green / yellow / red)
+  "metrics-bar-poll-ms": 10000,
+
+  // How often (ms) the metrics popover values are refreshed while open
+  "metrics-popup-refresh-ms": 3000,
+
+  // Average CPU+RAM below this → green icon
+  "metrics-threshold-warn": 35,
+
+  // Average CPU+RAM above this → red icon (between warn and crit → yellow)
+  "metrics-threshold-crit": 65,
+
+  // Maximum disk throughput shown on the progress bar (MB/s)
+  "metrics-disk-max-mb": 500,
+
+  // ── Audio ─────────────────────────────────────────────────────────────
+
+  // Maximum volume the slider can reach (1.0 = 100 %, 1.5 = 150 %)
+  "audio-max-volume": 1.5,
+
+  // How often (ms) the volume level is polled in the background
+  "audio-poll-ms": 3000,
+
+  // ── Battery ───────────────────────────────────────────────────────────
+
+  // Fraction (0–1) below which a low-battery notification is sent
+  "battery-low-threshold": 0.15,
+
+  // How long (ms) the low-battery notify-send notification stays on screen
+  "battery-notify-expire-ms": 10000,
+
+  // ── Base backgrounds ──────────────────────────────────────────────────
+
+  // Main bar background
+  "bg": "#353535",
+
+  // Darker surface used by widget containers (workspaces, clock, head button)
+  "bg-dark": "#202020",
+
+  // Hover tone for bg-dark containers — pre-computed lighten(bg-dark, 5%)
+  "bg-dark-hover": "#2d2d2d",
+
+  // ── Foreground ────────────────────────────────────────────────────────
+
+  // Primary text / icon color
+  "foreground": "#A8B0CD",
+
+  // Subdued text — labels, separators, secondary info, dashed line
+  "foreground-dark": "#4C536A",
+
+  // High-contrast white — window-count badge, dot-selected border, etc.
+  "foreground-2": "#FFFFFF",
+
+  // ── Interactive states ────────────────────────────────────────────────
+
+  // Hover / selected background overlay (semi-transparent)
+  "selected": "rgba(168, 166, 166, 0.1)",
+
+  // Disabled / greyed-out foreground
+  "disabled": "#6A6A6A",
+
+  // ── Semantic ──────────────────────────────────────────────────────────
+
+  "danger":  "#DC3545",
+  "warning": "#FFFFFF",
+  "success": "#61D97C",
+
+  // ── Per-monitor accent colors ─────────────────────────────────────────
+  // Array index = monitor index (0-based).
+  // Used for: workspace underline borders and tmp-workspace indicator dots.
+  "accents": ["#673434", "#6E6E2C", "#304079", "#50885B"],
+
+  // ── System metrics colors ─────────────────────────────────────────────
+
+  "metric-cpu":  "#e06060",
+  "metric-mem":  "#6090e0",
+  "metric-disk": "#60c080",
+
+  // ── WLED / ambilight ─────────────────────────────────────────────────
+
+  "ambilight-color": "#E8A838",
+
+  // ── Layout ───────────────────────────────────────────────────────────
+
+  "border-radius":   "20px",
+  "border-radius-2": "23px",
+  "padding":         "15px"
+}

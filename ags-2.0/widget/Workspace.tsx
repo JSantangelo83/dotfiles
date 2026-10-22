@@ -5,11 +5,11 @@ import { Gtk } from "ags/gtk4"
 import AstalHyprland from "gi://AstalHyprland"
 import GLib from "gi://GLib"
 import Gio from "gi://Gio"
+import { getConfig } from "../jsbar"
 
 const hyprland = AstalHyprland.get_default()
 
-const WORKSPACES = 8
-const ICON_SIZE = 20
+const cfg = getConfig()
 
 interface Settings {
   icons_dir: string
@@ -17,13 +17,14 @@ interface Settings {
 }
 
 const settingsPath = `${SRC}/default-settings.json`
-let _settings: Settings = { icons_dir: "/tmp", workspaces: {} }
+let _settings: Settings = { icons_dir: cfg.workspaceIconsDir, workspaces: {} }
 try { _settings = JSON.parse(readFile(settingsPath)) } catch {}
 monitorFile(settingsPath, () => {
   try { _settings = JSON.parse(readFile(settingsPath)) } catch {}
 })
 
-const getIconsDir = () => _settings?.icons_dir ?? "/tmp"
+// icons_dir: prefer jsbar.jsonc value; fall back to default-settings.json
+const getIconsDir = () => cfg.workspaceIconsDir || _settings?.icons_dir || "/tmp"
 
 const ICONS_FILE = `${GLib.get_user_config_dir()}/ags-2.0/workspace-icons.json`
 
@@ -204,13 +205,14 @@ function buildIconPicker(wsId: number, parent: Gtk.Widget): Gtk.Popover {
 // ── Workspace button ───────────────────────────────────────────────────────
 
 function Workspace(id: number) {
+  const iconSize = cfg.workspaceIconSize
+
   const windowCount = createComputed(() =>
     clients().filter(c => c.workspace?.id === id).length
   )
 
   const iconFile = createComputed(() => {
     const icon = getIcon(id)
-    // depend on overrides reactively
     const _ = iconOverrides()
     const hasWindows = windowCount() > 0
     return `${getIconsDir()}/${icon}-${hasWindows ? 1 : 0}.png`
@@ -220,8 +222,6 @@ function Workspace(id: number) {
     clients().some(c => c.urgent && c.workspace?.id === id)
   )
 
-  // Sorted list of sub-workspace IDs currently alive for this main workspace.
-  // Sub-workspaces use the encoding: id*10+N (e.g. ws 2 → 21, 22, …)
   const subIds = createComputed((): number[] =>
     workspaces()
       .filter(ws => ws.id > 9 && Math.floor(ws.id / 10) === id)
@@ -229,7 +229,6 @@ function Workspace(id: number) {
       .sort((a, b) => a - b)
   )
 
-  // Which sub-workspace (if any) is currently active on any monitor for this group.
   const activeSub = createComputed((): { subId: number; monId: number } | null => {
     for (const { monId, activeWs } of monitorWsBindings) {
       const wsId = activeWs()?.id
@@ -239,7 +238,6 @@ function Workspace(id: number) {
     return null
   })
 
-  // Underline class: only show for the MAIN workspace, not for sub-workspaces.
   const monitorClass = createComputed(() => {
     const match = monitorWsBindings.find(({ activeWs }) => activeWs()?.id === id)
     return `item monitor-${match ? match.monId : "none"}`
@@ -257,7 +255,7 @@ function Workspace(id: number) {
 
         const img = new Gtk.Image()
         img.set_css_classes(["icon"])
-        img.set_pixel_size(ICON_SIZE)
+        img.set_pixel_size(iconSize)
         img.halign = Gtk.Align.CENTER
         img.valign = Gtk.Align.CENTER
         overlay.set_child(img)
@@ -347,7 +345,7 @@ function Workspace(id: number) {
 export function WorkspacesContainer() {
   return (
     <box class="workspace-element container" orientation={1}>
-      {Array.from({ length: WORKSPACES }, (_, i) => Workspace(i + 1))}
+      {Array.from({ length: cfg.workspacesCount }, (_, i) => Workspace(i + 1))}
     </box>
   )
 }

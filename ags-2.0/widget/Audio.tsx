@@ -2,6 +2,9 @@ import { createState, createEffect } from "ags"
 import { execAsync } from "ags/process"
 import { Gtk } from "ags/gtk4"
 import GLib from "gi://GLib"
+import { getConfig } from "../jsbar"
+
+const cfg = getConfig()
 
 type Device = { id: string; name: string; active: boolean }
 
@@ -33,7 +36,7 @@ function fetchVolume() {
 }
 
 fetchVolume()
-GLib.timeout_add(GLib.PRIORITY_DEFAULT, 3000, () => {
+GLib.timeout_add(GLib.PRIORITY_DEFAULT, cfg.audioPollMs, () => {
   fetchVolume()
   return GLib.SOURCE_CONTINUE
 })
@@ -109,7 +112,7 @@ function buildPopover(parent: Gtk.Widget): Gtk.Popover {
   muteIcon.set_css_classes(["audio-icon"])
   muteBtn.set_child(muteIcon)
 
-  const volScale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0, 1.5, 0.01)
+  const volScale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0, cfg.audioMaxVolume, 0.01)
   volScale.draw_value = false
   volScale.hexpand = true
   volScale.add_mark(1.0, Gtk.PositionType.BOTTOM, null)
@@ -170,7 +173,7 @@ function buildPopover(parent: Gtk.Widget): Gtk.Popover {
     setVolume(val)
     if (volDebounce) GLib.source_remove(volDebounce)
     volDebounce = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 80, () => {
-      execAsync(["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", Math.min(1.5, val).toFixed(2)])
+      execAsync(["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", Math.min(cfg.audioMaxVolume, val).toFixed(2)])
         .catch(console.error)
       volDebounce = 0
       return GLib.SOURCE_REMOVE

@@ -1,7 +1,9 @@
 import { createBinding, createComputed, createEffect } from "ags"
 import { execAsync } from "ags/process"
 import AstalBattery from "gi://AstalBattery"
+import { getConfig } from "../jsbar"
 
+const cfg = getConfig()
 const device = AstalBattery.Device.get_default()
 
 function getTimeLabel(seconds: number): string {
@@ -33,9 +35,12 @@ export default function Battery() {
 
   createEffect(() => {
     const p = percentage()
-    if (isPresent() && p > 0 && p < 0.15 && !charging()) {
-      execAsync(["notify-send", "Low battery", `${Math.round(p * 100)}% remaining`, "--urgency", "critical", "--expire-time", "10000"])
-        .catch(console.error)
+    if (isPresent() && p > 0 && p < cfg.batteryLowThreshold && !charging()) {
+      execAsync([
+        "notify-send", "Low battery", `${Math.round(p * 100)}% remaining`,
+        "--urgency", "critical",
+        "--expire-time", String(cfg.batteryNotifyExpireMs),
+      ]).catch(console.error)
     }
   })
 

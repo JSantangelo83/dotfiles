@@ -1,58 +1,65 @@
-$bg: #353535;
-$bg-dark: #202020;
-$foreground: #A8B0CD;
-$foreground-dark: #4C536A;
-$foreground-2: #FFFFFF;
-$selected: rgba(168, 166, 166, 0.1);
-$disabled: #6A6A6A;
-$accents: (
-  0: #673434,
-  1: #6E6E2C,
-  2: #304079,
-  3: #50885B,
-);
-$danger: #DC3545;
-$warning: #FFFFFF;
-$success: #61D97C;
-$border-radius: 20px;
-$border-radius-2: 23px;
-
-$padding: 15px;
+// Default values — overridden at runtime by jsbar.jsonc via theme.ts.
+// All colours and layout tokens live here so the bar is fully functional
+// even if no config file exists.
+window {
+  --bar-bg: #353535;
+  --bar-bg-dark: #202020;
+  --bar-bg-dark-hover: #2d2d2d;
+  --bar-fg: #A8B0CD;
+  --bar-fg-dark: #4C536A;
+  --bar-fg-2: #FFFFFF;
+  --bar-selected: rgba(168, 166, 166, 0.1);
+  --bar-disabled: #6A6A6A;
+  --bar-danger: #DC3545;
+  --bar-warning: #FFFFFF;
+  --bar-success: #61D97C;
+  --bar-accent-0: #673434;
+  --bar-accent-1: #6E6E2C;
+  --bar-accent-2: #304079;
+  --bar-accent-3: #50885B;
+  --bar-metric-cpu: #e06060;
+  --bar-metric-mem: #6090e0;
+  --bar-metric-disk: #60c080;
+  --bar-ambilight: #E8A838;
+  --bar-radius: 20px;
+  --bar-radius-2: 23px;
+  --bar-padding: 15px;
+}
 
 .bar {
-  background-color: $bg;
-  padding-bottom: $padding;
+  background-color: var(--bar-bg);
+  padding-bottom: var(--bar-padding);
   min-width: 48px;
-  border-radius: $border-radius;
+  border-radius: var(--bar-radius);
 }
 
 .head-element {
   &.container {
-    background-color: $bg-dark;
-    border-radius: $border-radius-2;
+    background-color: var(--bar-bg-dark);
+    border-radius: var(--bar-radius-2);
     border: none;
     padding: 20px;
   }
 
   &.container:hover {
-    background-color: lighten($bg-dark, 5%);
+    background-color: var(--bar-bg-dark-hover);
   }
 }
 
 .clock-element {
   &.container {
-    background-color: $bg-dark;
+    background-color: var(--bar-bg-dark);
     font-family: 'JetBrains Mono', monospace;
     padding: 0.7rem 0.1rem;
   }
 
   .hourmin {
-    color: $foreground;
+    color: var(--bar-fg);
     font-size: 1.5rem;
   }
 
   .label {
-    color: $foreground-dark;
+    color: var(--bar-fg-dark);
     font-size: 0.6rem;
     margin-left: 0.5em;
   }
@@ -72,12 +79,12 @@ $padding: 15px;
   $ws-underscore-spacing: 9px;
 
   &.container {
-    background-color: $bg-dark;
-    padding-top: $padding;
+    background-color: var(--bar-bg-dark);
+    padding-top: var(--bar-padding);
     padding-left: 4px;
     padding-right: 4px;
-    border-radius: $border-radius $border-radius 0 0;
-    border-bottom: 2px dashed $foreground-dark;
+    border-radius: var(--bar-radius) var(--bar-radius) 0 0;
+    border-bottom: 2px dashed var(--bar-fg-dark);
   }
 
   .ws-item-wrap {
@@ -92,7 +99,7 @@ $padding: 15px;
     min-height: 0;
 
     .icon {
-      color: $foreground;
+      color: var(--bar-fg);
       font-size: 1.5rem;
       padding-bottom: $ws-underscore-spacing;
     }
@@ -104,10 +111,8 @@ $padding: 15px;
 
     @for $i from 0 through 3 {
       &.monitor-#{$i} {
-        $accent: map-get($accents, $i);
-
         .icon {
-          border-bottom: 2px solid $accent;
+          border-bottom: 2px solid var(--bar-accent-#{$i});
           padding-bottom: $ws-underscore-spacing - 2px;
         }
       }
@@ -130,7 +135,7 @@ $padding: 15px;
 
     @for $i from 0 through 3 {
       &.tmp-dot-mon-#{$i} {
-        background-color: map-get($accents, $i);
+        background-color: var(--bar-accent-#{$i});
       }
     }
   }
@@ -159,7 +164,7 @@ $padding: 15px;
   font-weight: bold;
   font-size: 0.8rem;
   letter-spacing: 0.08em;
-  color: $foreground;
+  color: var(--bar-fg);
   padding: 8px 14px 6px;
 }
 
@@ -181,9 +186,9 @@ $padding: 15px;
   min-height: 0;
   padding: 2px 6px;
   border-radius: 6px;
-  color: $foreground-dark;
+  color: var(--bar-fg-dark);
 
-  &:hover { background-color: $selected; }
+  &:hover { background-color: var(--bar-selected); }
 }
 
 // WLED section — sits directly below the dashed workspace line
@@ -212,12 +217,12 @@ $padding: 15px;
 .wled-button {
   min-width: 0;
   min-height: 0;
-  color: $foreground-2;
+  color: var(--bar-fg-2);
   border-radius: 8px;
   padding: 4px 6px;
 
-  &:hover { background-color: $selected; }
-  &.ambilight-on { color: #E8A838; }
+  &:hover { background-color: var(--bar-selected); }
+  &.ambilight-on { color: var(--bar-ambilight); }
 
   .wled-icon {
     font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono NL', monospace;
@@ -229,17 +234,17 @@ $padding: 15px;
     font-size: calc(1.8rem + 10px);
   }
 
-  .wled-icon.metrics-green  { color: #61D97C; }
-  .wled-icon.metrics-yellow { color: #E8A838; }
-  .wled-icon.metrics-red    { color: #DC3545; }
+  .wled-icon.metrics-green  { color: var(--bar-success); }
+  .wled-icon.metrics-yellow { color: var(--bar-ambilight); }
+  .wled-icon.metrics-red    { color: var(--bar-danger); }
 }
 
 // Popover shell
 popover.wled-popup > contents {
-  background-color: $bg;
-  border-radius: $border-radius;
+  background-color: var(--bar-bg);
+  border-radius: var(--bar-radius);
   padding: 0;
-  border: 1px solid $foreground-dark;
+  border: 1px solid var(--bar-fg-dark);
 }
 
 .wled-popover {
@@ -253,11 +258,11 @@ popover.wled-popup > contents {
   .wled-row-label {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.72rem;
-    color: $foreground-dark;
+    color: var(--bar-fg-dark);
   }
 
   .wled-ambilight-label {
-    color: #E8A838;
+    color: var(--bar-ambilight);
   }
 
   // color dot buttons — background-color is set dynamically via per-dot CSS providers
@@ -269,9 +274,9 @@ popover.wled-popup > contents {
     border: 2px solid transparent;
     background-clip: padding-box;
 
-    &:hover { border-color: $foreground; }
+    &:hover { border-color: var(--bar-fg); }
     &:focus { box-shadow: none; outline: none; }
-    &.dot-selected { border-color: $foreground-2; }
+    &.dot-selected { border-color: var(--bar-fg-2); }
   }
 
   .wled-hex-entry {
@@ -279,10 +284,10 @@ popover.wled-popup > contents {
     font-size: 0.75rem;
     min-height: 0;
     padding: 4px 8px;
-    color: $foreground;
+    color: var(--bar-fg);
 
-    &placeholder { color: $foreground-dark; }
-    &.wled-hex-error { border-color: $danger; }
+    &placeholder { color: var(--bar-fg-dark); }
+    &.wled-hex-error { border-color: var(--bar-danger); }
   }
 }
 
@@ -324,14 +329,14 @@ popover.wled-popup > contents {
     font-size: 0.9rem;
   }
 
-  .metric-icon-cpu  { color: #e06060; }
-  .metric-icon-mem  { color: #6090e0; }
-  .metric-icon-disk { color: #60c080; }
+  .metric-icon-cpu  { color: var(--bar-metric-cpu); }
+  .metric-icon-mem  { color: var(--bar-metric-mem); }
+  .metric-icon-disk { color: var(--bar-metric-disk); }
 
   .metric-name {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.72rem;
-    color: $foreground;
+    color: var(--bar-fg);
   }
 
   .metric-value {
@@ -340,9 +345,9 @@ popover.wled-popup > contents {
     font-weight: bold;
   }
 
-  .metric-value-cpu  { color: #e06060; }
-  .metric-value-mem  { color: #6090e0; }
-  .metric-value-disk { color: #60c080; }
+  .metric-value-cpu  { color: var(--bar-metric-cpu); }
+  .metric-value-mem  { color: var(--bar-metric-mem); }
+  .metric-value-disk { color: var(--bar-metric-disk); }
 
   .metric-bar {
     min-height: 3px;
@@ -356,9 +361,9 @@ popover.wled-popup > contents {
     progress { min-height: 3px; border-radius: 2px; }
   }
 
-  .metric-bar-cpu  progress { background-color: #e06060; }
-  .metric-bar-mem  progress { background-color: #6090e0; }
-  .metric-bar-disk progress { background-color: #60c080; }
+  .metric-bar-cpu  progress { background-color: var(--bar-metric-cpu); }
+  .metric-bar-mem  progress { background-color: var(--bar-metric-mem); }
+  .metric-bar-disk progress { background-color: var(--bar-metric-disk); }
 
   .proc-panel {
     padding: 6px 14px 8px;
@@ -367,7 +372,7 @@ popover.wled-popup > contents {
   .proc-row {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.65rem;
-    color: $foreground-dark;
+    color: var(--bar-fg-dark);
   }
 }
 
@@ -376,9 +381,9 @@ popover.wled-popup > contents {
 .audio-icon {
   font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono NL', monospace;
   font-size: 1.2rem;
-  color: $foreground;
+  color: var(--bar-fg);
 
-  &.audio-muted { color: $danger; }
+  &.audio-muted { color: var(--bar-danger); }
 }
 
 .audio-popover {
@@ -389,20 +394,20 @@ popover.wled-popup > contents {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.62rem;
     letter-spacing: 0.08em;
-    color: $foreground-dark;
+    color: var(--bar-fg-dark);
     padding: 8px 10px 4px;
   }
 
   .audio-device-row {
     padding: 5px 10px;
 
-    &:hover { background-color: $selected; }
+    &:hover { background-color: var(--bar-selected); }
   }
 
   .audio-device-name {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.72rem;
-    color: $foreground;
+    color: var(--bar-fg);
   }
 
   checkbutton.audio-check,
@@ -422,18 +427,18 @@ popover.wled-popup > contents {
     min-width: 12px;
     min-height: 12px;
     border-radius: 50%;
-    border: 2px solid $foreground-dark;
+    border: 2px solid var(--bar-fg-dark);
     background: transparent;
     box-shadow: none;
   }
 
   checkbutton.audio-check check:checked {
-    background-color: $foreground;
-    border-color: $foreground;
+    background-color: var(--bar-fg);
+    border-color: var(--bar-fg);
   }
 
   checkbutton.audio-check:hover check {
-    border-color: $foreground;
+    border-color: var(--bar-fg);
   }
 }
 
@@ -445,9 +450,9 @@ popover.wled-popup > contents {
   .icon-search {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.75rem;
-    color: $foreground;
+    color: var(--bar-fg);
 
-    &placeholder { color: $foreground-dark; }
+    &placeholder { color: var(--bar-fg-dark); }
   }
 
   .icon-flow {
@@ -472,6 +477,6 @@ popover.wled-popup > contents {
     min-width: 0;
     min-height: 0;
 
-    &:hover { background-color: $selected; }
+    &:hover { background-color: var(--bar-selected); }
   }
 }

@@ -8,10 +8,9 @@ import Tray from "./Tray"
 import { WorkspacesContainer } from "./Workspace"
 import WledButton from "./WledController"
 import SysMetrics from "./SysMetrics"
-import AudioButton from "./Audio"
+import { getConfig } from "../jsbar"
 
 const { TOP, BOTTOM, LEFT } = Astal.WindowAnchor
-const SEPARATION = 10
 
 const hyprland = AstalHyprland.get_default()
 
@@ -22,6 +21,9 @@ function HPercentage(pct: number) {
 execAsync(["bash", `${SRC}/scripts/setup-icons.sh`, SRC]).catch(console.error)
 
 export default function Bar(monitor: number) {
+  const cfg = getConfig()
+  const w   = cfg.widgets
+
   return (
     <window
       monitor={monitor}
@@ -29,24 +31,25 @@ export default function Bar(monitor: number) {
       anchor={TOP | BOTTOM | LEFT}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
       css="background: transparent;"
-      marginTop={HPercentage(1)}
-      marginBottom={HPercentage(1)}
-      marginLeft={HPercentage(1)}
+      marginTop={HPercentage(cfg.barMarginsPercent)}
+      marginBottom={HPercentage(cfg.barMarginsPercent)}
+      marginLeft={HPercentage(cfg.barMarginsPercent)}
     >
-      <box orientation={1} spacing={SEPARATION}>
+      <box orientation={1} spacing={cfg.barGap}>
         <Head />
-        {/* bar column narrower than head — halign CENTER keeps it at natural width */}
         <box orientation={1} class="bar" vexpand halign={Gtk.Align.CENTER}>
-          <WorkspacesContainer />
+          {w.workspaces && WorkspacesContainer()}
           <box class="wled-section" orientation={1}>
-            <box halign={Gtk.Align.CENTER}><SysMetrics /></box>
+            <box halign={Gtk.Align.CENTER}>
+              {w.sysmetrics && SysMetrics()}
+            </box>
           </box>
           <box vexpand />
-          <box orientation={1} spacing={SEPARATION}>
-            <Tray />
-            <Clock />
-            <WledButton />
-            <Battery />
+          <box orientation={1} spacing={cfg.barGap}>
+            {w.tray    && Tray()}
+            {w.clock   && Clock()}
+            {w.wled    && WledButton()}
+            {w.battery && Battery()}
           </box>
         </box>
       </box>

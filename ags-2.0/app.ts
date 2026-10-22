@@ -1,6 +1,7 @@
 import app from "ags/gtk4/app"
 import style from "./style.scss"
 import Bar from "./widget/Bar"
+import { initTheme } from "./jsbar"
 import { Astal } from "ags/gtk4"
 import Gdk from "gi://Gdk"
 
@@ -34,6 +35,7 @@ function updateBar() {
 app.start({
   css: style,
   main() {
+    initTheme()
     updateBar()
     const display = Gdk.Display.get_default()!
     display.get_monitors().connect("items-changed", updateBar)
