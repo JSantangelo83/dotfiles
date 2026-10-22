@@ -1,4 +1,4 @@
-import { createBinding, createComputed, createEffect, createState, onCleanup } from "ags"
+import { type Accessor, createBinding, createComputed, createEffect, createState, onCleanup } from "ags"
 import { readFile, monitorFile } from "ags/file"
 import { execAsync } from "ags/process"
 import { Gtk } from "ags/gtk4"
@@ -65,10 +65,21 @@ function getIcon(id: number) {
 const workspaces = createBinding(hyprland, "workspaces")
 const clients    = createBinding(hyprland, "clients")
 
-const monitorWsBindings = hyprland.get_monitors().map(m => ({
-  monId: m.id as number,
-  activeWs: createBinding(m, "active-workspace"),
-}))
+// Reactive: a monitor that powers off/on comes back as a new object, so the
+// list must follow hyprland's "monitors" instead of being read once at startup.
+const monitors = createBinding(hyprland, "monitors")
+const activeWsBindings = new WeakMap<AstalHyprland.Monitor, Accessor<AstalHyprland.Workspace>>()
+
+function monitorWsBindings() {
+  return monitors().map(m => {
+    let activeWs = activeWsBindings.get(m)
+    if (!activeWs) {
+      activeWs = createBinding(m, "active-workspace")
+      activeWsBindings.set(m, activeWs)
+    }
+    return { monId: m.id as number, activeWs }
+  })
+}
 
 function changeWorkspace(id: number) {
   hyprland.message_async(`dispatch hl.dsp.focus({ workspace = ${id} })`, () => {})
@@ -230,7 +241,7 @@ function Workspace(id: number) {
   )
 
   const activeSub = createComputed((): { subId: number; monId: number } | null => {
-    for (const { monId, activeWs } of monitorWsBindings) {
+    for (const { monId, activeWs } of monitorWsBindings()) {
       const wsId = activeWs()?.id
       if (wsId !== undefined && wsId > 9 && Math.floor(wsId / 10) === id)
         return { subId: wsId, monId }
@@ -239,7 +250,7 @@ function Workspace(id: number) {
   })
 
   const monitorClass = createComputed(() => {
-    const match = monitorWsBindings.find(({ activeWs }) => activeWs()?.id === id)
+    const match = monitorWsBindings().find(({ activeWs }) => activeWs()?.id === id)
     return `item monitor-${match ? match.monId : "none"}`
   })
 

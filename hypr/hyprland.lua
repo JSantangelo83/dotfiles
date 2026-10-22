@@ -24,7 +24,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd(HOME .. "/.config/hypr/scripts/mpvpaper-pause-fullscreen.sh")
     hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
     hl.exec_cmd(HOME .. "/.customscripts/alert-daemon.sh")
-    hl.exec_cmd("ags run " .. HOME .. "/.config/dotfiles/ags-2.0/app.ts")
+    hl.exec_cmd("ags run " .. HOME .. "/.config/dotfiles/ags-2.0/app.tsx")
     hl.exec_cmd(HOME .. "/.config/wacom/init.sh")
     hl.exec_cmd("hypridle")
     -- XWayland has no primary by default; games use it for fullscreen/resolution
@@ -161,9 +161,9 @@ hl.bind(mainMod .. " + Tab",            hl.dsp.window.fullscreen({ mode = "maxim
 hl.bind(mainMod .. " + SHIFT + Tab",    hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
 
 -- AGS
-hl.bind(mainMod .. " + Backspace",      hl.dsp.exec_cmd("ags quit && ags run " .. HOME .. "/.config/dotfiles/ags-2.0/app.ts"))
+hl.bind(mainMod .. " + Backspace",      hl.dsp.exec_cmd("ags quit; ags run " .. HOME .. "/.config/dotfiles/ags-2.0/app.tsx"))
 hl.bind(mainMod .. " + SHIFT + Backspace", hl.dsp.exec_cmd("ags quit"))
-hl.bind(mainMod .. " + G",              hl.dsp.exec_cmd("ags run " .. HOME .. "/.config/dotfiles/ags-2.0/app.ts"))
+hl.bind(mainMod .. " + G",              hl.dsp.exec_cmd("ags run " .. HOME .. "/.config/dotfiles/ags-2.0/app.tsx"))
 hl.bind(mainMod .. " + SHIFT + G",      hl.dsp.exec_cmd("ags quit"))
 
 -- ─── Columns Layout ──────────────────────────────────────────────────────────

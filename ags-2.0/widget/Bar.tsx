@@ -1,6 +1,6 @@
-import { Astal, Gtk } from "ags/gtk4"
+import { Astal, Gtk, Gdk } from "ags/gtk4"
+import { onCleanup, createBinding } from "ags"
 import { execAsync } from "ags/process"
-import AstalHyprland from "gi://AstalHyprland"
 import Head from "./Head"
 import Clock from "./Clock"
 import Battery from "./Battery"
@@ -12,28 +12,28 @@ import { getConfig } from "../jsbar"
 
 const { TOP, BOTTOM, LEFT } = Astal.WindowAnchor
 
-const hyprland = AstalHyprland.get_default()
-
-function HPercentage(pct: number) {
-  return Math.round(pct / 100 * (hyprland.get_monitor(0)?.height ?? 1440))
-}
-
 execAsync(["bash", `${SRC}/scripts/setup-icons.sh`, SRC]).catch(console.error)
 
-export default function Bar(monitor: number) {
-  const cfg = getConfig()
-  const w   = cfg.widgets
+export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
+  const cfg    = getConfig()
+  const w      = cfg.widgets
+  // geometry is empty right after the monitor (re)connects, so bind to it
+  const margin = createBinding(gdkmonitor, "geometry").as((g) =>
+    Math.round(cfg.barMarginsPercent / 100 * g.height),
+  )
 
   return (
     <window
-      monitor={monitor}
-      name={`bar${monitor}`}
+      visible
+      name="bar"
+      gdkmonitor={gdkmonitor}
       anchor={TOP | BOTTOM | LEFT}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
       css="background: transparent;"
-      marginTop={HPercentage(cfg.barMarginsPercent)}
-      marginBottom={HPercentage(cfg.barMarginsPercent)}
-      marginLeft={HPercentage(cfg.barMarginsPercent)}
+      marginTop={margin}
+      marginBottom={margin}
+      marginLeft={margin}
+      $={(self) => onCleanup(() => self.destroy())}
     >
       <box orientation={1} spacing={cfg.barGap}>
         <Head />
