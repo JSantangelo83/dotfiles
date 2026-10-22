@@ -29,11 +29,31 @@ local config = {
 -- state.cols entries: { clients = {stable_id, ...}, split = bool, width = int, focus = int }
 -- width and heights use proportional units: sum(widths) == 100 * #cols,
 -- sum(col.heights) == 100 * #col.clients (same invariant as Qtile).
-local state = {
-    cols    = { { clients = {}, split = config.default_split, width = 100, focus = 1 } },
-    current = 1,
-    heights = {},  -- stable_id -> height unit
-}
+-- One state per workspace: a single shared table made every workspace's
+-- arrangement depend on which workspace was laid out before it.
+local function new_state()
+    return {
+        cols    = { { clients = {}, split = config.default_split, width = 100, focus = 1 } },
+        current = 1,
+        heights = {},  -- stable_id -> height unit
+    }
+end
+
+local states = {}  -- workspace id -> state
+local state  = new_state()
+local parked = {}  -- stable_id -> true for stacked windows placed off-screen
+
+-- Point `state` at the workspace this ctx belongs to.
+local function select_state(ctx)
+    for _, target in ipairs(ctx.targets) do
+        local ws = target.window and target.window.workspace
+        if ws then
+            states[ws.id] = states[ws.id] or new_state()
+            state = states[ws.id]
+            return
+        end
+    end
+end
 
 -- ─────────────────────────────────────────────────────────────
 -- Utilities
@@ -116,6 +136,7 @@ local function col_remove_client(col, id)
     local h = state.heights[id] or 100
     table.remove(col.clients, idx)
     state.heights[id] = nil
+    parked[id] = nil
     col.focus = clamp(col.focus, 1, math.max(1, #col.clients))
     if idx <= col.focus and col.focus > 1 then col.focus = col.focus - 1 end
     -- Spread (h - 100) across remaining windows
@@ -167,6 +188,8 @@ end
 -- ─────────────────────────────────────────────────────────────
 
 local function sync_state(ctx)
+    select_state(ctx)
+
     local present      = {}
     local targets_by_id = {}
     local active_id
@@ -262,6 +285,7 @@ local function do_recalculate(ctx)
             or  math.floor(col.width * area.w / tw)
 
         if col.split then
+            for _, id in ipairs(col.clients) do parked[id] = nil end
             local th = total_height(col)
             local y  = area.y
             for wi, id in ipairs(col.clients) do
@@ -273,10 +297,18 @@ local function do_recalculate(ctx)
                 y = y + win_h
             end
         else
-            -- Stacked: all windows overlap at same box; focused window is on top.
+            -- Stacked: only the focused window gets the column box. The layout
+            -- API can't raise windows, so overlapping them left whichever one
+            -- Hyprland draws on top under the cursor, and follow_mouse then
+            -- stole focus to it. The rest are parked off-screen below.
+            local focused = col_focused_id(col)
             for _, id in ipairs(col.clients) do
                 local t = targets_by_id[id]
-                if t then t:place({ x = x, y = area.y, w = col_w, h = area.h }) end
+                if t then
+                    parked[id] = (id ~= focused) or nil
+                    local y = parked[id] and (area.y + area.h * 4) or area.y
+                    t:place({ x = x, y = y, w = col_w, h = area.h })
+                end
             end
         end
 
@@ -545,6 +577,7 @@ local commands = {
     reset            = cmd_reset,
     swap_column_left  = cmd_swap_column_left,
     swap_column_right = cmd_swap_column_right,
+    refresh           = function() end,  -- sync_state + relayout only
 }
 
 hl.layout.register("columns", {
@@ -560,3 +593,11 @@ hl.layout.register("columns", {
         return true
     end,
 })
+
+-- Focus changes don't relayout, so a parked window that gets focus (keyboard
+-- nav, a window rule, ...) would stay off-screen; bring its column up to date.
+hl.on("window.active", function(w)
+    if w and parked[w.stable_id] then
+        hl.dispatch(hl.dsp.layout("refresh"))
+    end
+end)
