@@ -24,5 +24,6 @@ $HOME/.config/waybar:waybar
 /etc/evremap.toml:evremap.toml
 /etc/vconsole.conf:vconsole.conf
 $HOME/.config/hypr:hypr
+/etc/greetd:greetd
 $HOME/.config/ags:ags
 $HOME/.config/resources:resources
