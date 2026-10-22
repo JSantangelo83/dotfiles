@@ -237,6 +237,16 @@ window {
   .wled-icon.metrics-green  { color: var(--bar-success); }
   .wled-icon.metrics-yellow { color: var(--bar-ambilight); }
   .wled-icon.metrics-red    { color: var(--bar-danger); }
+
+  // the chip glyph sits ~2px right of its advance box; pull it back onto the bar's centre line
+  &.metrics-button .wled-icon { margin-right: 4px; }
+
+  .vpn-icon.vpn-pending { animation: vpn-pulse 1s ease-in-out infinite alternate; }
+}
+
+@keyframes vpn-pulse {
+  from { opacity: 1; }
+  to   { opacity: 0.35; }
 }
 
 // Popover shell
@@ -397,7 +407,11 @@ popover.wled-popup > contents {
     color: var(--bar-fg-dark);
     padding: 8px 10px 4px;
   }
+}
 
+// Radio device rows — shared by the audio and vpn popovers
+.audio-popover,
+.vpn-popover {
   .audio-device-row {
     padding: 5px 10px;
 
@@ -440,6 +454,19 @@ popover.wled-popup > contents {
   checkbutton.audio-check:hover check {
     border-color: var(--bar-fg);
   }
+}
+
+// ── VPN widget ────────────────────────────────────────────────────────────
+
+.vpn-popover {
+  min-width: 210px;
+  padding: 4px 0 8px;
+
+  .vpn-list { padding: 4px 0 0; }
+
+  .audio-device-row { padding: 5px 14px; }
+
+  .vpn-off-label { color: var(--bar-fg-dark); }
 }
 
 // ── Workspace icon picker ─────────────────────────────────────────────────

@@ -24,6 +24,7 @@
   "widgets": {
     "workspaces": true,
     "sysmetrics": true,
+    "vpn":        true,
     "tray":       true,
     "clock":      true,
     "wled":       true,

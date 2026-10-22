@@ -8,6 +8,7 @@ import Tray from "./Tray"
 import { WorkspacesContainer } from "./Workspace"
 import WledButton from "./WledController"
 import SysMetrics from "./SysMetrics"
+import Vpn from "./Vpn"
 import { getConfig } from "../jsbar"
 
 const { TOP, BOTTOM, LEFT } = Astal.WindowAnchor
@@ -42,6 +43,9 @@ export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
           <box class="wled-section" orientation={1}>
             <box halign={Gtk.Align.CENTER}>
               {w.sysmetrics && SysMetrics()}
+            </box>
+            <box halign={Gtk.Align.CENTER}>
+              {w.vpn && Vpn()}
             </box>
           </box>
           <box vexpand />

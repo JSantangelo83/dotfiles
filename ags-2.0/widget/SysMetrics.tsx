@@ -210,7 +210,7 @@ function buildPopover(parent: Gtk.Widget): Gtk.Popover {
 export default function SysMetrics() {
   return (
     <button
-      class="wled-button flat"
+      class="wled-button metrics-button flat"
       tooltipText="System"
       $={(btn: Gtk.Button) => {
         const lbl = new Gtk.Label({ label: "󰍛" })

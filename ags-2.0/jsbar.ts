@@ -35,6 +35,7 @@ export interface BarConfig {
   widgets: {
     workspaces: boolean
     sysmetrics: boolean
+    vpn: boolean
     tray: boolean
     clock: boolean
     wled: boolean
@@ -98,6 +99,7 @@ const DEFAULTS: BarConfig = {
   widgets: {
     workspaces: true,
     sysmetrics: true,
+    vpn: true,
     tray: true,
     clock: true,
     wled: true,
@@ -172,6 +174,7 @@ function loadConfig() {
       widgets: {
         workspaces: w.workspaces ?? DEFAULTS.widgets.workspaces,
         sysmetrics: w.sysmetrics ?? DEFAULTS.widgets.sysmetrics,
+        vpn:        w.vpn        ?? DEFAULTS.widgets.vpn,
         tray:       w.tray       ?? DEFAULTS.widgets.tray,
         clock:      w.clock      ?? DEFAULTS.widgets.clock,
         wled:       w.wled       ?? DEFAULTS.widgets.wled,
