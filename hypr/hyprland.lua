@@ -27,6 +27,13 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("ags run " .. HOME .. "/.config/dotfiles/ags-2.0/app.ts")
     hl.exec_cmd(HOME .. "/.config/wacom/init.sh")
     hl.exec_cmd("hypridle")
+    -- XWayland has no primary by default; games use it for fullscreen/resolution
+    hl.exec_cmd("xrandr --output DP-1 --primary")
+    -- Initial workspaces only (not bound): left=5, right=7, main=4 focused last
+    for _, m in ipairs({ { "DP-2", 5 }, { "DP-3", 7 }, { "DP-1", 4 } }) do
+        hl.dispatch(hl.dsp.focus({ monitor = m[1] }))
+        hl.dispatch(hl.dsp.focus({ workspace = m[2] }))
+    end
 end)
 
 -- ─── Environment ─────────────────────────────────────────────────────────────
@@ -120,6 +127,13 @@ hl.window_rule({
     name    = "flameshot-no-anim",
     match   = { class = "^(flameshot)$" },
     no_anim = true,
+})
+
+-- Games always open on the main monitor, so they read DP-1's resolutions
+hl.window_rule({
+    name    = "games-on-main",
+    match   = { class = "^(bg3|steam_app_[0-9]+)$" },
+    monitor = "DP-1",
 })
 
 -- ─── Keybindings ─────────────────────────────────────────────────────────────
